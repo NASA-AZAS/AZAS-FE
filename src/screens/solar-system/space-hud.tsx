@@ -85,16 +85,7 @@ export function SpaceHud({ speed, onSpeedChange, simulationSeconds, selected, on
               </Pressable>)}
             </View>}
           </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Reset camera view"
-            accessibilityState={{ disabled }}
-            disabled={disabled}
-            onPress={() => { setSpeedMenuOpen(false); onReset(); }}
-            style={({ pressed }) => [styles.playButton, pressed && styles.pressed, disabled && styles.disabled]}
-          >
-            <Ionicons name="scan-outline" size={17} color={theme.colors.muted} accessible={false} />
-          </Pressable>
+
           <Pressable accessibilityRole="button" accessibilityLabel="Menu"
             onPress={() => setSpeedMenuOpen(false)} style={[styles.playButton, { width: 60 }]}>
             <Ionicons name="menu-outline" size={23} color={theme.colors.text} />
@@ -140,6 +131,16 @@ export function SpaceHud({ speed, onSpeedChange, simulationSeconds, selected, on
                 <Text style={[styles.objectLabel, selected === item.id && styles.selectedText]}>{item.label.toUpperCase()}</Text>
               </Pressable>
             ))}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Reset camera view"
+            accessibilityState={{ disabled }}
+            disabled={disabled}
+            onPress={() => { setSpeedMenuOpen(false); onReset(); }}
+            style={({ pressed }) => [styles.playButton, pressed && styles.pressed, disabled && styles.disabled]}
+          >
+            <Ionicons name="scan-outline" size={17} color={theme.colors.muted} accessible={false} />
+          </Pressable>
           </View>
         </View>
 
@@ -153,7 +154,7 @@ export function SpaceHud({ speed, onSpeedChange, simulationSeconds, selected, on
 
 const styles = StyleSheet.create({
   speedTag: { paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
-  speedTagText: { color: theme.colors.accent, fontSize: 10, fontWeight: '500' },
+  speedTagText: { color: theme.colors.text, fontSize: 10, fontWeight: '500' },
   speedMenu: { position: 'absolute', top: 56, right: 0, width: 76, padding: 3, backgroundColor: '#0b1725', borderWidth: 1, borderColor: theme.colors.border, borderRadius: 10, zIndex: 30 },
   speedOption: { minHeight: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 },
