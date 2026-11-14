@@ -127,19 +127,19 @@ export function SpaceHud({ speed, onSpeedChange, simulationSeconds, selected, on
                 onPress={() => onSelect(item.id)}
                 style={({ pressed }) => [styles.objectButton, selected === item.id && styles.objectSelected, pressed && styles.pressed, disabled && styles.disabled]}
               >
-                <View style={[styles.objectDot, { backgroundColor: theme.colors[item.id] }]} />
+                <View style={[styles.objectDot, { backgroundColor: selected === item.id ? theme.colors[item.id] : '#8A8A8A' }]} />
                 <Text style={[styles.objectLabel, selected === item.id && styles.selectedText]}>{item.label.toUpperCase()}</Text>
               </Pressable>
             ))}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Reset camera view"
-            accessibilityState={{ disabled }}
+            accessibilityState={{ selected: selected === null, disabled }}
             disabled={disabled}
             onPress={() => { setSpeedMenuOpen(false); onReset(); }}
-            style={({ pressed }) => [styles.playButton, pressed && styles.pressed, disabled && styles.disabled]}
+            style={({ pressed }) => [styles.playButton, { borderColor: selected === null ? '#ffffff' : '#8A8A8A' }, pressed && styles.pressed, disabled && styles.disabled]}
           >
-            <Ionicons name="scan-outline" size={17} color={theme.colors.muted} accessible={false} />
+            <Ionicons name="scan-outline" size={17} color={selected === null ? theme.colors.text : '#8A8A8A'} accessible={false} />
           </Pressable>
           </View>
         </View>
@@ -177,18 +177,18 @@ const styles = StyleSheet.create({
   selectorSection: { gap: 12 },
   sectionLabel: { color: theme.colors.muted, fontSize: theme.type.micro, letterSpacing: 2 },
   selector: { flexDirection: 'row', gap: 8 },
-  objectButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48, paddingHorizontal: 12, borderRadius: theme.radius.sm, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
-  objectSelected: { borderColor: theme.colors.activeBorder, backgroundColor: theme.colors.activeSurface },
+  objectButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48, paddingHorizontal: 12, borderRadius: theme.radius.sm, borderWidth: 0.5, borderColor: '#8A8A8A', backgroundColor: 'transparent' },
+  objectSelected: { borderColor: '#ffffff', backgroundColor: 'transparent' },
   objectDot: { width: 6, height: 6, borderRadius: 3 },
-  objectLabel: { color: theme.colors.muted, fontSize: theme.type.micro, fontWeight: '600', letterSpacing: 1 },
+  objectLabel: { color: '#8A8A8A', fontSize: theme.type.micro, fontWeight: '600', letterSpacing: 1 },
   selectedText: { color: theme.colors.text },
   playback: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 8 },
-  playButton: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.sm, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border },
-  resetButton: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingHorizontal: 16, borderRadius: theme.radius.sm, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border },
+  playButton: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.sm, backgroundColor: 'transparent', borderWidth: 0.5, borderColor: '#ffffff' },
+  resetButton: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingHorizontal: 16, borderRadius: theme.radius.sm, backgroundColor: 'transparent', borderWidth: 0.5, borderColor: '#ffffff' },
   resetLabel: { fontSize: theme.type.micro, letterSpacing: 1.2, fontWeight: '500', color: theme.colors.text },
   hints: { minHeight: 48, flexDirection: 'row', gap: 12, alignItems: 'center' },
   hintText: { color: theme.colors.muted, fontSize: theme.type.caption, lineHeight: 19 },
-  pressed: { backgroundColor: theme.colors.surfacePressed },
+  pressed: { opacity: 0.65 },
   disabled: { opacity: 0.4 },
   feedback: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', gap: 16, paddingHorizontal: 48 },
   feedbackText: { color: theme.colors.muted, fontSize: theme.type.body, lineHeight: 22, textAlign: 'center', maxWidth: 360 },
