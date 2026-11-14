@@ -18,8 +18,8 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 
 # 해커톤 관측 기록
 
-개발 작업 12건 · 완료 12건 · 사용자 확인 0건 · setup 1건 별도
-재작업 표시 7회 · 완료 작업 경과시간 중앙값 1.5분
+개발 작업 31건 · 완료 31건 · 사용자 확인 0건 · setup 1건 별도
+재작업 표시 12회 · 완료 작업 경과시간 중앙값 1.0분
 
 | 작업 | 구분 | 상태 | 경과(분) | 관측 토큰 | 시스템 토큰 | 재작업 | 사용자 확인 |
 |---|---|---|---:|---:|---:|---:|---|
@@ -36,6 +36,25 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 | Lock gestures throughout complete focus transitions | harness | done | 1.1 | 1140396 | 127729 | 0 | 미확인 |
 | Reset zooms out from current body and angle | harness | done | 1.6 | 1386105 | 131103 | 1 | 미확인 |
 | Update button highlight and description on selection immediately | harness | done | 0.1 | 233756 | 0 | 0 | 미확인 |
+| Sun-centered reset, Earth-Moon local overview and curved camera flights | harness | done | 1.7 | 986768 | 144079 | 1 | 미확인 |
+| Preserve camera angle, direct overview-to-Sun zoom and lower arcs | harness | done | 1.1 | 1251595 | 146992 | 0 | 미확인 |
+| Remove camera catch-up and smooth continuous approach | harness | done | 1.0 | 1264939 | 149535 | 1 | 미확인 |
+| Fix all automatic flights to Reset View angle | harness | done | 0.2 | 254284 | 0 | 1 | 미확인 |
+| Direct source-centered reset zoom and repeated-reset guard | harness | done | 0.8 | 769657 | 153370 | 1 | 미확인 |
+| Ignore Reset whenever overview is selected | harness | done | 0.2 | 257738 | 0 | 0 | 미확인 |
+| Blend toward reset angle while zooming | harness | done | 0.2 | 258984 | 0 | 0 | 미확인 |
+| Direct faster Sun-to-Earth/Moon flights without zoom-out | harness | done | 0.2 | 260199 | 0 | 0 | 미확인 |
+| Restore restrained low-arc Sun-to-body zoom-out | harness | done | 0.2 | 261298 | 0 | 0 | 미확인 |
+| Raise Sun flight arc to intermediate height | harness | done | 0.2 | 262150 | 0 | 0 | 미확인 |
+| Restore standard Sun flight parabola with faster travel | harness | done | 0.2 | 263109 | 0 | 0 | 미확인 |
+| Restore original Sun flight duration | harness | done | 0.1 | 263869 | 0 | 0 | 미확인 |
+| Focus Earth and Moon from the sunlit side | harness | done | 0.2 | 265107 | 0 | 0 | 미확인 |
+| Moon-first Earth-facing phases, reordered copy and reset guards | harness | done | 4.4 | 2466018 | 494777 | 0 | 미확인 |
+| Separate intro lunar phases from bright Moon button focus | harness | done | 1.1 | 1128357 | 170447 | 1 | 미확인 |
+| Start lunar introduction at full Moon | harness | done | 0.1 | 284832 | 0 | 0 | 미확인 |
+| Start intro Moon with roughly one-third shadow | harness | done | 0.1 | 285740 | 0 | 0 | 미확인 |
+| Tap enlarged overview bodies to open Earth-Moon orbit view | harness | done | 1.3 | 1163040 | 176485 | 0 | 미확인 |
+| Tap Moon in Earth orbit view to reopen lunar introduction | harness | done | 0.8 | 886579 | 180896 | 0 | 미확인 |
 
 ## 비교
 
@@ -90,3 +109,48 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 - Reset now zooms outward around the current body while preserving viewing angles; it no longer heads toward the Sun first. App launches directly in the wide overview, with no initial Sun zoom. Typecheck and browser initial overview → Earth → Reset flow passed; physical device unverified.
 
 - HUD selection/description now uses requestedBody, updated immediately on button press independently of the delayed camera target. Reset clears both. Typecheck passed; no visual/device check for this change.
+
+- Camera flight correction: removed timeout-driven zoom-out/center-shift/zoom-in steps. A single frame-driven eased curved flight now widens and moves together. Earth↔Moon uses local peak distance (4 lunar-orbit radii), while other body flights use system-wide range. Reset initially widens at the moving source body, then finishes at the Sun-centered overview. Request revisions handle retarget/reset without stale timers. End-to-end input lock retained. Typecheck and browser Sun/Earth/Moon focus/reset/drag/wheel/pinch checks passed with no runtime errors; physical-device motion remains unverified.
+
+- Flight adjustment: preserve actual starting camera azimuth/elevation instead of rotating toward the reset angle. Overview→Sun directly zooms in over 2 seconds without the wide-out leg. Arc height reduced from 18% of travel (cap 25% of peak range) to 2.5% (cap 4%). Sun idle orbit remains. Typecheck and browser focus/reset/drag/zoom checks passed; device motion unverified.
+
+- Smooth approach correction: automatic flights now set the camera directly from the one computed flight trajectory, removing the extra damping pass/final catch-up. The wide point uses sinusoidal easing over the overall smooth progress instead of two flat quintic endpoints, reducing the apparent mid-flight pause. Manual camera damping retained. Typecheck/browser focus/reset/zoom controls passed; physical-device smoothness remains unverified.
+
+- Angle correction: every automatic focus/reset flight now uses the fixed Reset View yaw .18 / pitch .48 throughout, regardless of the preceding manually rotated angle. Typecheck passed; visual/device check not performed for this small correction.
+
+- Reset fix: keep tracking source body until zoom-out reaches 25% of the system overview distance; only then blend the center toward the Sun, finishing at the canonical overview. Ignore Reset when already at default overview or while Reset is running; manually changed overview still resets. Typecheck and browser repeated Reset (initial/flight/end) + post-reset wheel unlock checks passed; no runtime errors. Physical-device smoothness unverified.
+
+- Reset is now an unconditional no-op whenever overview is selected, including manually rotated/zoomed overview and an in-progress reset. Typecheck passed; no additional visual check for this guard.
+
+- Angle blend: capture actual camera yaw/pitch at automatic flight start, then ease along the shortest yaw path toward the Reset View angle over the same flight progress as zoom. Removes instant angle snap; overview Reset remains a no-op. Typecheck passed; this small change not visually/device checked.
+
+- Sun→Earth/Moon now uses a direct 1.6-second flight with no preliminary widening or vertical arc. Distance blends directly toward the destination close-up; other routes are unchanged. Typecheck passed; visual/device check not performed for this small change.
+
+- Sun→Earth/Moon zoom-out restored with restrained peak range (0.65 Earth orbital radius instead of system overview), 2.6-second duration, and arc height limited to 0.5% of travel / 1% of peak range. Typecheck passed; visual/device check not performed for this adjustment.
+
+- Sun flight arc adjusted to an intermediate height: 1.2% of travel capped at 2.2% of peak range. Zoom range and duration unchanged. Typecheck passed; visual/device check not performed.
+
+- Sun→Earth/Moon standard curved route restored: system overview peak, standard arc (2.5% travel capped at 4% peak). Only duration shortened to 2.2s; single-pass interpolation and smooth arrival retained. Typecheck passed; visual/device check not performed for this parameter adjustment.
+
+- Sun→Earth/Moon duration restored to the standard 3.6 seconds; original curve/range and single-pass arrival retained. Typecheck passed.
+
+- Earth/Moon focus arrival now faces the daylight hemisphere: destination azimuth points from the body toward the Sun, with pitch .25. Angle follows the moving target during automatic flight and blends smoothly from the start angle. Manual orbit remains available after arrival. Typecheck passed; visual/device check not performed for this change.
+
+## 달 시작 화면과 관찰 위상
+
+첫 화면은 일반 달 포커스와 구분되는 확대된 인트로다. 천체 크기·달 간격은 전체 보기 표시 배율을 쓰며, 관찰 방향은 지구 쪽을 따라간다. 가속된 단순 원궤도에서 태양 광원에 대한 관찰 각도가 바뀌므로 밝은 부분이 변화한다. 실제 날짜의 달 위상 계산은 아니다. 버튼·설명은 Moon부터 시작하며 MOON/EARTH/SUN 순서다. 다른 천체 선택 또는 Reset 뒤에는 일반 보기로 전환한다.
+
+타입 검사 통과. 브라우저에서 요청 문구·버튼 순서·반복 리셋 무동작·수동 확대된 전체 보기의 리셋 복구 검사를 통과했다. 최초 리셋 스크린샷 비교는 표시 배율 보간이 끝나기 전에 캡처해 실패했고, 보간 종료를 기다리도록 검증 대기 조건을 수정했다. 실제 화면에서 아래 두 시점의 달 위상 변화를 확인했다. 네이티브 기기 확인은 미실시다.
+
+- [확대된 첫 달 화면](evidence/moon-intro-large.png)
+- [공전 후 달의 밝은 부분 변화](evidence/moon-intro-phase.png)
+
+- Moon view correction: intro alone uses the Earth-side observer and starts near a half Moon (initial orbit angle 1.7), then changes phase with motion. Pressing MOON exits intro via direct same-body flight and faces the Sun-lit hemisphere; regular Moon focus keeps that bright-side viewing direction while allowing manual offset. Title explicitly breaks as A DREAM / AS OLD AS HUMANITY. Typecheck and browser render passed; intro vs bright-button screenshots visually confirmed; native unverified.
+
+- Intro initial Moon orbital angle now .35, aligned opposite the Sun from Earth for a full-Moon start; subsequent phase motion unchanged. Typecheck passed.
+
+- Intro starts approximately two-thirds lit / one-third shadow with initial Moon angle 1.68; later phases retained. Typecheck passed; visual check not performed for this parameter adjustment.
+
+- Overview Earth/Moon meshes are tappable (larger invisible hit spheres). A tap opens Earth-centered orbit view at 3.2 enlarged lunar-orbit radii, retaining overview display sizes/separation. Object buttons switch to physical close-up; Reset returns to full system. Typecheck passed; actual overview Earth click and resulting Earth/Moon orbit screenshot visually confirmed in browser with no runtime errors. Native touch unverified.
+
+- In Earth-centered enlarged orbit view, tapping the Moon mesh now opens the phase-changing enlarged Moon introduction at the current simulation time. Input lock and immediate Moon HUD selection retained. Normal MOON button still uses bright-side physical close-up. Typecheck and browser actual mesh navigation sequence overview→Earth orbit→Moon intro passed; native touch unverified.
