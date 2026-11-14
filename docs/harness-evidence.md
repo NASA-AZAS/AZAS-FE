@@ -18,8 +18,8 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 
 # 해커톤 관측 기록
 
-개발 작업 33건 · 완료 32건 · 사용자 확인 0건 · setup 1건 별도
-재작업 표시 13회 · 완료 작업 경과시간 중앙값 1.0분
+개발 작업 42건 · 완료 41건 · 사용자 확인 0건 · setup 1건 별도
+재작업 표시 16회 · 완료 작업 경과시간 중앙값 1.0분
 
 | 작업 | 구분 | 상태 | 경과(분) | 관측 토큰 | 시스템 토큰 | 재작업 | 사용자 확인 |
 |---|---|---|---:|---:|---:|---:|---|
@@ -57,6 +57,15 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 | Tap Moon in Earth orbit view to reopen lunar introduction | harness | done | 0.8 | 886579 | 180896 | 0 | 미확인 |
 | Earth return tap and non-penetrating Earth-Moon camera path | harness | done | 2.1 | 1211895 | 188250 | 1 | 미확인 |
 | Plan Earth-Moon flight around Earth instead of pushing camera on contact | harness | cancelled | 2.1 | 1565015 | 192790 | 0 | 미확인 |
+| Rocket sticker companion with open-bot-avatar eyes and header controls | harness | done | 4.8 | 12828115 | 689384 | 1 | 미확인 |
+| Larger tilted floating rocket and smooth native-driven expressions | harness | done | 3.7 | 3152524 | 436389 | 0 | 미확인 |
+| Reset stale Worklets plugin transforms and isolate Metro cache | harness | done | 2.8 | 3711244 | 463042 | 1 | 미확인 |
+| Replace header orbital mark with supplied Space Apps SVG | harness | done | 0.2 | 377350 | 0 | 0 | 미확인 |
+| Use supplied white motif logo with transparent backing | harness | done | 0.3 | 756737 | 0 | 0 | 미확인 |
+| Slightly enlarge header logo | harness | done | 0.0 | 0 | 0 | 0 | 미확인 |
+| Simulation calendar and 0.25x–2x playback speed menu | harness | done | 4.6 | 4708465 | 329645 | 0 | 미확인 |
+| Hide 1x tag, restore Earth spin and dismissible speed menu | harness | done | 0.8 | 1198658 | 99323 | 1 | 미확인 |
+| Use outlined play and pause icons | harness | done | 0.0 | 0 | 0 | 0 | 미확인 |
 
 ## 비교
 
@@ -160,3 +169,46 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 - Enlarged Moon introduction: Earth mesh tap now returns to enlarged Earth-centered orbit. Earth→Moon flights add clearance over Earth; camera position is constrained outside 1.35× the currently displayed Earth radius. Enlarged Moon observer distance reduced below (Moon separation − 1.4× displayed Earth radius), fixing the previous endpoint inside enlarged Earth. Typecheck and actual browser Moon-view rotation/Earth mesh click/return orbit flow passed without runtime errors; native touch/flight perception unverified.
 
 - User requested camera rollback: removed Earth spherical detour, surface push-out and camera-dependent Earth scaling, restored original enlarged Moon observation distance. Passing through Earth is allowed again. Earth/Moon mesh navigation remains. Detour task marked cancelled; rollback typecheck passed.
+
+## 로켓 동반자와 상단 조작 버튼
+
+이전 작업은 `0c6313a`로 먼저 커밋했다. LIVE SIMULATION 표시를 없애고 정지/리셋을 상단 오른쪽으로 이동했다. 하단 오른쪽 로켓은 사용자가 제공한 몸체를 ImageGen으로 투명 에셋화하고 실제 open-bot-avatar 0.2.1의 DOM-free avatarFrame 눈을 react-native-svg로 렌더링한다. 누르면 1.6초 happy 표정 후 idle로 돌아온다. MIT 원문/출처는 docs/rocket-companion.md 및 docs/licenses에 보관했다.
+
+타입 검사, iOS/Android 번들 생성, 브라우저 버튼 위치/상태 텍스트 제거/표정 전환·복귀 검사를 통과했다. 몸체 표시 및 SVG 쌓임 순서 문제를 보정한 후 아래 화면을 시각 확인했고 console/runtime 오류가 없었다. 실기기 미확인. 이 작업의 start 마크는 이미지 생성 후 기록되어 이미지 생성 호출 비용과 시간은 장부에 포함되지 않는다. 측정 누락을 0으로 주장하지 않는다.
+
+- [기본 표정](evidence/rocket-idle.png)
+- [클릭 후 웃는 표정](evidence/rocket-happy.png)
+
+## 로켓 전체 동작과 눈 애니메이션
+
+로켓을 118pt에서 160pt로 키우고 오른쪽으로 기울였다. 몸체와 두 표정 눈 레이어를 한 Reanimated 컨테이너에 넣어 함께 부유/반응한다. 클릭하면 위로 뜨며 기울기와 크기가 반응한다. 기존 50ms(20Hz) setInterval/setState 기반 avatarFrame 재계산을 없앴고, 패키지의 고정 idle/happy 눈 데이터를 네이티브 transform/opacity로 깜빡임·시선·표정 전환한다. UI 스레드 애니메이션으로 바꿨지만 실제 기기 FPS 향상률은 측정하지 않았다.
+
+타입 검사, iOS/Android 번들, 브라우저 크기/부유 transform/웃는 눈 opacity/복귀 검사 통과. console/runtime 오류 없음. 두 화면을 시각 확인했으며 네이티브 기기는 미확인이다.
+
+- [부유·기울기](evidence/rocket-floating.png)
+- [몸체와 함께 반응하는 웃음](evidence/rocket-floating-happy.png)
+
+## Worklets 변환 버전 오류 대응
+
+사용자 로그의 마지막 실행 차단 오류는 JS 0.13.0 / Babel plugin 0.13.1 불일치였다. 설치 트리는 Worklets 0.13.0 단일 버전임을 확인했다. 이 레포에서 실행되던 Metro를 종료하고 캐시 초기화 후 재시작했다. Metro cacheVersion에 설치된 Worklets/Reanimated 버전을 넣어 이후 버전 변경 시 변환 캐시를 분리했다. 실제 src/app을 포함한 iOS dev 번들에서 __pluginVersion 표식 505개가 모두 0.13.0인 것을 검증했다. 타입 검사 통과. 기기 내 이전 runtime 상태와 ExpoAsset 관련 예전 로그의 해소 여부는 실기기 재실행 미확인이다. Three.Clock/EXGL 지원 경고는 숨기지 않았다.
+
+검증 과정의 독립 Babel 샘플은 물리 파일 없이 호출하여 테스트 환경 설정 오류가 났고, 처음 받은 Metro 번들은 routerRoot 파라미터가 빠져 앱 화면이 포함되지 않았다. 실제 src/app routerRoot로 받은 전체 앱 번들로 검증을 대체했다. 이 테스트 준비 오류는 앱 수정 횟수와 구분한다.
+
+- Header mark replaced with user-supplied Space Apps Color and Black motif SVG, rendered using existing react-native-svg. Original vector paths/colors retained on a small white backing for contrast against space. Typecheck passed; visual/device check not performed for this small asset change.
+
+- Header logo switched to user-supplied Color and White motif SVG; removed white backing so the original vector renders on transparent background. Typecheck passed.
+
+## 시뮬레이션 시각과 배속
+
+ORBITAL EXPLORER 대신 동일 스타일의 한국시간 달력을 표시한다. 시작값은 2026-11-14 00:00:00 KST. 시뮬레이션 ref를 유일한 시간 원천으로 쓰고 궤도와 달력을 함께 정지/가속한다. 기본 환산은 루프 시간 1초=시뮬레이션 1일이며, 배속은 .25/.5/1/1.5/2. 태양계 움직임에는 NASA 평균 공전 주기(지구365.256일, 달27.3217일)를 적용했고 초기 각도는 기존 예술적 프리셋이라 날짜별 실제 천체력이라고 주장하지 않는다.
+
+날짜 옆 배속 태그, 라인형 배속 아이콘, 축소된 드롭다운을 반영했다. 타입 검사, KST 자정 시작/날짜 이월, 브라우저 시간 정지·재개/배속 변경 시 연속성 및 메뉴/태그 위치 검증 통과. 캡처 시각 확인 완료; 네이티브 실기기 미확인.
+
+공식 수치: https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html 및 https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html
+
+- [배속 메뉴](evidence/simulation-speed-menu.png)
+- [날짜와 배속 태그](evidence/simulation-speed-tag.png)
+
+- Playback polish: 1x badge hidden; Earth/cloud visual spin restored to previous .13/.145 rad per demo-loop second and still multiplied by playback speed. Calendar and mean orbital clock unchanged (visual spin no longer represents physical sidereal rotation). Outside overlay closes speed dropdown, header actions also dismiss it. Added a 60×48 outline menu button without menu contents. Typecheck and browser hidden/visible badge, outside-dismiss and rectangular button checks passed; native device unverified.
+
+- 헤더 로고는 사용자 제공 Space Apps Color and White motif SVG 원본을 투명 배경으로 적용했으며 52pt로 조정했다. 재생/정지 아이콘은 outline으로 통일했다. 이 표시 조정의 별도 실기기 검사는 미실시다.
