@@ -16,3 +16,6 @@ export const viewDistance = {
   earth: scale.earthRadius * 5.2,
   moon: scale.moonRadius * 5.2,
 };
+
+// Enlarged intro starts roughly two-thirds illuminated, then evolves with the orbit.
+export const INITIAL_MOON_ANGLE = 1.68;

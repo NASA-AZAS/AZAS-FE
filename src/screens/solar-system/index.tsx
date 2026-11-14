@@ -4,9 +4,9 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { Canvas } from './render-surface';
 import { SolarScene, type ViewControls } from './scene';
 import { SpaceHud, type BodyId } from './space-hud';
-import { viewDistance } from './scale';
+import { viewDistance, INITIAL_MOON_ANGLE } from './scale';
 
-const initialView = (): ViewControls => ({ yaw: .18, pitch: .48, zoom: 1, holdCenter: false, zoomingOut: false, locked: false, heldBody: null, keepAngle: false });
+const initialView = (): ViewControls => ({ yaw: .18, pitch: .48, zoom: 1, locked: false, revision: 0, fromBody: null });
 const sceneTouchStyle: ViewStyle & { touchAction?: 'none' } = Platform.OS === 'web' ? { touchAction: 'none' } : {};
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
@@ -18,14 +18,16 @@ class SceneBoundary extends Component<{ children: ReactNode; onError: (message: 
 }
 
 export function SolarSystemScreen() {
-  const [selected, setSelected] = useState<BodyId | null>(null);
-  const [requestedBody, setRequestedBody] = useState<BodyId | null>(null);
+  const [selected, setSelected] = useState<BodyId | null>('moon');
+  const [requestedBody, setRequestedBody] = useState<BodyId | null>('moon');
+  const [systemView, setSystemView] = useState(false);
+  const [intro, setIntro] = useState(true);
   const [paused, setPaused] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [active, setActive] = useState(AppState.currentState === 'active');
   const { width, height } = useWindowDimensions();
-  const controls = useRef(initialView());
+  const controls = useRef({ ...initialView(), yaw: Math.atan2(-Math.cos(INITIAL_MOON_ANGLE), -Math.sin(INITIAL_MOON_ANGLE)), pitch: 0 });
   const gesture = useRef({ x: 0, y: 0, count: 0, pinch: 0 });
   const pinch = (event: import('react-native').GestureResponderEvent) => {
     const [a, b] = event.nativeEvent.touches;
@@ -70,27 +72,33 @@ export function SolarSystemScreen() {
       onPanResponderTerminationRequest: () => true,
     }), []);
 
-  const pendingFocus = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => () => { if (pendingFocus.current) clearTimeout(pendingFocus.current); }, []);
-  const focus = (body: BodyId) => {
-    setRequestedBody(body);
-    if (pendingFocus.current) clearTimeout(pendingFocus.current);
-    if (selected === body && !pendingFocus.current) return;
-    controls.current = { ...initialView(), locked: true };
-    if (selected || pendingFocus.current) {
-      controls.current.zoomingOut = true;
-      pendingFocus.current = setTimeout(() => { controls.current = { ...initialView(), locked: true }; setSelected(body); pendingFocus.current = null; }, 2200);
-    } else setSelected(body);
-  };
-  const reset = () => {
-    setRequestedBody(null);
-    if (pendingFocus.current) clearTimeout(pendingFocus.current);
-    pendingFocus.current = null;
+  const moveTo = (body: BodyId | null, orbitView = false, introView = false) => {
+    if (selected === body && body !== null && intro === introView && systemView === orbitView) return;
+    setIntro(introView);
+    setSystemView(orbitView);
     const current = controls.current;
     controls.current = { ...initialView(), yaw: current.yaw, pitch: current.pitch,
-      locked: true, holdCenter: true, heldBody: selected ?? current.heldBody, keepAngle: true };
-    setSelected(null);
+      locked: true, revision: current.revision + 1, fromBody: selected };
+    setRequestedBody(body);
+    setSelected(body);
   };
+  const openEarthSystem = () => {
+    if (selected !== null || intro || controls.current.locked) return;
+    moveTo('earth', true);
+  };
+  const openMoonIntro = () => {
+    if (!systemView || controls.current.locked) return;
+    moveTo('moon', false, true);
+  };
+  const focus = (body: BodyId) => moveTo(body);
+  const reset = () => {
+    const current = controls.current;
+    const angleDelta = Math.atan2(Math.sin(current.yaw - .18), Math.cos(current.yaw - .18));
+    const pristine = Math.abs(current.zoom - 1) < .001 && Math.abs(angleDelta) < .001 && Math.abs(current.pitch - .48) < .001;
+    if (selected === null && (current.locked || pristine)) return;
+    moveTo(null);
+  };
+
 
   const wheelProps = Platform.OS === 'web' ? {
     onWheel: (event: { deltaY: number }) => {
@@ -102,12 +110,12 @@ export function SolarSystemScreen() {
     <View style={styles.screen}>
       <View style={[StyleSheet.absoluteFill, sceneTouchStyle]} {...responder.panHandlers} {...wheelProps} accessibilityLabel="Interactive solar system. Drag to orbit. Select a body to zoom in; reset to return to the Sun-centered overview.">
         <SceneBoundary onError={fail}>
-          <Canvas camera={{ position: [viewDistance.overview * .159, viewDistance.overview * .462, viewDistance.overview * .872], fov: 43, near: .000001, far: 4000 }}
+          <Canvas camera={{ position: [-Math.cos(INITIAL_MOON_ANGLE) * viewDistance.moon * 1200, 0, -Math.sin(INITIAL_MOON_ANGLE) * viewDistance.moon * 1200], fov: 43, near: .000001, far: 4000 }}
             frameloop={active ? 'always' : 'never'}
             gl={{ antialias: true, alpha: false }}
             >
             <Suspense fallback={null}>
-              <SolarScene controls={controls} selected={selected} paused={paused || !active} onReady={ready} />
+              <SolarScene onMoonIntro={openMoonIntro} systemView={systemView} onSystemFocus={openEarthSystem} intro={intro} controls={controls} selected={selected} paused={paused || !active} onReady={ready} />
             </Suspense>
           </Canvas>
         </SceneBoundary>

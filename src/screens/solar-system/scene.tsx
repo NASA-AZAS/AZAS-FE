@@ -5,10 +5,17 @@ import { useLoader } from './render-surface';
 import { Sun } from './sun';
 import type { BodyId } from './space-hud';
 
-import { scale, viewDistance } from './scale';
+import { scale, viewDistance, INITIAL_MOON_ANGLE } from './scale';
 
-export type ViewControls = { yaw: number; pitch: number; zoom: number; holdCenter: boolean; zoomingOut: boolean; locked: boolean; heldBody: BodyId | null; keepAngle: boolean };
+export type ViewControls = {
+  yaw: number; pitch: number; zoom: number; locked: boolean;
+  revision: number; fromBody: BodyId | null;
+};
 type Props = {
+  intro: boolean;
+  systemView: boolean;
+  onSystemFocus: () => void;
+  onMoonIntro: () => void;
   controls: MutableRefObject<ViewControls>;
   paused: boolean;
   selected: BodyId | null;
@@ -131,7 +138,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ controls, paused, selected, onReady }: Props) {
+export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
@@ -142,19 +149,23 @@ export function SolarScene({ controls, paused, selected, onReady }: Props) {
   const earthSystem = useRef<THREE.Group>(null);
   const earth = useRef<THREE.Mesh>(null);
   const moon = useRef<THREE.Mesh>(null);
+  const moonHit = useRef<THREE.Mesh>(null);
   const clouds = useRef<THREE.Mesh>(null);
   const time = useRef(0);
-  const visualOverview = useRef(selected ? 0 : 1);
+  const lastMoonViewYaw = useRef(Math.atan2(-Math.cos(INITIAL_MOON_ANGLE), -Math.sin(INITIAL_MOON_ANGLE)));
+  const visualOverview = useRef(intro || !selected ? 1 : 0);
   const sunVisual = useRef<THREE.Group>(null);
   const earthVisual = useRef<THREE.Group>(null);
   const moonOrbitVisual = useRef<THREE.Group>(null);
   const center = useMemo(() => new THREE.Vector3(0, 0, 0), []);
   const target = useMemo(() => new THREE.Vector3(), []);
-  const transition = useRef<{ body: string; elapsed: number; from: THREE.Vector3 }>({ body: `${selected}:false`, elapsed: 2, from: new THREE.Vector3() });
+  const transition = useRef({ revision: 0, elapsed: 4, from: new THREE.Vector3(),
+    startDistance: viewDistance.overview, peak: viewDistance.overview, duration: 3.6,
+    yaw: .18, pitch: .48, startYaw: .18, startPitch: .48, direct: false, lowArc: false, source: null as BodyId | null, sourceStart: new THREE.Vector3() });
   const physicalSystem = useRef<THREE.Group>(null);
-  const flightDistance = useRef(selected ? viewDistance[selected] : viewDistance.overview);
-  const flightStartDistance = useRef(selected ? viewDistance[selected] : viewDistance.overview);
-  const previousCenter = useMemo(() => new THREE.Vector3(), []);
+  const flightDistance = useRef(viewDistance.overview);
+  const sourcePosition = useMemo(() => new THREE.Vector3(), []);
+  const movingStart = useMemo(() => new THREE.Vector3(), []);
   const desired = useMemo(() => new THREE.Vector3(), []);
   const { camera } = useThree();
   useEffect(onReady, [onReady]);
@@ -163,58 +174,104 @@ export function SolarScene({ controls, paused, selected, onReady }: Props) {
     const dt = Math.min(delta, .05);
     if (!paused) time.current += dt;
     const t = time.current;
-    visualOverview.current = THREE.MathUtils.lerp(visualOverview.current, selected ? 0 : 1, 1 - Math.exp(-dt * 4));
+    visualOverview.current = THREE.MathUtils.lerp(visualOverview.current, intro || systemView ? 1 : selected ? 0 : THREE.MathUtils.smoothstep(flightDistance.current / viewDistance.overview, .08, .8), 1 - Math.exp(-dt * 4));
     const overview = visualOverview.current;
     sunVisual.current?.scale.setScalar(scale.sunRadius / 1.55 * (1 + overview * 19));
     earthVisual.current?.scale.setScalar(scale.earthRadius / 1.02 * (1 + overview * 799));
     moon.current?.scale.setScalar(scale.moonRadius / .36 * (1 + overview * 1199));
     moonOrbitVisual.current?.scale.setScalar(1 + overview * 39);
     const a = .35 + t * .022;
-    const mx = Math.cos(.6 + t * .16) * scale.moonOrbit * (1 + overview * 39);
-    const mz = Math.sin(.6 + t * .16) * scale.moonOrbit * (1 + overview * 39);
+    const mx = Math.cos(INITIAL_MOON_ANGLE + t * .16) * scale.moonOrbit * (1 + overview * 39);
+    const mz = Math.sin(INITIAL_MOON_ANGLE + t * .16) * scale.moonOrbit * (1 + overview * 39);
     const ex = Math.cos(a) * scale.earthOrbit;
     const ez = Math.sin(a) * scale.earthOrbit;
     if (earthSystem.current) earthSystem.current.position.set(ex, 0, ez);
     if (earth.current) earth.current.rotation.y = t * .13 - 1.1;
     if (moon.current) { moon.current.position.set(mx, 0, mz); moon.current.rotation.y = t * .16; }
+    moonHit.current?.position.set(mx, 0, mz);
     if (clouds.current) clouds.current.rotation.y = t * .145 - 1.1;
-    const trackingBody = selected ?? (controls.current.holdCenter ? controls.current.heldBody : null);
-    if (trackingBody === 'earth') target.set(ex, 0, ez);
-    else if (trackingBody === 'moon') target.set(ex + mx, 0, ez + mz);
-    else if (controls.current.holdCenter) target.copy(center);
+    if (selected === 'earth') target.set(ex, 0, ez);
+    else if (selected === 'moon') target.set(ex + mx, 0, ez + mz);
     else target.set(0, 0, 0);
-    const flightKey = `${selected}:${controls.current.zoomingOut}`;
-    if (transition.current.body !== flightKey) {
+    const positionOf = (body: BodyId | null, out: THREE.Vector3) => {
+      if (body === 'earth') return out.set(ex, 0, ez);
+      if (body === 'moon') return out.set(ex + mx, 0, ez + mz);
+      return out.set(0, 0, 0);
+    };
+    if (transition.current.revision !== controls.current.revision) {
+      const local = (controls.current.fromBody === 'earth' && selected === 'moon') ||
+        (controls.current.fromBody === 'moon' && selected === 'earth');
+      const startDistance = Math.max(camera.position.length(), .000001);
+      const endDistance = systemView ? scale.moonOrbit * 40 * 3.2 : selected ? viewDistance[selected] * (intro ? 1200 : 1) : viewDistance.overview;
+      const direct = (controls.current.fromBody === null && selected === 'sun') || controls.current.fromBody === selected;
+      transition.current = {
+        revision: controls.current.revision, elapsed: 0, from: center.clone(),
+        startDistance, peak: direct ? startDistance : Math.max(startDistance, endDistance, local ? scale.moonOrbit * 4 : viewDistance.overview),
+        duration: direct ? 2 : local ? 2.8 : 3.6, direct, lowArc: false,
+        yaw: .18, pitch: .48,
+        startYaw: Math.atan2(camera.position.x, camera.position.z),
+        startPitch: Math.asin(THREE.MathUtils.clamp(camera.position.y / startDistance, -1, 1)),
+        source: controls.current.fromBody, sourceStart: positionOf(controls.current.fromBody, new THREE.Vector3()),
+      };
       controls.current.locked = true;
-      transition.current = { body: flightKey, elapsed: 0, from: center.clone() };
-      flightStartDistance.current = Math.max(camera.position.length(), .000001);
+      controls.current.zoom = 1;
     }
-    previousCenter.copy(center);
-    transition.current.elapsed += Math.min(delta, .25);
-    const u = Math.min(transition.current.elapsed / 2, 1);
-    const incoming = !!selected && !controls.current.zoomingOut;
-    const centerProgress = incoming ? Math.min(transition.current.elapsed / .65, 1) : u;
-    const centerEase = centerProgress ** 3 * (centerProgress * (centerProgress * 6 - 15) + 10);
-    if (controls.current.zoomingOut) center.copy(target);
-    else center.lerpVectors(transition.current.from, target, centerEase);
+    const flight = transition.current;
+    flight.elapsed += Math.min(delta, .25);
+    const u = Math.min(flight.elapsed / flight.duration, 1);
+    const smooth = (x: number) => x ** 3 * (x * (x * 6 - 15) + 10);
+    const endDistance = systemView ? scale.moonOrbit * 40 * 3.2 : selected ? viewDistance[selected] * (intro ? 1200 : 1) : viewDistance.overview;
+    // Lift along a curved path while widening and closing the view continuously.
+    // Reset starts by widening around the current body, then finishes at the Sun.
+    const resetDistance = Math.exp(THREE.MathUtils.lerp(
+      Math.log(flight.startDistance), Math.log(viewDistance.overview), smooth(u)));
+    // Keep the source centered until the field of view can contain the trip to the Sun.
+    const resetProgress = THREE.MathUtils.clamp(
+      (resetDistance / viewDistance.overview - .25) / .75, 0, 1);
+    const progress = smooth(selected ? u : resetProgress);
+    const arc = flight.direct ? 0 : Math.min(flight.from.distanceTo(target) * (flight.lowArc ? .012 : .025), flight.peak * (flight.lowArc ? .022 : .04));
+    positionOf(flight.source, sourcePosition);
+    movingStart.copy(flight.from).add(sourcePosition).sub(flight.sourceStart);
+    center.lerpVectors(movingStart, target, progress);
+    center.y += 4 * progress * (1 - progress) * arc;
     if (physicalSystem.current) physicalSystem.current.position.copy(center).negate();
-    const destinationDistance = selected && !controls.current.zoomingOut ? viewDistance[selected] : viewDistance.overview;
-    const zoomProgress = incoming ? Math.max(0, Math.min((transition.current.elapsed - .65) / 1.35, 1)) : u;
-    const ease = zoomProgress ** 3 * (zoomProgress * (zoomProgress * 6 - 15) + 10);
-    flightDistance.current = Math.exp(THREE.MathUtils.lerp(Math.log(flightStartDistance.current), Math.log(destinationDistance), ease));
+    if (!selected || flight.direct) {
+      flightDistance.current = Math.exp(THREE.MathUtils.lerp(Math.log(flight.startDistance), Math.log(endDistance), smooth(u)));
+    } else if (u < .5) {
+      flightDistance.current = Math.exp(THREE.MathUtils.lerp(Math.log(flight.startDistance), Math.log(flight.peak), Math.sin(Math.PI * smooth(u))));
+    } else {
+      flightDistance.current = Math.exp(THREE.MathUtils.lerp(Math.log(flight.peak), Math.log(endDistance), 1 - Math.sin(Math.PI * smooth(u))));
+    }
     const distance = flightDistance.current * controls.current.zoom;
     const near = Math.max(distance / 1000, .000001);
     if (camera.near !== near) { camera.near = near; camera.updateProjectionMatrix(); }
     if (selected === 'sun' && !controls.current.locked) controls.current.yaw += dt * .025;
-    const { yaw, pitch } = u < 1 && !controls.current.keepAngle ? { yaw: .18, pitch: .48 } : controls.current;
-    desired.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch))
-      .multiplyScalar(distance);
-    camera.position.lerp(desired, 1 - Math.exp(-dt * 9));
+    const moonViewYaw = intro
+      ? Math.atan2(-Math.cos(INITIAL_MOON_ANGLE + t * .16), -Math.sin(INITIAL_MOON_ANGLE + t * .16))
+      : Math.atan2(-target.x, -target.z);
+    if (selected === 'moon' && !controls.current.locked) {
+      const change = Math.atan2(Math.sin(moonViewYaw - lastMoonViewYaw.current), Math.cos(moonViewYaw - lastMoonViewYaw.current));
+      controls.current.yaw += change;
+    }
+    lastMoonViewYaw.current = moonViewYaw;
+    // Earth arrives on its daylight side; Moon is viewed from Earth's direction to show phases.
+    if (controls.current.locked && (selected === 'earth' || (selected === 'moon' && !intro))) {
+      flight.yaw = Math.atan2(-target.x, -target.z);
+      flight.pitch = .25;
+    }
+    if (controls.current.locked && selected === 'moon' && intro) { flight.yaw = moonViewYaw; flight.pitch = 0; }
+    const angleProgress = smooth(u);
+    const yawDelta = THREE.MathUtils.euclideanModulo(flight.yaw - flight.startYaw + Math.PI, Math.PI * 2) - Math.PI;
+    const yaw = controls.current.locked ? flight.startYaw + yawDelta * angleProgress : controls.current.yaw;
+    const pitch = controls.current.locked ? THREE.MathUtils.lerp(flight.startPitch, flight.pitch, angleProgress) : controls.current.pitch;
+    if (controls.current.locked) { controls.current.yaw = yaw; controls.current.pitch = pitch; }
+    desired.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(distance);
+    // Automatic flight has one trajectory; avoid a second damping pass and final catch-up.
+    if (controls.current.locked) camera.position.copy(desired);
+    else camera.position.lerp(desired, 1 - Math.exp(-dt * 9));
     camera.lookAt(0, 0, 0);
-    // Keep the outgoing/intermediate stage locked until the incoming camera has settled.
     if (controls.current.locked) {
-      controls.current.locked = controls.current.zoomingOut || u < 1 ||
-        camera.position.distanceTo(desired) > Math.max(distance * .02, .000001);
+      controls.current.locked = u < 1 || camera.position.distanceTo(desired) > Math.max(distance * .02, .000001);
     }
   });
 
@@ -228,7 +285,13 @@ export function SolarScene({ controls, paused, selected, onReady }: Props) {
       <pointLight position={[0, 0, 0]} intensity={scale.earthOrbit ** 2 * 4} decay={2} color="#ffedc9" />
       <Orbit radius={scale.earthOrbit} opacity={.24} />
       <group ref={sunVisual}><Sun time={time} /></group>
-      <group ref={earthSystem}>
+      <group ref={earthSystem} onClick={(event) => {
+        if (!selected && !intro && !controls.current.locked) { event.stopPropagation(); onSystemFocus(); }
+      }}>
+        {!selected && !intro && <>
+          <mesh><sphereGeometry args={[6, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
+          <mesh ref={moonHit}><sphereGeometry args={[3, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
+        </>}
 
         <group ref={earthVisual}>
         <mesh ref={earth} rotation={[0, -1.1, .12]}>
@@ -242,7 +305,9 @@ export function SolarScene({ controls, paused, selected, onReady }: Props) {
         <Glow radius={1.075} color="#5bbdff" strength={.38} />
         </group>
         <group ref={moonOrbitVisual}><Orbit radius={scale.moonOrbit} opacity={.25} /></group>
-        <mesh ref={moon}>
+        <mesh ref={moon} onClick={(event) => {
+          if (systemView && !controls.current.locked) { event.stopPropagation(); onMoonIntro(); }
+        }}>
           <sphereGeometry args={[.36, 48, 32]} /><meshStandardMaterial map={moonMap} bumpMap={moonMap} bumpScale={.025} roughness={.95} />
         </mesh>
       </group>

@@ -16,9 +16,9 @@ export type SpaceHudProps = {
 };
 
 const bodies: { id: BodyId; label: string; category: string; description: string }[] = [
-  { id: 'sun', label: 'Sun', category: 'OUR HOME STAR', description: 'The light at the center\nof our solar system.' },
+  { id: 'moon', label: 'Moon', category: 'A DREAM\nAS OLD AS HUMANITY', description: 'The beginning of our journey\namong the stars.' },
   { id: 'earth', label: 'Earth', category: 'OUR HOME PLANET', description: 'A small blue world.\nAn extraordinary place to call home.' },
-  { id: 'moon', label: 'Moon', category: 'EARTH’S COMPANION', description: 'Our closest neighbor,\nalways moving with us.' },
+  { id: 'sun', label: 'Sun', category: 'OUR HOME STAR', description: 'The light at the center\nof our solar system.' },
 ];
 
 export function SpaceHud({ selected, onSelect, paused, onTogglePause, onReset, loading, error }: SpaceHudProps) {
