@@ -1,0 +1,20 @@
+# 프로젝트를 신뢰한 새 세션의 기본값. 현재 대화의 모델/effort를 바꾸지는 않는다.
+model = "gpt-6.1-sol"
+model_reasoning_effort = "low"
+
+[agents]
+max_concurrent_threads_per_session = 1
+
+# 승인한 문서 조회 전용 연결. 키 없이 초기화/도구 목록 조회 확인.
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+enabled_tools = ["resolve-library-id", "query-docs"]
+startup_timeout_sec = 10
+tool_timeout_sec = 30
+required = false
+
+[mcp_servers.context7.tools.resolve-library-id]
+output_token_limit = 1500
+
+[mcp_servers.context7.tools.query-docs]
+output_token_limit = 3500
