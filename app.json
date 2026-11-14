@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "AZAS",
+    "slug": "azas-app",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#03070d",
+    "ios": {
+      "supportsTablet": true,
+      "requireFullScreen": true
+    },
+    "android": {
+      "package": "com.azas.orbit"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "LANDSCAPE"
+        }
+      ],
+      "expo-asset"
+    ],
+    "web": {
+      "bundler": "metro",
+      "name": "AZAS \u00b7 Orbital Explorer"
+    },
+    "scheme": "azas"
+  }
+}
