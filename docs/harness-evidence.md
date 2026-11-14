@@ -212,3 +212,35 @@ ORBITAL EXPLORER 대신 동일 스타일의 한국시간 달력을 표시한다.
 - Playback polish: 1x badge hidden; Earth/cloud visual spin restored to previous .13/.145 rad per demo-loop second and still multiplied by playback speed. Calendar and mean orbital clock unchanged (visual spin no longer represents physical sidereal rotation). Outside overlay closes speed dropdown, header actions also dismiss it. Added a 60×48 outline menu button without menu contents. Typecheck and browser hidden/visible badge, outside-dismiss and rectangular button checks passed; native device unverified.
 
 - 헤더 로고는 사용자 제공 Space Apps Color and White motif SVG 원본을 투명 배경으로 적용했으며 52pt로 조정했다. 재생/정지 아이콘은 outline으로 통일했다. 이 표시 조정의 별도 실기기 검사는 미실시다.
+
+- Reset button moved from header to immediately after SUN in the body selector row. Existing reset behavior retained. Typecheck passed.
+
+- MOON button now opens the same enlarged Earth-facing, phase-changing observer as startup (current simulation time retained), replacing the bright-side-only button view. Typecheck passed; no additional visual check for this routing change.
+
+## MOON 버튼 관찰 방향 수정·직전 라우팅 롤백
+
+직전 MOON→인트로 모드 연결은 사용자 지적에 따라 되돌렸다. MOON 버튼은 원래 일반 물리 스케일 근접 보기로 유지하며, 관찰 방향만 지구 쪽을 따라가도록 수정했다. 밝은 면으로 고정하던 도착 각도만 제거했다. 첫 확대 인트로/지구 중심 궤도 탐색/전환 크기 및 기존 버튼 구성은 유지했다.
+
+타입 검사 통과. 브라우저에서 일반 MOON 버튼 진입 후 정지 상태와 재생 6초 후를 캡처·시각 확인했으며 밝은 부분이 달라졌다. runtime 오류 없음. 실기기 미확인.
+
+- [MOON 버튼 진입 후](evidence/moon-focus-phase-start.png)
+- [시간 경과 후](evidence/moon-focus-phase-later.png)
+
+- Startup-only hidden playback multiplier 1.5 for 3 seconds after scene ready; user drag/zoom/focus/pause/speed choice ends it earlier. Multiplier eases toward 1 without changing selected UI speed or displaying a tag. Both orbital/calendar clocks share the multiplier. Typecheck passed; visual/device check not performed.
+
+- User cancelled startup boost: removed hidden 1.5x, timer/touch boost reset hooks and startup multiplier. App starts at normal 1x again; explicit playback speed menu retained. Rollback typecheck passed; interrupted until-touch task recorded cancelled.
+
+## 새 대각선 로켓 스티커
+
+사용자가 제공한 첫 번째 로켓을 투명 몸체로 준비하고 두 번째 참조의 창 안 눈 위치만 적용했다. 이미지 자체가 기울어져 있어 기본 회전은 0으로 변경했다. Open Bot Avatar의 눈을 아이보리색으로 표시하고, UI 스레드 shared value로 몸체·눈이 함께 좌우로 흔들리며 웃게 했다. 기존 부유/깜빡임/시선/표정 복귀도 유지한다.
+
+새 위치의 눈 정의가 패키지의 scale 최소값/몸체 내부 검증을 처음 통과하지 못해, 렌더하지 않는 눈 캐리어 몸체 정의와 scale을 수정했다. 눈 자체의 회전 중심도 창 안으로 보정했다. 최종 패키지 정의 검증·타입 검사·브라우저 기본 회전 0/웃음 전환/복귀 검사를 통과했다. 고해상도 캡처에서 몸체와 눈의 위치를 시각 확인했다. 네이티브 실기기 미확인. 첫 이미지 생성 호출은 이 작업의 start 마크 이전이므로 그 호출 비용/시간은 장부에 포함되지 않는다.
+
+- [기본 눈 위치](evidence/diagonal-rocket-idle.png)
+- [클릭 후 웃음·흔들림](evidence/diagonal-rocket-happy.png)
+
+- Mascot body replaced with user-supplied neon/holographic rocket prepared as transparent PNG; small eyes repositioned inside its window. Existing restrained shake, floating and happy reaction retained; no idle tilt added. Typecheck/browser render and eye placement visually confirmed. Image generation was before the measurement start, so that cost is unmeasured by this task mark. Native unverified.
+
+## 확정 로켓 크기 조정
+
+`assets/rocket-neon-dark.png`를 최종 몸체로 사용한다. 160pt 터치 영역 안에서 몸체만 90%로 줄이고 눈 크기는 유지했다. 축소 후 창 중심에 눈 위치를 맞췄다. 기존 부유·작은 흔들림·웃음 반응을 유지한다. 타입 검사와 브라우저 기본/웃음 표시를 확인했다. 실기기 미확인.
