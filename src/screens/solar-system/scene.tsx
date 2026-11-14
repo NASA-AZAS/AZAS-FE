@@ -257,20 +257,18 @@ export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, 
     const near = Math.max(distance / 1000, .000001);
     if (camera.near !== near) { camera.near = near; camera.updateProjectionMatrix(); }
     if (selected === 'sun' && !controls.current.locked) controls.current.yaw += dt * .025;
-    const moonViewYaw = intro
-      ? Math.atan2(-Math.cos(moonAngle), -Math.sin(moonAngle))
-      : Math.atan2(-target.x, -target.z);
+    const moonViewYaw = Math.atan2(-Math.cos(moonAngle), -Math.sin(moonAngle));
     if (selected === 'moon' && !controls.current.locked) {
       const change = Math.atan2(Math.sin(moonViewYaw - lastMoonViewYaw.current), Math.cos(moonViewYaw - lastMoonViewYaw.current));
       controls.current.yaw += change;
     }
     lastMoonViewYaw.current = moonViewYaw;
     // Earth arrives on its daylight side; Moon is viewed from Earth's direction to show phases.
-    if (controls.current.locked && (selected === 'earth' || (selected === 'moon' && !intro))) {
+    if (controls.current.locked && selected === 'earth') {
       flight.yaw = Math.atan2(-target.x, -target.z);
       flight.pitch = .25;
     }
-    if (controls.current.locked && selected === 'moon' && intro) { flight.yaw = moonViewYaw; flight.pitch = 0; }
+    if (controls.current.locked && selected === 'moon') { flight.yaw = moonViewYaw; flight.pitch = 0; }
     const angleProgress = smooth(u);
     const yawDelta = THREE.MathUtils.euclideanModulo(flight.yaw - flight.startYaw + Math.PI, Math.PI * 2) - Math.PI;
     const yaw = controls.current.locked ? flight.startYaw + yawDelta * angleProgress : controls.current.yaw;
