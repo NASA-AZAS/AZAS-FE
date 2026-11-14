@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import * as THREE from 'three';
 import { useLoader } from './render-surface';
 import { Sun } from './sun';
+import { SIMULATION_RATE } from './simulation-clock';
 import type { BodyId } from './space-hud';
 
 import { scale, viewDistance, INITIAL_MOON_ANGLE, introMoonDistance } from './scale';
@@ -12,6 +13,8 @@ export type ViewControls = {
   revision: number; fromBody: BodyId | null;
 };
 type Props = {
+  speed: number;
+  simulationSeconds: MutableRefObject<number>;
   intro: boolean;
   systemView: boolean;
   onSystemFocus: () => void;
@@ -138,7 +141,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
@@ -172,7 +175,10 @@ export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, cont
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, .05);
-    if (!paused) time.current += dt;
+    if (!paused) {
+      time.current += dt * speed;
+      simulationSeconds.current += dt * speed * SIMULATION_RATE;
+    }
     const t = time.current;
     visualOverview.current = THREE.MathUtils.lerp(visualOverview.current, intro || systemView ? 1 : selected ? 0 : THREE.MathUtils.smoothstep(flightDistance.current / viewDistance.overview, .08, .8), 1 - Math.exp(-dt * 4));
     const overview = visualOverview.current;
@@ -180,14 +186,19 @@ export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, cont
     earthVisual.current?.scale.setScalar(scale.earthRadius / 1.02 * (1 + overview * 799));
     moon.current?.scale.setScalar(scale.moonRadius / .36 * (1 + overview * 1199));
     moonOrbitVisual.current?.scale.setScalar(1 + overview * 39);
-    const a = .35 + t * .022;
-    const mx = Math.cos(INITIAL_MOON_ANGLE + t * .16) * scale.moonOrbit * (1 + overview * 39);
-    const mz = Math.sin(INITIAL_MOON_ANGLE + t * .16) * scale.moonOrbit * (1 + overview * 39);
+    const days = simulationSeconds.current / 86_400;
+    // Mean periods: NASA Earth/Moon fact sheets; initial phase remains the demo's preset.
+    // Keep the previous gentle demo spin; calendar/orbits retain their shared clock.
+    const earthSpin = t * .13;
+    const a = .35 + days * Math.PI * 2 / 365.256;
+    const moonAngle = INITIAL_MOON_ANGLE + days * Math.PI * 2 / 27.3217;
+    const mx = Math.cos(moonAngle) * scale.moonOrbit * (1 + overview * 39);
+    const mz = Math.sin(moonAngle) * scale.moonOrbit * (1 + overview * 39);
     const ex = Math.cos(a) * scale.earthOrbit;
     const ez = Math.sin(a) * scale.earthOrbit;
     if (earthSystem.current) earthSystem.current.position.set(ex, 0, ez);
-    if (earth.current) earth.current.rotation.y = t * .13 - 1.1;
-    if (moon.current) { moon.current.position.set(mx, 0, mz); moon.current.rotation.y = t * .16; }
+    if (earth.current) earth.current.rotation.y = earthSpin - 1.1;
+    if (moon.current) { moon.current.position.set(mx, 0, mz); moon.current.rotation.y = -(moonAngle - INITIAL_MOON_ANGLE); }
     moonHit.current?.position.set(mx, 0, mz);
     if (clouds.current) clouds.current.rotation.y = t * .145 - 1.1;
     if (selected === 'earth') target.set(ex, 0, ez);
@@ -247,7 +258,7 @@ export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, cont
     if (camera.near !== near) { camera.near = near; camera.updateProjectionMatrix(); }
     if (selected === 'sun' && !controls.current.locked) controls.current.yaw += dt * .025;
     const moonViewYaw = intro
-      ? Math.atan2(-Math.cos(INITIAL_MOON_ANGLE + t * .16), -Math.sin(INITIAL_MOON_ANGLE + t * .16))
+      ? Math.atan2(-Math.cos(moonAngle), -Math.sin(moonAngle))
       : Math.atan2(-target.x, -target.z);
     if (selected === 'moon' && !controls.current.locked) {
       const change = Math.atan2(Math.sin(moonViewYaw - lastMoonViewYaw.current), Math.cos(moonViewYaw - lastMoonViewYaw.current));

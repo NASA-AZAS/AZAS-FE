@@ -1,11 +1,19 @@
+import { useState, type MutableRefObject } from 'react';
+import { SimulationClock } from './simulation-clock';
+import { SvgXml } from 'react-native-svg';
+import { spaceAppsLogo } from '../../../assets/space-apps-logo';
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
+import { RocketCompanion } from './rocket-companion';
 
 export type BodyId = 'sun' | 'earth' | 'moon';
 
 export type SpaceHudProps = {
+  speed: number;
+  onSpeedChange: (speed: number) => void;
+  simulationSeconds: MutableRefObject<number>;
   selected: BodyId | null;
   onSelect: (body: BodyId) => void;
   paused: boolean;
@@ -21,7 +29,8 @@ const bodies: { id: BodyId; label: string; category: string; description: string
   { id: 'sun', label: 'Sun', category: 'OUR HOME STAR', description: 'The light at the center\nof our solar system.' },
 ];
 
-export function SpaceHud({ selected, onSelect, paused, onTogglePause, onReset, loading, error }: SpaceHudProps) {
+export function SpaceHud({ speed, onSpeedChange, simulationSeconds, selected, onSelect, paused, onTogglePause, onReset, loading, error }: SpaceHudProps) {
+  const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const compact = width < 760;
@@ -35,19 +44,61 @@ export function SpaceHud({ selected, onSelect, paused, onTogglePause, onReset, l
       paddingLeft: Math.max(insets.left, compact ? 24 : 32),
       paddingRight: Math.max(insets.right, compact ? 24 : 32),
     }]}>
-      <View pointerEvents="none" style={styles.header}>
-        <View style={styles.brand}>
+      {speedMenuOpen && <Pressable accessibilityRole="button" accessibilityLabel="Dismiss playback speed menu"
+        onPress={() => setSpeedMenuOpen(false)} style={[StyleSheet.absoluteFill, { zIndex: 5 }]} />}
+      <View pointerEvents="box-none" style={[styles.header, { zIndex: 10 }]}>
+        <View pointerEvents="none" style={styles.brand}>
           <View style={styles.brandMark}>
-            <View style={styles.brandOrbit} />
-            <View style={styles.brandCore} />
+            <SvgXml xml={spaceAppsLogo} width={52} height={52} />
           </View>
           <Text style={styles.wordmark}>AZAS</Text>
           <View style={styles.brandDivider} />
-          <Text style={styles.eyebrow}>ORBITAL{compact ? '\n' : ' '}EXPLORER</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <SimulationClock elapsed={simulationSeconds} compact={compact} style={styles.eyebrow} />
+            {speed !== 1 && <View testID="simulation-speed-tag" style={styles.speedTag}><Text style={styles.speedTagText}>{speed}×</Text></View>}
+          </View>
         </View>
-        <View style={styles.status} accessible accessibilityLabel={loading ? 'Loading simulation' : error ? 'Simulation unavailable' : paused ? 'Simulation paused' : 'Live simulation'}>
-          <View style={[styles.statusDot, { backgroundColor: error ? theme.colors.error : paused || loading ? theme.colors.muted : theme.colors.accent }]} />
-          <Text style={styles.statusText}>{loading ? 'INITIALIZING' : error ? 'OFFLINE' : paused ? 'SIMULATION PAUSED' : 'LIVE SIMULATION'}</Text>
+        <View pointerEvents="box-none" style={styles.playback}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={paused ? 'Play simulation' : 'Pause simulation'}
+            accessibilityState={{ disabled }}
+            disabled={disabled}
+            onPress={() => { setSpeedMenuOpen(false); onTogglePause(); }}
+            style={({ pressed }) => [styles.playButton, pressed && styles.pressed, disabled && styles.disabled]}
+          >
+            <Ionicons name={paused ? 'play-outline' : 'pause-outline'} size={18} color={theme.colors.text} accessible={false} />
+          </Pressable>
+          <View>
+            <Pressable accessibilityRole="button" accessibilityLabel="Playback speed"
+              accessibilityValue={{ text: `${speed} times` }} accessibilityState={{ expanded: speedMenuOpen, disabled }}
+              disabled={disabled} onPress={() => setSpeedMenuOpen(value => !value)} style={styles.playButton}>
+              <Ionicons name="play-forward-outline" size={18} color={theme.colors.text} />
+            </Pressable>
+            {speedMenuOpen && <View style={styles.speedMenu}>
+              {[.25, .5, 1, 1.5, 2].map(value => <Pressable key={value}
+                accessibilityRole="button" accessibilityLabel={`Set playback speed to ${value}x`}
+                accessibilityState={{ selected: value === speed }}
+                onPress={() => { onSpeedChange(value); setSpeedMenuOpen(false); }}
+                style={[styles.speedOption, value === speed && { backgroundColor: theme.colors.activeSurface }]}>
+                <Text style={{ color: value === speed ? theme.colors.accent : theme.colors.text, fontSize: 11 }}>{value}×</Text>
+              </Pressable>)}
+            </View>}
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Reset camera view"
+            accessibilityState={{ disabled }}
+            disabled={disabled}
+            onPress={() => { setSpeedMenuOpen(false); onReset(); }}
+            style={({ pressed }) => [styles.playButton, pressed && styles.pressed, disabled && styles.disabled]}
+          >
+            <Ionicons name="scan-outline" size={17} color={theme.colors.muted} accessible={false} />
+          </Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Menu"
+            onPress={() => setSpeedMenuOpen(false)} style={[styles.playButton, { width: 60 }]}>
+            <Ionicons name="menu-outline" size={23} color={theme.colors.text} />
+          </Pressable>
         </View>
       </View>
 
@@ -92,28 +143,7 @@ export function SpaceHud({ selected, onSelect, paused, onTogglePause, onReset, l
           </View>
         </View>
 
-        <View pointerEvents="box-none" style={styles.playback}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={paused ? 'Play simulation' : 'Pause simulation'}
-            accessibilityState={{ disabled }}
-            disabled={disabled}
-            onPress={onTogglePause}
-            style={({ pressed }) => [styles.playButton, pressed && styles.pressed, disabled && styles.disabled]}
-          >
-            <Ionicons name={paused ? 'play' : 'pause'} size={18} color={theme.colors.text} accessible={false} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Reset camera view"
-            accessibilityState={{ disabled }}
-            disabled={disabled}
-            onPress={onReset}
-            style={({ pressed }) => [styles.playButton, pressed && styles.pressed, disabled && styles.disabled]}
-          >
-            <Ionicons name="scan-outline" size={17} color={theme.colors.muted} accessible={false} />
-          </Pressable>
-        </View>
+        <RocketCompanion />
 
 
       </View>
@@ -122,9 +152,13 @@ export function SpaceHud({ selected, onSelect, paused, onTogglePause, onReset, l
 }
 
 const styles = StyleSheet.create({
+  speedTag: { paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
+  speedTagText: { color: theme.colors.accent, fontSize: 10, fontWeight: '500' },
+  speedMenu: { position: 'absolute', top: 56, right: 0, width: 76, padding: 3, backgroundColor: '#0b1725', borderWidth: 1, borderColor: theme.colors.border, borderRadius: 10, zIndex: 30 },
+  speedOption: { minHeight: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  brandMark: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
+  brandMark: { width: 54, height: 54, alignItems: 'center', justifyContent: 'center' },
   brandOrbit: { position: 'absolute', width: 25, height: 11, borderWidth: 1, borderColor: theme.colors.accent, borderRadius: 20, transform: [{ rotate: '-40deg' }] },
   brandCore: { width: 6, height: 6, backgroundColor: theme.colors.accent, borderRadius: 3 },
   wordmark: { color: theme.colors.text, fontSize: 23, fontWeight: '700', letterSpacing: 4 },

@@ -22,6 +22,8 @@ export function SolarSystemScreen() {
   const [requestedBody, setRequestedBody] = useState<BodyId | null>('moon');
   const [systemView, setSystemView] = useState(false);
   const [intro, setIntro] = useState(true);
+  const [speed, setSpeed] = useState(1);
+  const simulationSeconds = useRef(0);
   const [paused, setPaused] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -115,12 +117,12 @@ export function SolarSystemScreen() {
             gl={{ antialias: true, alpha: false }}
             >
             <Suspense fallback={null}>
-              <SolarScene onMoonIntro={openMoonIntro} systemView={systemView} onSystemFocus={openEarthSystem} intro={intro} controls={controls} selected={selected} paused={paused || !active} onReady={ready} />
+              <SolarScene speed={speed} simulationSeconds={simulationSeconds} onMoonIntro={openMoonIntro} systemView={systemView} onSystemFocus={openEarthSystem} intro={intro} controls={controls} selected={selected} paused={paused || !active} onReady={ready} />
             </Suspense>
           </Canvas>
         </SceneBoundary>
       </View>
-      <SpaceHud selected={requestedBody} onSelect={focus} paused={paused} onTogglePause={() => setPaused(value => !value)}
+      <SpaceHud speed={speed} onSpeedChange={setSpeed} simulationSeconds={simulationSeconds} selected={requestedBody} onSelect={focus} paused={paused} onTogglePause={() => setPaused(value => !value)}
         onReset={reset} loading={loading} error={error} />
       {width < height && (
         <View style={styles.rotate}>
