@@ -19,3 +19,6 @@ export const viewDistance = {
 
 // Enlarged intro starts roughly two-thirds illuminated, then evolves with the orbit.
 export const INITIAL_MOON_ANGLE = 1.68;
+
+// Enlarged introduction uses the same Moon display boost as the overview.
+export const introMoonDistance = viewDistance.moon * 1200;

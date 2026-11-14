@@ -4,7 +4,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { Canvas } from './render-surface';
 import { SolarScene, type ViewControls } from './scene';
 import { SpaceHud, type BodyId } from './space-hud';
-import { viewDistance, INITIAL_MOON_ANGLE } from './scale';
+import { viewDistance, INITIAL_MOON_ANGLE, introMoonDistance } from './scale';
 
 const initialView = (): ViewControls => ({ yaw: .18, pitch: .48, zoom: 1, locked: false, revision: 0, fromBody: null });
 const sceneTouchStyle: ViewStyle & { touchAction?: 'none' } = Platform.OS === 'web' ? { touchAction: 'none' } : {};
@@ -83,7 +83,7 @@ export function SolarSystemScreen() {
     setSelected(body);
   };
   const openEarthSystem = () => {
-    if (selected !== null || intro || controls.current.locked) return;
+    if (controls.current.locked || (selected !== null && !intro)) return;
     moveTo('earth', true);
   };
   const openMoonIntro = () => {
@@ -110,7 +110,7 @@ export function SolarSystemScreen() {
     <View style={styles.screen}>
       <View style={[StyleSheet.absoluteFill, sceneTouchStyle]} {...responder.panHandlers} {...wheelProps} accessibilityLabel="Interactive solar system. Drag to orbit. Select a body to zoom in; reset to return to the Sun-centered overview.">
         <SceneBoundary onError={fail}>
-          <Canvas camera={{ position: [-Math.cos(INITIAL_MOON_ANGLE) * viewDistance.moon * 1200, 0, -Math.sin(INITIAL_MOON_ANGLE) * viewDistance.moon * 1200], fov: 43, near: .000001, far: 4000 }}
+          <Canvas camera={{ position: [-Math.cos(INITIAL_MOON_ANGLE) * introMoonDistance, 0, -Math.sin(INITIAL_MOON_ANGLE) * introMoonDistance], fov: 43, near: .000001, far: 4000 }}
             frameloop={active ? 'always' : 'never'}
             gl={{ antialias: true, alpha: false }}
             >

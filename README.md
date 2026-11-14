@@ -11,7 +11,7 @@ Open the project in Expo Go on a physical iOS or Android device. For a browser p
 
 - Drag to orbit around the Sun. The overview is Sun-centered. Pinch or use the mouse wheel to zoom.
 - Select Sun, Earth, or Moon to highlight it immediately and fly to it along a continuous curved path with a single camera interpolation and no final catch-up adjustment. The object buttons are ordered Moon, Earth, Sun. Earth ↔ Moon flights widen only to a local Earth–Moon orbit view; other body-to-body flights use a system-wide range. Reset widens from the current body and finishes at the Sun-centered overview. All automatic flights use the fixed Reset View angle, use a low arc, and zoom directly from overview to Sun. They keep drag / pinch / wheel locked until the camera settles. The Sun view gently orbits the camera while its surface does not rotate. Camera tracking follows orbital position independently of body rotation.
-- In the system overview, tap the enlarged Earth or Moon to open an Earth-centered view that keeps both enlarged bodies and the Moon’s orbit visible. Tap the Moon in this orbit view to return to the enlarged, phase-changing Moon introduction. Object buttons still open individual close-ups.
+- In the system overview, tap the enlarged Earth or Moon to open an Earth-centered view that keeps both enlarged bodies and the Moon’s orbit visible. Tap the Moon in this orbit view to return to the enlarged, phase-changing Moon introduction. Tap Earth from that Moon view to return to the enlarged Earth-centered orbit. Object buttons still open individual close-ups.
 - Pause / resume orbital motion, or reset to the overview.
 - All interface text is in English. Textures are bundled for offline use after the app is loaded.
 

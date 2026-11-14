@@ -18,8 +18,8 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 
 # 해커톤 관측 기록
 
-개발 작업 31건 · 완료 31건 · 사용자 확인 0건 · setup 1건 별도
-재작업 표시 12회 · 완료 작업 경과시간 중앙값 1.0분
+개발 작업 33건 · 완료 32건 · 사용자 확인 0건 · setup 1건 별도
+재작업 표시 13회 · 완료 작업 경과시간 중앙값 1.0분
 
 | 작업 | 구분 | 상태 | 경과(분) | 관측 토큰 | 시스템 토큰 | 재작업 | 사용자 확인 |
 |---|---|---|---:|---:|---:|---:|---|
@@ -55,6 +55,8 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 | Start intro Moon with roughly one-third shadow | harness | done | 0.1 | 285740 | 0 | 0 | 미확인 |
 | Tap enlarged overview bodies to open Earth-Moon orbit view | harness | done | 1.3 | 1163040 | 176485 | 0 | 미확인 |
 | Tap Moon in Earth orbit view to reopen lunar introduction | harness | done | 0.8 | 886579 | 180896 | 0 | 미확인 |
+| Earth return tap and non-penetrating Earth-Moon camera path | harness | done | 2.1 | 1211895 | 188250 | 1 | 미확인 |
+| Plan Earth-Moon flight around Earth instead of pushing camera on contact | harness | cancelled | 2.1 | 1565015 | 192790 | 0 | 미확인 |
 
 ## 비교
 
@@ -154,3 +156,7 @@ HarnessKit으로 구성한 Expo 해커톤 하네스를 사용한 개발 사례 �
 - Overview Earth/Moon meshes are tappable (larger invisible hit spheres). A tap opens Earth-centered orbit view at 3.2 enlarged lunar-orbit radii, retaining overview display sizes/separation. Object buttons switch to physical close-up; Reset returns to full system. Typecheck passed; actual overview Earth click and resulting Earth/Moon orbit screenshot visually confirmed in browser with no runtime errors. Native touch unverified.
 
 - In Earth-centered enlarged orbit view, tapping the Moon mesh now opens the phase-changing enlarged Moon introduction at the current simulation time. Input lock and immediate Moon HUD selection retained. Normal MOON button still uses bright-side physical close-up. Typecheck and browser actual mesh navigation sequence overview→Earth orbit→Moon intro passed; native touch unverified.
+
+- Enlarged Moon introduction: Earth mesh tap now returns to enlarged Earth-centered orbit. Earth→Moon flights add clearance over Earth; camera position is constrained outside 1.35× the currently displayed Earth radius. Enlarged Moon observer distance reduced below (Moon separation − 1.4× displayed Earth radius), fixing the previous endpoint inside enlarged Earth. Typecheck and actual browser Moon-view rotation/Earth mesh click/return orbit flow passed without runtime errors; native touch/flight perception unverified.
+
+- User requested camera rollback: removed Earth spherical detour, surface push-out and camera-dependent Earth scaling, restored original enlarged Moon observation distance. Passing through Earth is allowed again. Earth/Moon mesh navigation remains. Detour task marked cancelled; rollback typecheck passed.

@@ -5,7 +5,7 @@ import { useLoader } from './render-surface';
 import { Sun } from './sun';
 import type { BodyId } from './space-hud';
 
-import { scale, viewDistance, INITIAL_MOON_ANGLE } from './scale';
+import { scale, viewDistance, INITIAL_MOON_ANGLE, introMoonDistance } from './scale';
 
 export type ViewControls = {
   yaw: number; pitch: number; zoom: number; locked: boolean;
@@ -202,7 +202,7 @@ export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, cont
       const local = (controls.current.fromBody === 'earth' && selected === 'moon') ||
         (controls.current.fromBody === 'moon' && selected === 'earth');
       const startDistance = Math.max(camera.position.length(), .000001);
-      const endDistance = systemView ? scale.moonOrbit * 40 * 3.2 : selected ? viewDistance[selected] * (intro ? 1200 : 1) : viewDistance.overview;
+      const endDistance = systemView ? scale.moonOrbit * 40 * 3.2 : selected ? (intro ? introMoonDistance : viewDistance[selected]) : viewDistance.overview;
       const direct = (controls.current.fromBody === null && selected === 'sun') || controls.current.fromBody === selected;
       transition.current = {
         revision: controls.current.revision, elapsed: 0, from: center.clone(),
@@ -220,7 +220,7 @@ export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, cont
     flight.elapsed += Math.min(delta, .25);
     const u = Math.min(flight.elapsed / flight.duration, 1);
     const smooth = (x: number) => x ** 3 * (x * (x * 6 - 15) + 10);
-    const endDistance = systemView ? scale.moonOrbit * 40 * 3.2 : selected ? viewDistance[selected] * (intro ? 1200 : 1) : viewDistance.overview;
+    const endDistance = systemView ? scale.moonOrbit * 40 * 3.2 : selected ? (intro ? introMoonDistance : viewDistance[selected]) : viewDistance.overview;
     // Lift along a curved path while widening and closing the view continuously.
     // Reset starts by widening around the current body, then finishes at the Sun.
     const resetDistance = Math.exp(THREE.MathUtils.lerp(
@@ -266,7 +266,6 @@ export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, cont
     const pitch = controls.current.locked ? THREE.MathUtils.lerp(flight.startPitch, flight.pitch, angleProgress) : controls.current.pitch;
     if (controls.current.locked) { controls.current.yaw = yaw; controls.current.pitch = pitch; }
     desired.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(distance);
-    // Automatic flight has one trajectory; avoid a second damping pass and final catch-up.
     if (controls.current.locked) camera.position.copy(desired);
     else camera.position.lerp(desired, 1 - Math.exp(-dt * 9));
     camera.lookAt(0, 0, 0);
@@ -293,7 +292,9 @@ export function SolarScene({ onMoonIntro, systemView, onSystemFocus, intro, cont
           <mesh ref={moonHit}><sphereGeometry args={[3, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
         </>}
 
-        <group ref={earthVisual}>
+        <group ref={earthVisual} onClick={(event) => {
+          if (intro && !controls.current.locked) { event.stopPropagation(); onSystemFocus(); }
+        }}>
         <mesh ref={earth} rotation={[0, -1.1, .12]}>
           <sphereGeometry args={[1.02, 72, 48]} />
           <meshStandardMaterial map={earthMap} normalMap={earthNormal} normalScale={new THREE.Vector2(.65, .65)} roughness={.72} metalness={.04} />
