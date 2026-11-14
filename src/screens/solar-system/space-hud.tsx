@@ -8,9 +8,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { RocketCompanion } from './rocket-companion';
 
+
 export type BodyId = 'sun' | 'earth' | 'moon';
 
 export type SpaceHudProps = {
+  onExplore: () => void;
   speed: number;
   onSpeedChange: (speed: number) => void;
   simulationSeconds: MutableRefObject<number>;
@@ -29,7 +31,7 @@ const bodies: { id: BodyId; label: string; category: string; description: string
   { id: 'sun', label: 'Sun', category: 'OUR HOME STAR', description: 'The light at the center\nof our solar system.' },
 ];
 
-export function SpaceHud({ speed, onSpeedChange, simulationSeconds, selected, onSelect, paused, onTogglePause, onReset, loading, error }: SpaceHudProps) {
+export function SpaceHud({ onExplore, speed, onSpeedChange, simulationSeconds, selected, onSelect, paused, onTogglePause, onReset, loading, error }: SpaceHudProps) {
   const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
@@ -87,7 +89,7 @@ export function SpaceHud({ speed, onSpeedChange, simulationSeconds, selected, on
           </View>
 
           <Pressable accessibilityRole="button" accessibilityLabel="Menu"
-            onPress={() => setSpeedMenuOpen(false)} style={[styles.playButton, { width: 60 }]}>
+            onPress={() => { setSpeedMenuOpen(false); onExplore(); }} style={[styles.playButton, { width: 60 }]}>
             <Ionicons name="menu-outline" size={23} color={theme.colors.text} />
           </Pressable>
         </View>

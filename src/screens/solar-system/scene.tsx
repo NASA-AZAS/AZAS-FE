@@ -2,6 +2,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import * as THREE from 'three';
 import { useLoader } from './render-surface';
+import { lunarSites } from './lunar-sites';
 import { Sun } from './sun';
 import { SIMULATION_RATE } from './simulation-clock';
 import type { BodyId } from './space-hud';
@@ -12,7 +13,11 @@ export type ViewControls = {
   yaw: number; pitch: number; zoom: number; locked: boolean;
   revision: number; fromBody: BodyId | null;
 };
+export type LunarProjection = { id: string; x: number; y: number; visible: boolean }[];
 type Props = {
+  exploring?: boolean;
+  candidateSelected?: boolean;
+  onLunarProjection?: (points: LunarProjection) => void;
   speed: number;
   simulationSeconds: MutableRefObject<number>;
   intro: boolean;
@@ -141,7 +146,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+export function SolarScene({ exploring, candidateSelected, onLunarProjection, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
@@ -170,7 +175,8 @@ export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, 
   const sourcePosition = useMemo(() => new THREE.Vector3(), []);
   const movingStart = useMemo(() => new THREE.Vector3(), []);
   const desired = useMemo(() => new THREE.Vector3(), []);
-  const { camera } = useThree();
+  const { camera, size } = useThree();
+  const projectionTimer = useRef(0);
   useEffect(onReady, [onReady]);
 
   useFrame((_, delta) => {
@@ -181,7 +187,7 @@ export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, 
     }
     const t = time.current;
     visualOverview.current = THREE.MathUtils.lerp(visualOverview.current, intro || systemView ? 1 : selected ? 0 : THREE.MathUtils.smoothstep(flightDistance.current / viewDistance.overview, .08, .8), 1 - Math.exp(-dt * 4));
-    const overview = visualOverview.current;
+    const overview = exploring ? 0 : visualOverview.current;
     sunVisual.current?.scale.setScalar(scale.sunRadius / 1.55 * (1 + overview * 19));
     earthVisual.current?.scale.setScalar(scale.earthRadius / 1.02 * (1 + overview * 799));
     moon.current?.scale.setScalar(scale.moonRadius / .36 * (1 + overview * 1199));
@@ -198,7 +204,7 @@ export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, 
     const ez = Math.sin(a) * scale.earthOrbit;
     if (earthSystem.current) earthSystem.current.position.set(ex, 0, ez);
     if (earth.current) earth.current.rotation.y = earthSpin - 1.1;
-    if (moon.current) { moon.current.position.set(mx, 0, mz); moon.current.rotation.y = -(moonAngle - INITIAL_MOON_ANGLE); }
+    if (moon.current) { moon.current.position.set(mx, 0, mz); moon.current.rotation.set(0, -(moonAngle - INITIAL_MOON_ANGLE), THREE.MathUtils.degToRad(1.542), 'ZYX'); }
     moonHit.current?.position.set(mx, 0, mz);
     if (clouds.current) clouds.current.rotation.y = t * .145 - 1.1;
     if (selected === 'earth') target.set(ex, 0, ez);
@@ -253,12 +259,12 @@ export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, 
     } else {
       flightDistance.current = Math.exp(THREE.MathUtils.lerp(Math.log(flight.peak), Math.log(endDistance), 1 - Math.sin(Math.PI * smooth(u))));
     }
-    const distance = flightDistance.current * controls.current.zoom;
+    const distance = flightDistance.current * controls.current.zoom * (exploring ? 1.35 : 1);
     const near = Math.max(distance / 1000, .000001);
     if (camera.near !== near) { camera.near = near; camera.updateProjectionMatrix(); }
     if (selected === 'sun' && !controls.current.locked) controls.current.yaw += dt * .025;
     const moonViewYaw = Math.atan2(-Math.cos(moonAngle), -Math.sin(moonAngle));
-    if (selected === 'moon' && !controls.current.locked) {
+    if (selected === 'moon' && !controls.current.locked && !exploring) {
       const change = Math.atan2(Math.sin(moonViewYaw - lastMoonViewYaw.current), Math.cos(moonViewYaw - lastMoonViewYaw.current));
       controls.current.yaw += change;
     }
@@ -268,7 +274,7 @@ export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, 
       flight.yaw = Math.atan2(-target.x, -target.z);
       flight.pitch = .25;
     }
-    if (controls.current.locked && selected === 'moon') { flight.yaw = moonViewYaw; flight.pitch = 0; }
+    if (controls.current.locked && selected === 'moon') { flight.yaw = moonViewYaw; flight.pitch = exploring ? .22 : 0; }
     const angleProgress = smooth(u);
     const yawDelta = THREE.MathUtils.euclideanModulo(flight.yaw - flight.startYaw + Math.PI, Math.PI * 2) - Math.PI;
     const yaw = controls.current.locked ? flight.startYaw + yawDelta * angleProgress : controls.current.yaw;
@@ -277,9 +283,33 @@ export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, 
     desired.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(distance);
     if (controls.current.locked) camera.position.copy(desired);
     else camera.position.lerp(desired, 1 - Math.exp(-dt * 9));
+    if (exploring) camera.up.set(-Math.sin(yaw) * Math.sin(pitch), Math.cos(pitch), -Math.cos(yaw) * Math.sin(pitch));
+    else camera.up.set(0, 1, 0);
     camera.lookAt(0, 0, 0);
     if (controls.current.locked) {
       controls.current.locked = u < 1 || camera.position.distanceTo(desired) > Math.max(distance * .02, .000001);
+    }
+    if (exploring && moon.current && onLunarProjection) {
+      projectionTimer.current += dt;
+      if (projectionTimer.current > 1 / 30) {
+        projectionTimer.current = 0;
+        physicalSystem.current?.updateWorldMatrix(true, true);
+        const origin = moon.current.localToWorld(new THREE.Vector3());
+        const entries = lunarSites.map(site => {
+          const lat = THREE.MathUtils.degToRad(site.latitude), lon = THREE.MathUtils.degToRad(site.longitude);
+          return { id: site.id, point: new THREE.Vector3(.363 * Math.cos(lat) * Math.cos(lon), .363 * Math.sin(lat), -.363 * Math.cos(lat) * Math.sin(lon)) };
+        });
+        entries.push({ id: 'North Pole', point: new THREE.Vector3(0, .58, 0) }, { id: 'South Pole', point: new THREE.Vector3(0, -.58, 0) });
+        camera.updateMatrixWorld();
+        onLunarProjection(entries.map(({ id, point }) => {
+          const world = moon.current!.localToWorld(point);
+          const normal = world.clone().sub(origin).normalize();
+          const surface = origin.clone().addScaledVector(normal, scale.moonRadius);
+          const visible = normal.dot(camera.position.clone().sub(surface)) > 0;
+          world.project(camera);
+          return { id, x: (world.x + 1) * size.width / 2, y: (1 - world.y) * size.height / 2, visible: (!candidateSelected || visible) && !controls.current.locked };
+        }));
+      }
     }
   });
 
@@ -318,6 +348,11 @@ export function SolarScene({ speed, simulationSeconds, onMoonIntro, systemView, 
         <mesh ref={moon} onClick={(event) => {
           if (systemView && !controls.current.locked) { event.stopPropagation(); onMoonIntro(); }
         }}>
+          {exploring && <mesh><cylinderGeometry args={[.0015, .0015, 1.08, 8]} /><meshBasicMaterial color="white" /></mesh>}
+          {exploring && <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[.54, .001, 8, 128]} />
+            <meshBasicMaterial color="white" side={THREE.DoubleSide} />
+          </mesh>}
           <sphereGeometry args={[.36, 48, 32]} /><meshStandardMaterial map={moonMap} bumpMap={moonMap} bumpScale={.025} roughness={.95} />
         </mesh>
       </group>
