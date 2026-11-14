@@ -1,0 +1,312 @@
+{
+  "checked_date": "2026-11-13",
+  "stars_scope": "repository, not individual skill; selection-time snapshot",
+  "user_approved_warning_skills": [
+    "expo-overview",
+    "expo-native-ui",
+    "expo-data-fetching",
+    "vercel-react-native-skills",
+    "ui-ux-pro-max"
+  ],
+  "skills": [
+    {
+      "name": "ponytail",
+      "source": "https://github.com/DietrichGebert/ponytail",
+      "revision": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846",
+      "path": "skills/ponytail",
+      "repository_stars_at_selection": 190069,
+      "scope": "project",
+      "assignment": "코드 작성 담당 공통",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 0,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "665a575a8987e0bafe6b3e3dbafe03794a013d51ff34bd3d91a924940e2b0767"
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "source": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "revision": "6ae86f61f520d6ca229d2f40e070410638c908c5",
+      "path": ".claude/skills/ui-ux-pro-max",
+      "repository_stars_at_selection": 148915,
+      "scope": "project",
+      "assignment": "expo-ui: 첫 시각 방향·큰 리디자인",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "DO_NOT_INSTALL",
+        "score": 100,
+        "complete": false,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": true,
+      "adaptation": "Codex project-local script path, tests excluded",
+      "installed_tree_sha256_excluding_bytecode": "fe024591f78c764b6bab5129bda4eddee45212edffc85a8197de4f092a9f3f88"
+    },
+    {
+      "name": "vercel-react-native-skills",
+      "source": "https://github.com/vercel-labs/agent-skills",
+      "revision": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "path": "skills/react-native-skills",
+      "repository_stars_at_selection": 33986,
+      "scope": "project",
+      "assignment": "메인·expo-quick·expo-debug: 관련 RN 규칙",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "CAUTION",
+        "score": 46,
+        "complete": false,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": true,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "47ac16425c958dfeb931571caa27c96b09aaaa0e3ce650eaf9acc343a0e12f0f"
+    },
+    {
+      "name": "expo-overview",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-overview",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "메인: Expo 목표 분류",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "CAUTION",
+        "score": 25,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": true,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "870c74a0b37a7cff75afd000284d966a1f1d8fe83235800f975d6bcf2daccb2b"
+    },
+    {
+      "name": "expo-project-structure",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-project-structure",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "메인: 최초 앱 생성",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 7,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "c46cb30580d65d61ddf495041a3b630d646568c45d87ef044c21fd15454f28b0"
+    },
+    {
+      "name": "expo-examples",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-examples",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "메인·expo-debug: 공식 예제",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 12,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "89a9630d1ff78fd68d0ba1f79facb0f0c6eb5a5937649c4218fb7cabce5d3de1"
+    },
+    {
+      "name": "expo-design-system",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-design-system",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "expo-ui: 테마·스타일 통일",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 7,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "b8331ebe0ac51e07970892e26a626b43782e4f4acb4a723931c9fe54be59948c"
+    },
+    {
+      "name": "expo-native-ui",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-native-ui",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "expo-ui: 모바일 화면 구성",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "CAUTION",
+        "score": 19,
+        "complete": false,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": true,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "1c291a52eeebd20be4188740d69606b3f1bd322adfec0cb553085e03b497f532"
+    },
+    {
+      "name": "expo-ui",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-ui",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "expo-ui·expo-quick: 네이티브 컨트롤",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 10,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "44e17e01fd7745403b32917e02204f3e806fddfdc6a6026ab6e4748edacc71e6"
+    },
+    {
+      "name": "expo-router",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-router",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "메인: 화면 이동·탭·모달",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 14,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "e7affe51d838eb7e1cf99c7b66189a6349b291225513af0ae31caa6de5f4da7e"
+    },
+    {
+      "name": "expo-animation",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-animation",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "expo-ui: 애니메이션·제스처·햅틱",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 12,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "44b084929dfd9e34619aa47a8827254174dd413e7a578c69d11a2dad9024155b"
+    },
+    {
+      "name": "expo-data-fetching",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-data-fetching",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "메인·expo-debug: API 연결·상태 처리",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "DO_NOT_INSTALL",
+        "score": 85,
+        "complete": false,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": true,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "f9ca9a3171739b6a19f88cd3e6cb18873dfdb031c744606829899360e3d31fc5"
+    },
+    {
+      "name": "expo-dev-client",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-dev-client",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "expo-debug: Expo Go 미지원 기능",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 10,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "ca2e6a41d252a03b3b3bc9a16c8c3689b135c564944d92bed98c2e163b87a24e"
+    },
+    {
+      "name": "expo-upgrade",
+      "source": "https://github.com/expo/skills",
+      "revision": "acc0b21ce09be356b5cf0323482bdfe7db0b7a1e",
+      "path": "plugins/expo/skills/expo-upgrade",
+      "repository_stars_at_selection": 4131,
+      "scope": "project",
+      "assignment": "expo-debug: 실제 SDK 호환성 문제",
+      "installed": true,
+      "security": {
+        "status": "ok",
+        "verdict": "SAFE",
+        "score": 12,
+        "complete": true,
+        "skillspector_version": "2.12.0"
+      },
+      "user_accepted_findings": false,
+      "adaptation": "skill folder only; no plugin hooks installed",
+      "installed_tree_sha256_excluding_bytecode": "cdb45f31a4a23abbcfe6192936df42d91afb0d954decc98314f8e0f38f3982fc"
+    }
+  ],
+  "tools": [
+    {
+      "name": "context7",
+      "kind": "remote MCP",
+      "url": "https://mcp.context7.com/mcp",
+      "scope": "project",
+      "enabled_tools": [
+        "resolve-library-id",
+        "query-docs"
+      ],
+      "verification": "initialize/tools-list successful; connection manifest scan SAFE 0; remote hosted implementation not audited"
+    },
+    {
+      "name": "headroom",
+      "kind": "existing MCP",
+      "scope": "user",
+      "change": "reused; no proxy or hooks installed"
+    }
+  ]
+}

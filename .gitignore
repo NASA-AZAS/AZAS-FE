@@ -1,0 +1,9 @@
+# Local harness work files and measurements
+_workspace/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# macOS
+.DS_Store
