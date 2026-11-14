@@ -1,7 +1,8 @@
 import { avatarFrame, type AvatarDefinition } from 'open-bot-avatar';
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, AppState, Image, Pressable, StyleSheet } from 'react-native';
+import { AccessibilityInfo, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { theme } from '../../theme';
 import Svg, { G, Path, Rect } from 'react-native-svg';
 
 const SIZE = 160;
@@ -42,6 +43,7 @@ export function RocketCompanion() {
   const joy = useSharedValue(0);
   const shake = useSharedValue(0);
   const pressed = useSharedValue(1);
+  const emphasis = useSharedValue(0);
 
   useEffect(() => {
     let mounted = true;
@@ -56,11 +58,16 @@ export function RocketCompanion() {
       float.set(withRepeat(withTiming(1, { duration: 2200, easing: Easing.inOut(Easing.sin) }), -1, true));
       gaze.set(withRepeat(withSequence(withDelay(1800, withTiming(2.5, { duration: 550 })), withDelay(1400, withTiming(-2, { duration: 650 })), withTiming(0, { duration: 400 })), -1, false));
       blink.set(withRepeat(withSequence(withDelay(3200, withTiming(.08, { duration: 85 })), withTiming(1, { duration: 110 })), -1, false));
-    } else { float.set(0); gaze.set(0); blink.set(1); joy.set(0); shake.set(0); }
-    return () => { [float, gaze, blink, joy, shake, pressed].forEach(cancelAnimation); };
-  }, [active, reducedMotion, float, gaze, blink, joy, shake, pressed]);
+    } else { float.set(0); gaze.set(0); blink.set(1); joy.set(0); shake.set(0); emphasis.set(0); }
+    return () => { [float, gaze, blink, joy, shake, pressed, emphasis].forEach(cancelAnimation); };
+  }, [active, reducedMotion, float, gaze, blink, joy, shake, pressed, emphasis]);
 
   const smile = () => {
+    emphasis.set(0);
+    emphasis.set(withSequence(
+      withTiming(1, { duration: 85 }), withTiming(0, { duration: 130 }),
+      withDelay(120, withSequence(withTiming(1, { duration: 85 }), withTiming(0, { duration: 130 }))),
+    ));
     shake.set(withSequence(withTiming(-1, { duration: 90 }),
       withRepeat(withTiming(1, { duration: 110, easing: Easing.inOut(Easing.sin) }), 6, true),
       withTiming(0, { duration: 120 })));
@@ -68,27 +75,50 @@ export function RocketCompanion() {
       withDelay(1100, withSpring(0, { duration: 400, dampingRatio: .8 }))));
   };
   const bodyStyle = useAnimatedStyle(() => ({ transform: [
-    { translateY: reducedMotion ? 0 : float.get() * -12 - joy.get() * 8 },
+    { translateY: reducedMotion ? 0 : -joy.get() * 8 },
     { translateX: reducedMotion ? 0 : shake.get() * 1.2 },
     { rotate: `${reducedMotion ? 0 : shake.get() * 3}deg` },
     { scale: pressed.get() * (1 + (reducedMotion ? 0 : joy.get() * .07)) },
   ] }));
+  const floatStyle = useAnimatedStyle(() => ({ transform: [{ translateY: reducedMotion ? 0 : float.get() * -12 }] }));
   const idleStyle = useAnimatedStyle(() => ({ opacity: 1 - Math.min(1, joy.get()), transform: [{ translateX: gaze.get() }, { scaleY: blink.get() }] }));
   const happyStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, joy.get()), transform: [{ translateX: gaze.get() }] }));
+
+  const questionStyle = useAnimatedStyle(() => ({
+    opacity: joy.get() > .15 ? 0 : 1,
+    transform: [{ translateX: reducedMotion ? 0 : Math.sin(float.get() * Math.PI * 2) * 1.5 }, { rotate: `${reducedMotion ? 0 : Math.sin(float.get() * Math.PI * 2) * 9}deg` }],
+  }));
+  const exclamationStyle = useAnimatedStyle(() => ({
+    opacity: joy.get() > .15 ? 1 : 0,
+    transform: [{ translateY: reducedMotion ? 0 : -emphasis.get() * 4 }, { scale: reducedMotion ? 1 : 1 + emphasis.get() * .08 }],
+  }));
 
   return <Pressable accessibilityRole="button" accessibilityLabel="Make the rocket smile"
     accessibilityHint="Tap to make your rocket companion happy" style={styles.rocket}
     onPress={smile} onPressIn={() => pressed.set(withTiming(.97, { duration: 100 }))}
     onPressOut={() => pressed.set(withSpring(1, { duration: 300, dampingRatio: 1 }))}>
-    <Animated.View testID="rocket-visual" style={[styles.visual, bodyStyle]} pointerEvents="none">
+    <Animated.View style={floatStyle} pointerEvents="none">
+    <Animated.View testID="rocket-visual" style={[styles.visual, bodyStyle]}>
       <Image source={require('../../../assets/rocket-neon-dark.png')} style={styles.body} resizeMode="contain" accessible={false} />
       <Animated.View testID="rocket-idle-eyes" style={[styles.eyes, idleStyle]}><Eyes mood="idle" /></Animated.View>
       <Animated.View testID="rocket-happy-eyes" style={[styles.eyes, happyStyle]}><Eyes mood="happy" /></Animated.View>
     </Animated.View>
+    <View pointerEvents="none" style={styles.launchRow}>
+      <Text style={styles.launchText}>LAUNCH</Text>
+      <View style={styles.mark}>
+        <Animated.Text testID="launch-question" style={[styles.launchText, styles.markText, questionStyle]}>?</Animated.Text>
+        <Animated.Text testID="launch-exclamation" style={[styles.launchText, styles.markText, exclamationStyle]}>!</Animated.Text>
+      </View>
+    </View>
+    </Animated.View>
   </Pressable>;
 }
 const styles = StyleSheet.create({
-  rocket: { width: SIZE, height: SIZE, marginBottom: -10, marginRight: -8 },
+  rocket: { width: SIZE, height: SIZE + 16, marginBottom: -10, marginRight: -8 },
+  launchRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 34, marginTop: -18 },
+  launchText: { color: theme.colors.text, fontSize: 23, fontWeight: '700', letterSpacing: 4 },
+  mark: { marginLeft: -2, width: 16, height: 32 },
+  markText: { position: 'absolute', left: 0, top: 2 },
   visual: { width: SIZE, height: SIZE },
   eyes: { position: 'absolute', left: -2.64, top: 1.648, zIndex: 1, transformOrigin: '66.5% 39.7%' },
   body: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', transform: [{ scale: .9 }] },
