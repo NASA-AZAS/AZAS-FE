@@ -55,6 +55,11 @@ export function createTransferRoute(samples: TrajectorySample[]) {
 }
 
 export type TransferRoute = ReturnType<typeof createTransferRoute>;
+export function isTransferArrival(route: Pick<TransferRoute, 'points'>, progress: number, position: THREE.Vector3) {
+  const endpoint = route.points[route.points.length - 1];
+  // Gate on the final segment so an earlier orbit passing the endpoint cannot trigger arrival.
+  return progress >= 1 || (progress >= .95 && position.distanceToSquared(endpoint) <= (100 / KM_PER_SCENE_UNIT) ** 2);
+}
 export type FlightTelemetry = { progress: number; remainingSeconds: number; remainingKm: number; speedKmh: number; arrived: boolean };
 export const initialFlightTelemetry = (route?: TransferRoute): FlightTelemetry => ({
   progress: 0, remainingSeconds: FLIGHT_DURATION_SECONDS, ...(route?.metrics(0) ?? { remainingKm: 0, speedKmh: 0 }), arrived: false,

@@ -8,7 +8,7 @@ import type { LunarSite } from './lunar-sites';
 import { Sun } from './sun';
 import { TransferTrajectory } from './transfer-trajectory';
 import { FlightRocket } from './flight-rocket';
-import { FLIGHT_DURATION_SECONDS, type TransferRoute, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
+import { FLIGHT_DURATION_SECONDS, isTransferArrival, type TransferRoute, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
 import { SIMULATION_RATE } from './simulation-clock';
 import type { BodyId } from './space-hud';
 
@@ -396,6 +396,12 @@ export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight
       view.lastTick = now;
       const progress = view.elapsed / FLIGHT_DURATION_SECONDS;
       flightRoute.sample(progress, view.point);
+      if (isTransferArrival(flightRoute, progress, view.point)) {
+        view.completed = true;
+        flightTelemetry.current = { progress, remainingSeconds: 0, ...flightRoute.metrics(progress), arrived: true };
+        onFlightArrived?.();
+        return;
+      }
       flightRoute.sample(progress < 1 ? Math.min(1, progress + .0002) : .9998, view.ahead);
       if (progress < 1) view.tangent.subVectors(view.ahead, view.point).normalize();
       else view.tangent.subVectors(view.point, view.ahead).normalize();
@@ -444,8 +450,7 @@ export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight
         flightMarkers.set({ sunX: sx, sunY: sy, sunVisible, earthX: e.x, earthY: e.y, earthVisible: e.visible, moonX: m.x, moonY: m.y, moonVisible: m.visible });
       }
       flightSpriteSize.current = baseDistance * 2 * Math.tan(43 * Math.PI / 360) * 100 / size.height;
-      flightTelemetry.current = { progress, remainingSeconds: Math.max(0, FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1), ...flightRoute.metrics(progress), arrived: progress === 1 };
-      if (progress === 1) { view.completed = true; onFlightArrived?.(); }
+      flightTelemetry.current = { progress, remainingSeconds: Math.max(0, FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1), ...flightRoute.metrics(progress), arrived: false };
     }
     if (exploring && !controls.current.locked && !explorerArrived.current) {
       explorerArrived.current = true;
