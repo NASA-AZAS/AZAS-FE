@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type MutableRefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -15,6 +15,7 @@ const shadow = { textShadowColor: '#000', textShadowRadius: 3, textShadowOffset:
 export function MoonFlightHud({ telemetry, playback, route }: { telemetry: MutableRefObject<FlightTelemetry>; playback: MutableRefObject<FlightPlayback>; route: TransferRoute }) {
   const [flight, setFlight] = useState(telemetry.current);
   const [settings, setSettings] = useState({ ...playback.current });
+  const autoSkipped = useRef(false);
   const insets = useSafeAreaInsets();
   useEffect(() => { const timer = setInterval(() => setFlight({ ...telemetry.current }), 150); return () => clearInterval(timer); }, [telemetry]);
   const seconds = Math.ceil(flight.remainingSeconds);
@@ -33,13 +34,18 @@ export function MoonFlightHud({ telemetry, playback, route }: { telemetry: Mutab
   const path = useMemo(() => route.points.map(p => { const v = project(p); return `${v.x},${v.y}`; }).join(' '), [route]);
   const earth = project(new THREE.Vector3(0, 0, 0)), moon = project(route.moonPosition);
   const marker = project(route.sample(flight.progress, new THREE.Vector3()));
-  const update = (action: 'speed' | 'pause' | 'skip') => {
-    if (flight.arrived) return;
+  const update = useCallback((action: 'speed' | 'pause' | 'skip') => {
+    if (telemetry.current.arrived) return;
     if (action === 'speed') { const speeds = [.25, .5, 1, 1.5, 2]; playback.current.speed = speeds[(speeds.indexOf(playback.current.speed) + 1) % speeds.length]; }
     if (action === 'pause') playback.current.paused = !playback.current.paused;
     if (action === 'skip') requestFlightSkip(playback.current);
     setSettings({ ...playback.current });
-  };
+  }, [playback, telemetry]);
+  useEffect(() => {
+    if (autoSkipped.current || flight.arrived || playback.current.paused || flight.remainingSeconds > 3 || flight.remainingSeconds <= 0) return;
+    autoSkipped.current = true;
+    update('skip');
+  }, [flight, playback, update]);
   return <>
     <View testID="flight-minimap" pointerEvents="none" style={{ position: 'absolute', top: Math.max(24, insets.top), left: Math.max(24, insets.left), width: 166, padding: 8, gap: 4, ...theme.outlineSurface, borderRadius: 10 }}>
       <Text style={{ ...shadow, color: theme.colors.muted, fontSize: 8, letterSpacing: 1.3 }}>TRANSFER MAP</Text>

@@ -16,10 +16,10 @@ test('arrival uses the trajectory endpoint in its final section, not an earlier 
   assert.equal(isTransferArrival(route, .999, endpoint.clone().add(new THREE.Vector3(101 / 2000000, 0, 0))), false);
   assert.equal(isTransferArrival(route, 1, new THREE.Vector3()), true, 'a skipped or overshot final frame must still finish');
 });
-test('automatic skip starts at 200ms remaining, before final camera calculations', () => {
+test('skip completes before final camera calculations', () => {
   const source = readFileSync('src/screens/solar-system/scene.tsx', 'utf8');
   const start = source.indexOf('if (missionFlight && flightTelemetry && flightRoute)');
-  const branch = source.indexOf('if (remainingSeconds <= .2)', start);
+  const branch = source.indexOf('if (skipping || progress >= 1)', start);
   const camera = source.indexOf('flightRoute.sample(progress < 1', start);
   assert.ok(branch > start && branch < camera);
   assert.match(source.slice(branch, camera), /view.completed = true;[\s\S]*onFlightArrived\?\.\(\);\s*return;/);
@@ -29,8 +29,9 @@ test('manual and automatic arrival request the same skip operation', () => {
   const playback = { speed: 1, paused: false, skip: false };
   mod.exports.requestFlightSkip(playback);
   assert.equal(playback.skip, true);
-  const scene = readFileSync('src/screens/solar-system/scene.tsx', 'utf8');
   const hud = readFileSync('src/screens/solar-system/moon-flight-hud.tsx', 'utf8');
-  assert.match(scene, /if \(!skipping && playback\) \{\s*requestFlightSkip\(playback\);\s*return;/);
+  assert.match(hud, /flight.remainingSeconds > 3/);
+  assert.match(hud, /autoSkipped.current = true;\s*update\('skip'\)/);
+  assert.match(hud, /onPress=\{\(\) => update\('skip'\)\}/);
   assert.match(hud, /requestFlightSkip\(playback.current\)/);
 });
