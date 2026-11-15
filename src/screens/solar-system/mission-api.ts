@@ -1,5 +1,6 @@
 import { launchSiteLabel, type LaunchSite } from './launch-sites';
 import type { LunarSite } from './lunar-sites';
+import { createSurfaceTrack, type SurfaceReport } from './surface-sky-data';
 
 const baseUrl = (process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://api.azas.n-e.kr/api/v1').replace(/\/+$/, '');
 export const defaultDeadline = '2027-01-31';
@@ -40,6 +41,29 @@ export async function startAnalysis(siteId: number, deadline: string, signal: Ab
 }
 
 export class FailedAnalysis extends Error {}
+type SurfaceOpportunities = {
+  analysisRunId: string; earliestTouchdownUtc: string | null;
+  candidates: { candidateId: string; proposedLandingUtc: string; surfaceFinishUtc: string; surfaceStatus: string }[];
+};
+
+export async function loadSurfaceSky(runId: string, siteCode: string, touchdownUtc: string, signal: AbortSignal) {
+  const path = `/analyses/${encodeURIComponent(runId)}`;
+  const result = await request<SurfaceOpportunities>(path + '/date-opportunities', signal);
+  const start = Date.parse(touchdownUtc);
+  if (result.analysisRunId !== runId || !result.earliestTouchdownUtc || Date.parse(result.earliestTouchdownUtc) !== start) {
+    throw new Error('The sky observations do not match the selected touchdown.');
+  }
+  const candidate = result.candidates.find(c => c.surfaceStatus === 'SATISFIED' && Date.parse(c.proposedLandingUtc) === start);
+  if (!candidate?.candidateId) throw new Error('No surface candidate was found for this touchdown.');
+  const report = await request<SurfaceReport>(
+    `${path}/surface-candidates/${encodeURIComponent(candidate.candidateId)}/post-landing`, signal,
+  );
+  if (report.siteId !== siteCode || Date.parse(report.touchdownUtc) !== start ||
+      Date.parse(report.surfaceEndUtc) !== Date.parse(candidate.surfaceFinishUtc)) {
+    throw new Error('The sky observations do not match the selected landing site and time.');
+  }
+  return createSurfaceTrack(report);
+}
 export type LaunchPlan = { runId: string; touchdownUtc: string; sites: LaunchSite[] };
 type LaunchOptions = {
   touchdownUtc: string | null;

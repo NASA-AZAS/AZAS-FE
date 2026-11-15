@@ -550,7 +550,7 @@ export function SolarSystemScreen() {
         {trajectory && <MoonFlightHud route={trajectory.route} telemetry={flightTelemetry} playback={flightPlayback} />}
         <TransferGuide flight active={active} onCountdownComplete={countdownFinished} />
       </Animated.View>}
-      {missionStage === 'arrived' && chosenLanding.current && <LunarArrival site={chosenLanding.current} active={active} onReady={arrivalReady} />}
+      {missionStage === 'arrived' && chosenLanding.current && launchPlan && <LunarArrival key={launchPlan.runId} site={chosenLanding.current} runId={launchPlan.runId} touchdownUtc={launchPlan.touchdownUtc} active={active} onReady={arrivalReady} />}
       {launchBusy && <View testID="launch-input-lock" style={[StyleSheet.absoluteFill, { zIndex: 1000 }]} onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true} accessibilityLabel="Launch sequence in progress" accessibilityViewIsModal />}
       {startup !== 'done' && <StartupSplash onBrandReady={brandLoaded} leaving={startup === 'flight'} error={error} />}
       {width < height && (
