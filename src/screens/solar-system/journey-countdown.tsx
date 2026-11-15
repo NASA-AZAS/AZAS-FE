@@ -34,7 +34,8 @@ export function JourneyCountdown({ active, reserveText, onComplete }: { active: 
     return () => clearInterval(timer);
   }, [active, onComplete]);
   const number = 3 - Math.floor(time / 1000);
-  const dots = '.'.repeat(Math.min(number, 1 + Math.floor((time % 1000) / (1000 / number))));
+  const dotStep = Math.min(3, 1 + Math.floor((time % 1000) / (1000 / 3)));
+  const dots = number === 1 ? '.'.repeat(Math.min(2, dotStep)) + (dotStep === 3 ? '!' : '') : '.'.repeat(dotStep);
   return <View testID="journey-countdown" pointerEvents="none" accessibilityLiveRegion="polite" style={{ flex: 1, paddingLeft: 16, paddingRight: 42, paddingVertical: 14, borderWidth: .7, borderColor: '#fff', borderRadius: 12, backgroundColor: '#03070dcc' }}>
     <Text accessible={false} style={{ opacity: 0, color: '#fff', fontStyle: 'italic', fontSize: 12, lineHeight: 19 }}>{reserveText}</Text>
     <View style={{ position: 'absolute', left: 16, top: 14, flexDirection: 'row' }}>

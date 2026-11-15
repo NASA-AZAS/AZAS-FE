@@ -89,14 +89,13 @@ export function SpaceHud({ launchLocked, onRocketLaunchStart, onRocketFlightComp
                 accessibilityRole="button" accessibilityLabel={`Set playback speed to ${value}x`}
                 accessibilityState={{ selected: value === speed }}
                 onPress={() => { onSpeedChange(value); setSpeedMenuOpen(false); }}
-                style={[styles.speedOption, value === speed && { backgroundColor: theme.colors.activeSurface }]}>
-                <Text style={{ color: value === speed ? theme.colors.accent : theme.colors.text, fontSize: 11 }}>{value}×</Text>
+                style={styles.speedOption}>
+                <Text style={{ color: theme.colors.text, fontSize: 11, fontWeight: value === speed ? '600' : '400' }}>{value}×</Text>
               </Pressable>)}
             </View>}
           </View>
 
-          <Pressable accessibilityRole="button" accessibilityLabel="Menu" disabled={disabled}
-            onPress={() => { setSpeedMenuOpen(false); onExplore(); }} style={[styles.playButton, { width: 60 }]}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Menu" accessibilityState={{ disabled: true }} disabled style={[styles.playButton, { width: 60 }]}>
             <Ionicons name="menu-outline" size={23} color={theme.colors.text} />
           </Pressable>
         </View>
@@ -164,8 +163,8 @@ export function SpaceHud({ launchLocked, onRocketLaunchStart, onRocketFlightComp
 const styles = StyleSheet.create({
   speedTag: { paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
   speedTagText: { color: theme.colors.text, fontSize: 10, fontWeight: '500' },
-  speedMenu: { position: 'absolute', top: 56, right: 0, width: 76, padding: 3, backgroundColor: '#0b1725', borderWidth: 1, borderColor: theme.colors.border, borderRadius: 10, zIndex: 30 },
-  speedOption: { minHeight: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
+  speedMenu: { position: 'absolute', top: 56, right: 0, width: 76, padding: 3, gap: 3, ...theme.outlineSurface, borderRadius: 10, zIndex: 30 },
+  speedOption: { ...theme.outlineSurface, minHeight: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   brandMark: { width: 54, height: 54, alignItems: 'center', justifyContent: 'center' },

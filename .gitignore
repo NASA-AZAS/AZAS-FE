@@ -15,3 +15,9 @@ dist/
 web-build/
 expo-env.d.ts
 *.tsbuildinfo
+.vercel
+
+# Local API configuration
+.env
+.env.*
+!.env.example

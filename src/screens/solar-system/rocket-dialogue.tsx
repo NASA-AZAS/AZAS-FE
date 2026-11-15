@@ -11,15 +11,17 @@ export function RocketDialogue({ pages, onFinished, showPageNumber = false, onDi
 // All rocket speech shares italic typography and a stable-height typewriter bubble.
 function DialoguePage({ text, reserveText, hasNext, onNext, onFinished, pageLabel, compact, autoDismissMs, onAutoDismiss }: { autoDismissMs?: number; onAutoDismiss?: () => void; compact?: boolean; pageLabel?: string; text: string; reserveText: string; hasNext: boolean; onNext: () => void; onFinished?: () => void }) {
   const [count, setCount] = useState(0);
+  const [revealAll, setRevealAll] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [active, setActive] = useState(AppState.currentState !== 'background');
   const nudge = useSharedValue(0);
-  const complete = count >= text.length;
+  const complete = revealAll || count >= text.length;
   useEffect(() => {
     let alive = true;
     let interval: ReturnType<typeof setInterval> | undefined;
     let timeout: ReturnType<typeof setTimeout> | undefined;
     const app = AppState.addEventListener('change', value => setActive(value === 'active'));
+    if (revealAll) return () => app.remove();
     AccessibilityInfo.isReduceMotionEnabled().then(reduce => {
       if (!alive) return;
       setReducedMotion(reduce);
@@ -33,7 +35,7 @@ function DialoguePage({ text, reserveText, hasNext, onNext, onFinished, pageLabe
       }, 450);
     });
     return () => { alive = false; app.remove(); clearTimeout(timeout); clearInterval(interval); };
-  }, [text]);
+  }, [text, revealAll]);
   useEffect(() => {
     if (complete && hasNext && active && !reducedMotion) {
       nudge.set(withRepeat(withSequence(withDelay(800, withTiming(1, { duration: 160, easing: Easing.out(Easing.quad) })), withTiming(0, { duration: 160 })), -1, false));
@@ -47,12 +49,12 @@ function DialoguePage({ text, reserveText, hasNext, onNext, onFinished, pageLabe
     return () => clearTimeout(timer);
   }, [complete, active, autoDismissMs, onAutoDismiss]);
   const hintStyle = useAnimatedStyle(() => ({ transform: [{ translateX: nudge.get() * 6 }] }));
-  return <Pressable testID="rocket-dialogue-bubble" accessibilityRole="button" accessibilityLabel={hasNext ? 'Next rocket message' : 'Rocket message'} accessibilityState={{ disabled: !complete || !hasNext }} disabled={!complete || !hasNext} onPress={onNext} style={[styles.bubble, compact && { paddingVertical: 8 }]}>
-    <Text accessible={false} style={[styles.speech, { opacity: 0 }]}>{reserveText}</Text>
-    <Text testID="rocket-dialogue-text" accessibilityLabel={text} style={[styles.speech, styles.typing, compact && { top: 8 }]}>{text.slice(0, count)}</Text>
+  return <Pressable testID="rocket-dialogue-bubble" accessibilityRole="button" accessibilityLabel={!complete ? 'Complete rocket message' : hasNext ? 'Next rocket message' : 'Rocket message'} accessibilityState={{ disabled: complete && !hasNext }} disabled={complete && !hasNext} onPress={() => { if (!complete) setRevealAll(true); else onNext(); }} style={[styles.bubble, compact && { flex: 0, flexGrow: 0, flexShrink: 0, paddingVertical: 4 }]}>
+    <Text accessible={false} style={[styles.speech, compact && { lineHeight: 17 }, { opacity: 0 }]}>{compact ? text : reserveText}</Text>
+    <Text testID="rocket-dialogue-text" accessibilityLabel={text} style={[styles.speech, styles.typing, compact && { top: 4, lineHeight: 17 }]}>{revealAll ? text : text.slice(0, count)}</Text>
     {pageLabel && <Text testID="rocket-page-number" pointerEvents="none" style={{ position: 'absolute', right: 12, top: 10, color: '#9AABBE', fontSize: 9 }}>{pageLabel}</Text>}
-    {complete && hasNext && <Animated.Text testID="rocket-next-page" accessible={false} style={[styles.next, hintStyle]}>{'>'}</Animated.Text>}
-    <View pointerEvents="none" style={styles.tail} />
+    {complete && hasNext && <Animated.Text testID="rocket-next-page" accessible={false} style={[styles.next, compact && { fontSize: 18, lineHeight: 22, bottom: 4 }, hintStyle]}>{'>'}</Animated.Text>}
+    <View pointerEvents="none" style={[styles.tail, compact && { bottom: '50%', marginBottom: -4 }]} />
   </Pressable>;
 }
 const styles = StyleSheet.create({

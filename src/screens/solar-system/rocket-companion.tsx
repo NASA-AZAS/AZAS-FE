@@ -52,7 +52,7 @@ export function RocketPortrait() {
   </View>;
 }
 
-export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => {}, departed = false, narrator = false, outlined = false, onSmile }: { onDeparture?: () => void; onLaunchStart?: () => void; departed?: boolean; narrator?: boolean; outlined?: boolean; onSmile?: () => void }) {
+export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => {}, departed = false, narrator = false, outlined = false, onSmile, smileTrigger = 0 }: { onDeparture?: () => void; onLaunchStart?: () => void; departed?: boolean; narrator?: boolean; outlined?: boolean; onSmile?: () => void; smileTrigger?: number }) {
   const { width, height } = useWindowDimensions();
   const [launched, setLaunched] = useState(false);
   const flight = useSharedValue(0);
@@ -103,6 +103,7 @@ export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => 
         }));
       }))));
   };
+  useEffect(() => { if (smileTrigger > 0) smile(); }, [smileTrigger]);
   const bodyStyle = useAnimatedStyle(() => ({ transform: [
     { translateY: reducedMotion ? 0 : -joy.get() * 8 },
     { translateX: reducedMotion ? 0 : shake.get() * 1.2 },

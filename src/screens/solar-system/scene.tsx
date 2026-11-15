@@ -47,6 +47,7 @@ type Props = {
   intro: boolean;
   systemView: boolean;
   onSystemFocus: () => void;
+  onOverviewFocus: () => void;
   onMoonIntro: () => void;
   controls: MutableRefObject<ViewControls>;
   paused: boolean;
@@ -170,7 +171,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight, flightActive, flightTelemetry, flightPlayback, flightMarkers, flightLaunchId, flightLandingId, onFlightArrived, missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight, flightActive, flightTelemetry, flightPlayback, flightMarkers, flightLaunchId, flightLandingId, onFlightArrived, missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, onOverviewFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap, rocketMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
@@ -504,7 +505,11 @@ export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight
       <group ref={physicalSystem}>
       <pointLight position={[0, 0, 0]} intensity={scale.earthOrbit ** 2 * 4} decay={2} color="#ffedc9" />
       <Orbit radius={scale.earthOrbit} opacity={.24} />
-      <group ref={sunVisual}><Sun time={time} /></group>
+      <group ref={sunVisual} onClick={event => {
+        if (startup === 'done' && !exploring && !missionTransfer && (intro || systemView || selected === null) && !controls.current.locked) {
+          event.stopPropagation(); onOverviewFocus();
+        }
+      }}><Sun time={time} /></group>
       <group ref={earthSystem} onClick={(event) => {
         if (!selected && !intro && !controls.current.locked) { event.stopPropagation(); onSystemFocus(); }
       }}>

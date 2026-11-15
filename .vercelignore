@@ -1,0 +1,16 @@
+# Development servers, caches, and generated files
+.expo/
+node_modules/
+dist/
+web-build/
+**/*.sock
+
+# Local tooling and Git metadata
+.git/
+.vercel/
+.agents/
+.codex/
+_workspace/
+__pycache__/
+*.pyc
+.DS_Store

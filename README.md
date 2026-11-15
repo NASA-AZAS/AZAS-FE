@@ -9,7 +9,7 @@ npm start
 
 Open the project in Expo Go on a physical iOS or Android device. For a browser preview, run `npm run web` or open the running server at http://localhost:8081.
 
-The lunar explorer loads landing sites from `https://api.azas.n-e.kr/api/v1`. To use another backend, set `EXPO_PUBLIC_API_BASE_URL` to its full API base URL (including `/api/v1`) before starting Expo. The address must be reachable from the device.
+The lunar explorer loads landing sites from `https://api.azas.n-e.kr/api/v1`. Copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_API_BASE_URL` to the full API base URL (including `/api/v1`) before starting Expo or building the web app. The address must be reachable from the device. Do not use the Swagger UI URL as the API base URL. Local env files are ignored; configure the same public variable in Vercel before rebuilding. The backend must allow the web app's origin in CORS (`https://azas-app.vercel.app` for production).
 
 Select a landing site and enter a UTC mission deadline (default `2027-01-31`). The search finds the first touchdown that supports 48 hours of sunlight and Earth visibility. The Earth map and launch list show the launch options calculated for that touchdown.
 

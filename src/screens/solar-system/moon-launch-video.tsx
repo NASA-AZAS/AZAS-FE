@@ -23,7 +23,7 @@ export function MoonLaunchVideo({ active, visible, onComplete, onError, source }
   }, [player, onComplete, onError]);
   useEffect(() => { if (active && player.status === 'error') onError(); else if (active && ready) player.play(); else player.pause(); }, [active, ready, player, onError]);
   return <Animated.View testID="moon-launch-video" pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 900, backgroundColor: '#000' }, fade]}>
-    <VideoView player={player} style={StyleSheet.absoluteFill} nativeControls={false} contentFit="contain" fullscreenOptions={{ enable: false }} allowsPictureInPicture={false} allowsVideoFrameAnalysis={false} playsInline surfaceType="textureView" />
+    <VideoView player={player} style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} nativeControls={false} contentFit="contain" fullscreenOptions={{ enable: false }} allowsPictureInPicture={false} allowsVideoFrameAnalysis={false} playsInline surfaceType="textureView" />
     {!ready && <ActivityIndicator color="#fff" style={StyleSheet.absoluteFill} />}
   </Animated.View>;
 }

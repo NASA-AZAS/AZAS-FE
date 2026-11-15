@@ -35,7 +35,8 @@
     ],
     "web": {
       "bundler": "metro",
-      "name": "AZAS · Orbital Explorer"
+      "name": "AZAS \u00b7 Orbital Explorer",
+      "output": "single"
     },
     "scheme": "azas"
   }
