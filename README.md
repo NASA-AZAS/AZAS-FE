@@ -39,7 +39,6 @@ AZAS presents those questions as a guided visual sequence. The frontend combines
 | Repository | [NASA-AZAS/AZAS-FE](https://github.com/NASA-AZAS/AZAS-FE) |
 | Application | Expo / React Native with a web export |
 | Presentation | Landscape orientation, dark interface, English UI |
-| Backend base URL | `https://api.azas.n-e.kr/api/v1` |
 | Hosting configuration | Vercel, static export to `dist/` |
 
 ## Current implementation
@@ -135,14 +134,14 @@ cp .env.example .env.local
 The example contains:
 
 ```dotenv
-EXPO_PUBLIC_API_BASE_URL=https://api.azas.n-e.kr/api/v1
+EXPO_PUBLIC_API_BASE_URL=https://api.example.com/api/v1
 ```
 
 | Variable | Purpose | Expected value |
 | --- | --- | --- |
 | `EXPO_PUBLIC_API_BASE_URL` | Base URL used by the frontend mission API client | A device-reachable HTTP(S) API URL including `/api/v1` |
 
-The API client falls back to the URL above when the variable is absent. Configure it explicitly when using another backend. Use the API base URL, not a Swagger/documentation page URL.
+The URL above is a placeholder. Obtain the backend URL from the team and configure it locally or in the deployment environment. Use the API base URL, not a Swagger/documentation page URL.
 
 Variables beginning with `EXPO_PUBLIC_` are included in the client bundle and are visible to users. Do not place secrets, private tokens, or database credentials in them. Local environment files are ignored by Git.
 
