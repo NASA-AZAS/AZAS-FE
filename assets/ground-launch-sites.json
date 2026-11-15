@@ -1,0 +1,80 @@
+[
+  {
+    "id": "launch-1",
+    "name": "Kennedy Space Center",
+    "latitude": 28.61,
+    "longitude": -80.6
+  },
+  {
+    "id": "launch-2",
+    "name": "Cape Canaveral Space Force Station",
+    "latitude": 28.56,
+    "longitude": -80.58
+  },
+  {
+    "id": "launch-3",
+    "name": "Vandenberg Space Force Base",
+    "latitude": 34.77,
+    "longitude": -120.6
+  },
+  {
+    "id": "launch-4",
+    "name": "Mid-Atlantic Regional Spaceport (Wallops)",
+    "latitude": 37.84,
+    "longitude": -75.49
+  },
+  {
+    "id": "launch-5",
+    "name": "Baikonur Cosmodrome",
+    "latitude": 45.96,
+    "longitude": 63.35
+  },
+  {
+    "id": "launch-6",
+    "name": "Vostochny Cosmodrome",
+    "latitude": 51.882,
+    "longitude": 128.332
+  },
+  {
+    "id": "launch-7",
+    "name": "Xichang Satellite Launch Center",
+    "latitude": 28.25,
+    "longitude": 102.03
+  },
+  {
+    "id": "launch-8",
+    "name": "Wenchang Spacecraft Launch Site",
+    "latitude": 19.614,
+    "longitude": 110.951
+  },
+  {
+    "id": "launch-9",
+    "name": "Tanegashima Space Center",
+    "latitude": 30.39,
+    "longitude": 130.97
+  },
+  {
+    "id": "launch-10",
+    "name": "Uchinoura Space Center",
+    "latitude": 31.25,
+    "longitude": 131.08
+  },
+  {
+    "id": "launch-11",
+    "name": "Satish Dhawan Space Centre",
+    "latitude": 13.73,
+    "longitude": 80.23
+  },
+  {
+    "id": "launch-12",
+    "name": "Guiana Space Centre (Kourou)",
+    "latitude": 5.24,
+    "longitude": -52.77
+  },
+  {
+    "id": "launch-13",
+    "name": "Rocket Lab Launch Complex 1 (Mahia)",
+    "latitude": -39.26,
+    "longitude": 177.86
+  }
+]
