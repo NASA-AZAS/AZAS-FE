@@ -8,7 +8,7 @@ import type { LunarSite } from './lunar-sites';
 import { Sun } from './sun';
 import { TransferTrajectory } from './transfer-trajectory';
 import { FlightRocket } from './flight-rocket';
-import { FLIGHT_DURATION_SECONDS, isTransferArrival, type TransferRoute, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
+import { FLIGHT_DURATION_SECONDS, isTransferArrival, requestFlightSkip, type TransferRoute, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
 import { SIMULATION_RATE } from './simulation-clock';
 import type { BodyId } from './space-hud';
 
@@ -391,12 +391,17 @@ export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight
       if (view.completed) return;
       const now = performance.now();
       const playback = flightPlayback?.current;
-      if (playback?.skip) { playback.skip = false; view.elapsed = FLIGHT_DURATION_SECONDS; }
+      const skipping = playback?.skip === true;
+      if (skipping) { playback.skip = false; view.elapsed = FLIGHT_DURATION_SECONDS; }
       else if (flightActive && !playback?.paused) view.elapsed = Math.min(FLIGHT_DURATION_SECONDS, view.elapsed + Math.max(0, now - view.lastTick) / 1000 * (playback?.speed ?? 1));
       view.lastTick = now;
       const progress = view.elapsed / FLIGHT_DURATION_SECONDS;
       flightRoute.sample(progress, view.point);
       if (isTransferArrival(flightRoute, progress, view.point)) {
+        if (!skipping && playback) {
+          requestFlightSkip(playback);
+          return;
+        }
         view.completed = true;
         flightTelemetry.current = { progress, remainingSeconds: 0, ...flightRoute.metrics(progress), arrived: true };
         onFlightArrived?.();

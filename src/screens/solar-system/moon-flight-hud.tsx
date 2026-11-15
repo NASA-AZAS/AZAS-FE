@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { NASA_RED } from './lunar-sites';
-import { type TransferRoute, type FlightPlayback, type FlightTelemetry, type FlightMarkers } from './transfer-route';
+import { requestFlightSkip, type TransferRoute, type FlightPlayback, type FlightTelemetry, type FlightMarkers } from './transfer-route';
 
 const shadow = { textShadowColor: '#000', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } };
 
@@ -37,7 +37,7 @@ export function MoonFlightHud({ telemetry, playback, route }: { telemetry: Mutab
     if (flight.arrived) return;
     if (action === 'speed') { const speeds = [.25, .5, 1, 1.5, 2]; playback.current.speed = speeds[(speeds.indexOf(playback.current.speed) + 1) % speeds.length]; }
     if (action === 'pause') playback.current.paused = !playback.current.paused;
-    if (action === 'skip') playback.current.skip = true;
+    if (action === 'skip') requestFlightSkip(playback.current);
     setSettings({ ...playback.current });
   };
   return <>

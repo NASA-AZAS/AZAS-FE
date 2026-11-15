@@ -24,3 +24,13 @@ test('endpoint transition occurs before final camera calculations', () => {
   assert.ok(branch > start && branch < camera);
   assert.match(source.slice(branch, camera), /view.completed = true;[\s\S]*onFlightArrived\?\.\(\);\s*return;/);
 });
+
+test('manual and automatic arrival request the same skip operation', () => {
+  const playback = { speed: 1, paused: false, skip: false };
+  mod.exports.requestFlightSkip(playback);
+  assert.equal(playback.skip, true);
+  const scene = readFileSync('src/screens/solar-system/scene.tsx', 'utf8');
+  const hud = readFileSync('src/screens/solar-system/moon-flight-hud.tsx', 'utf8');
+  assert.match(scene, /if \(!skipping && playback\) \{\s*requestFlightSkip\(playback\);\s*return;/);
+  assert.match(hud, /requestFlightSkip\(playback.current\)/);
+});
