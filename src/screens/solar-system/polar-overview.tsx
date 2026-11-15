@@ -104,6 +104,7 @@ export function PolarOverview({ selected, onSelect }: { selected: LunarSite; onS
     </View></GestureDetector>
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: size.width / 2, borderWidth: .7, borderColor: '#fff' }]} />
     </View>
+    <Text pointerEvents="none" style={{ position: 'absolute', left: 8, bottom: 2, maxWidth: '68%', color: '#fff', fontSize: 11 }}>Explore another site!</Text>
     <Text pointerEvents="none" style={{ position: 'absolute', right: 8, bottom: 2, color: '#fff', fontSize: 11 }}>Candidate Sites · {lunarSites.length}</Text>
   </View>;
 }

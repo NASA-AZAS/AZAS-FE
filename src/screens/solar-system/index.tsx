@@ -1,3 +1,4 @@
+import { theme } from '../../theme';
 import { Asset } from 'expo-asset';
 import * as SplashScreen from 'expo-splash-screen';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -255,18 +256,20 @@ export function SolarSystemScreen() {
       {startup === 'done' && !exploring && <Animated.View entering={FadeIn.duration(650)} pointerEvents="box-none" style={StyleSheet.absoluteFill}><SpaceHud launchLocked={launchBusy} onRocketLaunchStart={() => { launchLocked.current = true; setLaunchBusy(true); }} onRocketFlightComplete={() => openExplorer(true)} rocketGone={rocketGone} onRocketDeparture={() => setRocketGone(true)} onExplore={openExplorer} speed={speed} onSpeedChange={setSpeed} simulationSeconds={simulationSeconds} selected={requestedBody} onSelect={focus} paused={paused} onTogglePause={() => setPaused(value => !value)}
         onReset={reset} loading={loading} error={error} /></Animated.View>}
       {exploring && <>
-        {candidate && <Animated.View entering={FadeIn.duration(350)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '54%', backgroundColor: '#03070d' }} pointerEvents="none">{Array.from({ length: 85 }, (_, i) => <View key={i} style={{ position: 'absolute', left: `${(i * 73.71) % 100}%`, top: `${(i * 41.13) % 100}%`, width: i % 5 === 0 ? 2 : 1, height: i % 5 === 0 ? 2 : 1, borderRadius: 1, backgroundColor: '#fff', opacity: .2 + (i % 4) * .15 }} />)}</Animated.View>}
+        {candidate && <Animated.View entering={FadeIn.duration(350)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '100%', backgroundColor: '#03070d' }} pointerEvents="none">{Array.from({ length: 85 }, (_, i) => <View key={i} style={{ position: 'absolute', left: `${(i * 73.71) % 100}%`, top: `${(i * 41.13) % 100}%`, width: i % 5 === 0 ? 2 : 1, height: i % 5 === 0 ? 2 : 1, borderRadius: 1, backgroundColor: '#fff', opacity: .2 + (i % 4) * .15 }} />)}</Animated.View>}
         {candidate && <Animated.View entering={FadeIn.duration(350)} style={{ position: 'absolute', left: 76, top: 20, width: Math.min(width * .54 - 56, height - 100), height: Math.min(width * .54 - 56, height - 100) + 60 }}><PolarOverview selected={candidate} onSelect={selectCandidate} /></Animated.View>}
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, candidate && { right: '46%' }]}>
           {!candidate && lunarPoints.filter(p => p.visible && p.id !== 'South Pole Surface' && p.id !== 'earth-select-anchor').map(point => point.id.includes('Pole')
             ? <Text key={point.id} pointerEvents="none" style={{ position: 'absolute', left: point.x - 10, top: point.y - 7, width: 20, textAlign: 'center', color: '#fff', fontSize: 11 }}>{point.id === 'North Pole' ? 'N' : 'S'}</Text>
             : <Pressable key={point.id} accessibilityRole="button" accessibilityLabel={`Open ${(earthStage ? launchSites : lunarSites).find(s => s.id === point.id)?.name}`} onPress={() => earthStage ? selectLaunchSite(point.id) : selectCandidate(lunarSites.find(s => s.id === point.id)!)} style={{ position: 'absolute', left: point.x - 12, top: point.y - 12, width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}><MaterialCommunityIcons name="circle-double" size={16} color={earthStage && launchSiteId === point.id ? NASA_RED : '#fff'} accessible={false} /><Text pointerEvents="none" style={{ position: 'absolute', top: 23, width: earthStage ? 130 : 80, textAlign: 'center', color: '#fff', fontSize: 9 }}>{(earthStage ? launchSites : lunarSites).find(s => s.id === point.id)?.name}</Text></Pressable>)}
         </View>
-        {candidate && <View style={{ position: 'absolute', right: 16, top: 20, bottom: 20, width: '50%', padding: 12, gap: 12, backgroundColor: '#080e18ee', borderWidth: .5, borderColor: '#777', borderRadius: 14 }}>
+        {candidate && <View style={{ position: 'absolute', right: 16, top: 20, bottom: 20, width: '50%', padding: 12, gap: 12, ...theme.outlineSurface, borderRadius: 14 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><Text style={{ color: '#fff', fontSize: 16 }}>{candidate.name} | DEM 360° Panorama</Text><Pressable accessibilityRole="button" accessibilityLabel="Close candidate map" onPress={closeCandidate} style={{ padding: 10 }}><Text style={{ color: '#fff' }}>✕</Text></Pressable></View>
           <LunarPanorama key={candidate.id} site={candidate} />
-          <Pressable testID="choose-landing-site" accessibilityRole="button" accessibilityLabel="Choose this landing site" onPress={chooseLanding} style={({ pressed }) => ({ minHeight: 48, alignItems: 'center', justifyContent: 'center', borderWidth: .3, borderColor: '#fff', borderRadius: 8, opacity: pressed ? .65 : 1 })}>
-            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>Choose this landing site?</Text>
+          <Pressable testID="choose-landing-site" accessibilityRole="button" accessibilityLabel="Confirm Landing Site" onPress={chooseLanding} style={({ pressed }) => ({ minHeight: 48, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', ...theme.outlineSurface, borderWidth: .3, borderRadius: 8, opacity: pressed ? .65 : 1 })}>
+            <MaterialCommunityIcons name="bullseye" size={19} color="#fff" accessible={false} />
+            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>Confirm Landing Site</Text>
+            <Ionicons name="arrow-forward-outline" size={18} color="#fff" accessible={false} />
           </Pressable>
         </View>}
       </>}

@@ -14,6 +14,7 @@ export const theme = {
     moon: '#D0D9E5',
     error: '#FFB6AA',
   },
+  outlineSurface: { backgroundColor: 'transparent', borderColor: '#ffffff', borderWidth: .5 },
   spacing: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 },
   radius: { sm: 8, md: 12, pill: 999 },
   type: { micro: 10, caption: 12, body: 14, title: 24 },
