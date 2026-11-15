@@ -56,6 +56,7 @@ type SurfaceOpportunities = {
   analysisRunId: string; earliestTouchdownUtc: string | null;
   windows: (TouchdownWindow & { surfaceStatus: string })[];
   candidates: (SurfaceCandidate & { proposedLandingUtc: string; surfaceStatus: string })[];
+  arrivalWindows?: (TouchdownWindow & { surfaceStatus: string })[];
 };
 
 async function loadTouchdownOpportunities(runId: string, touchdownMs: number, signal: AbortSignal) {
@@ -83,7 +84,7 @@ export async function loadSurfaceSky(plan: LaunchPlan, siteCode: string, signal:
   const report = await request<SurfaceReport>(
     `${path}/surface-candidates/${encodeURIComponent(candidate.candidateId)}/post-landing`, signal,
   );
-  if (report.siteId !== siteCode || Date.parse(report.touchdownUtc) !== start ||
+  if ((report.surfaceCandidateId != null && report.surfaceCandidateId !== candidate.candidateId) || report.siteId !== siteCode || Date.parse(report.touchdownUtc) !== start ||
       Date.parse(report.surfaceEndUtc) !== Date.parse(candidate.surfaceFinishUtc)) {
     throw new Error('The sky observations do not match the selected landing site and time.');
   }
@@ -94,7 +95,7 @@ export async function loadSurfaceSky(plan: LaunchPlan, siteCode: string, signal:
 }
 export type LaunchPlan = {
   runId: string; touchdownUtc: string; firstTouchdownWindow: TouchdownWindow | null; sites: LaunchSite[];
-  firstSurfaceCandidate: SurfaceCandidate | null;
+  firstSurfaceCandidate: SurfaceCandidate | null; surfaceCandidateId?: string | null;
 };
 
 type VisibilityWindow = { celestialBody: string; windowStartAt: string; windowEndAt: string };
@@ -115,14 +116,14 @@ export async function loadTouchdownDay(runId: string, touchdownUtc: string, sign
 }
 
 type LaunchOptions = {
-  analysisRunId: string; touchdownUtc: string | null;
+  analysisRunId: string; touchdownUtc: string | null; surfaceCandidateId?: string | null;
   launchSites: {
     launchSiteId: number; launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number;
     candidates: { candidateId: string; launchUtc: string; tliUtc: string; lunarArrivalUtc: string; proposedLandingUtc: string }[];
   }[];
 };
 
-export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promise<LaunchPlan | null> {
+export async function loadLaunchPlan(runId: string, signal: AbortSignal, selectedTouchdownUtc?: string): Promise<LaunchPlan | null> {
   const path = `/analyses/${encodeURIComponent(runId)}`;
   while (!signal.aborted) {
     const run = await request<{ executionStatus: string; failureCode?: string }>(path, signal);
@@ -133,10 +134,33 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promis
     await new Promise(resolve => setTimeout(resolve, 1500));
   }
   // Launch options and trajectory selection stay anchored to this single touchdown.
-  const result = await request<LaunchOptions>(path + '/launch-options', signal);
+  const selector = selectedTouchdownUtc ? '?touchdownUtc=' + encodeURIComponent(selectedTouchdownUtc) : '';
+  const result = await request<LaunchOptions>(path + '/launch-options' + selector, signal);
   if (result.analysisRunId !== runId) throw new Error('The launch options do not match the selected analysis.');
   if (!result.touchdownUtc) return null;
   const touchdownMs = Date.parse(result.touchdownUtc);
+  if (selectedTouchdownUtc && (touchdownMs !== Date.parse(selectedTouchdownUtc) || !result.surfaceCandidateId)) {
+    throw new Error('The mission service has not returned launch options for the selected arrival date. Please retry after the service is updated.');
+  }
+  const sites = result.launchSites.map(site => {
+        const [candidate] = site.candidates;
+        if (candidate && Date.parse(candidate.proposedLandingUtc) !== touchdownMs) throw new Error('The launch candidate does not match the selected touchdown.');
+        return {
+          id: `launch-${site.launchSiteId}`, ...launchSiteLabel(site.launchSiteCode),
+          latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
+          launchAt: candidate?.launchUtc ?? null, candidateId: candidate?.candidateId ?? null,
+          tliUtc: candidate?.tliUtc ?? null, lunarArrivalUtc: candidate?.lunarArrivalUtc ?? null,
+          proposedLandingUtc: candidate?.proposedLandingUtc ?? null,
+        };
+      });
+  if (result.surfaceCandidateId) {
+    return {
+      runId, touchdownUtc: result.touchdownUtc, surfaceCandidateId: result.surfaceCandidateId,
+      firstTouchdownWindow: null,
+      firstSurfaceCandidate: { candidateId: result.surfaceCandidateId, surfaceFinishUtc: new Date(touchdownMs + 48 * 3600_000).toISOString() },
+      sites,
+    };
+  }
   const opportunities = await loadTouchdownOpportunities(runId, touchdownMs, signal).catch(error => {
     if (signal.aborted) throw error;
     return null; // Launch options remain usable when surface data is unavailable.
@@ -149,16 +173,7 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promis
     runId, touchdownUtc: result.touchdownUtc,
     firstTouchdownWindow: window ? { startUtc: window.startUtc, endUtc: window.endUtc } : null,
     firstSurfaceCandidate: firstSurfaceCandidate(opportunities, touchdownMs),
-    sites: result.launchSites.map(site => {
-      const [candidate] = site.candidates;
-      return {
-        id: `launch-${site.launchSiteId}`, ...launchSiteLabel(site.launchSiteCode),
-        latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
-        launchAt: candidate?.launchUtc ?? null, candidateId: candidate?.candidateId ?? null,
-        tliUtc: candidate?.tliUtc ?? null, lunarArrivalUtc: candidate?.lunarArrivalUtc ?? null,
-        proposedLandingUtc: candidate?.proposedLandingUtc ?? null,
-      };
-    }),
+    sites,
   };
 }
 
@@ -167,7 +182,7 @@ type TrajectorySummary = {
   trajectoryRunId: string; candidateId: string; executionStatus: string; status: string | null;
 };
 type TrajectoryResult = TrajectorySummary & {
-  analysisRunId: string; reason: string | null;
+  analysisRunId: string; reason: string | null; surfaceCandidateId?: string | null; proposedLandingUtc?: string;
   frame: string; origin: string; segment: string; arrivalTarget: string; samples: TrajectorySample[];
 };
 
@@ -175,7 +190,7 @@ function inProgress(run: TrajectorySummary) {
   return run.executionStatus === 'PENDING' || run.executionStatus === 'RUNNING';
 }
 
-export async function loadTrajectory(runId: string, candidateId: string, signal: AbortSignal, savedId?: string) {
+export async function loadTrajectory(runId: string, candidateId: string, signal: AbortSignal, savedId?: string, selection?: Pick<LaunchPlan, 'surfaceCandidateId' | 'touchdownUtc'>) {
   const path = `/analyses/${encodeURIComponent(runId)}`;
   if (!savedId) {
     const history = await request<TrajectorySummary[]>(path + '/trajectories', signal);
@@ -204,15 +219,20 @@ export async function loadTrajectory(runId: string, candidateId: string, signal:
       || result.arrivalTarget !== 'MOON_EARTH_FACING_OFFSET_2000_KM_FROM_CENTER') {
     throw new Error('This trajectory uses an unsupported coordinate frame or arrival target.');
   }
+  if (selection?.surfaceCandidateId && (result.surfaceCandidateId !== selection.surfaceCandidateId ||
+      Date.parse(result.proposedLandingUtc ?? '') !== Date.parse(selection.touchdownUtc))) {
+    throw new Error('The trajectory does not match the selected arrival date.');
+  }
   return { trajectoryId, samples: result.samples };
 }
 
 export async function loadArrivalOptions(runId: string, signal: AbortSignal) {
   const firstPlan = await loadLaunchPlan(runId, signal);
-  if (!firstPlan) return { dates: [] as string[], firstPlan };
+  if (!firstPlan) return { runId, dates: [] as string[], firstPlan };
   const result = await loadTouchdownOpportunities(runId, Date.parse(firstPlan.touchdownUtc), signal);
-  const dates = [...new Set(result.windows.filter(w => w.surfaceStatus === 'SATISFIED' &&
-    Date.parse(w.startUtc) === Date.parse(firstPlan.touchdownUtc)).map(w => w.startUtc))]
+  const windows = result.arrivalWindows ?? result.windows.filter(w => Date.parse(w.startUtc) === Date.parse(firstPlan.touchdownUtc));
+  const dates = [...new Set(windows.filter(w => w.surfaceStatus === 'SATISFIED' &&
+    Number.isFinite(Date.parse(w.startUtc))).map(w => w.startUtc))]
     .sort((a, b) => Date.parse(a) - Date.parse(b));
-  return { dates, firstPlan };
+  return { runId, dates, firstPlan };
 }

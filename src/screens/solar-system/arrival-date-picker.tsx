@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme';
 import { NASA_RED } from './lunar-sites';
-import { defaultDeadline, loadArrivalOptions, startAnalysis, type LaunchPlan } from './mission-api';
+import { defaultDeadline, loadArrivalOptions, loadLaunchPlan, startAnalysis, type LaunchPlan } from './mission-api';
 
 type Options = Awaited<ReturnType<typeof loadArrivalOptions>>;
 export function ArrivalDatePicker({ siteId, onConfirm }: { siteId: number; onConfirm: (plan: LaunchPlan) => void }) {
@@ -11,6 +11,7 @@ export function ArrivalDatePicker({ siteId, onConfirm }: { siteId: number; onCon
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [confirming, setConfirming] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const active = useRef<AbortController | null>(null);
   useEffect(() => {
@@ -22,7 +23,7 @@ export function ArrivalDatePicker({ siteId, onConfirm }: { siteId: number; onCon
       try {
         const runId = await startAnalysis(siteId, defaultDeadline, controller.signal);
         const result = await loadArrivalOptions(runId, controller.signal);
-        if (current) { setOptions(result); setSelected(result.firstPlan?.touchdownUtc ?? null); }
+        if (current) { setOptions(result); setSelected(result.dates[0] ?? null); }
       } catch (e) {
         if (current) setError(controller.signal.aborted ? 'The search timed out. Please retry.' : e instanceof Error ? e.message : 'Unable to load arrival dates.');
       } finally { clearTimeout(timer); if (current) { setLoading(false); active.current = null; } }
@@ -31,11 +32,26 @@ export function ArrivalDatePicker({ siteId, onConfirm }: { siteId: number; onCon
   }, [siteId, attempt]);
   const confirm = async () => {
     if (!selected || !options || active.current) return;
-    const plan = options.firstPlan;
-    if (!plan || Date.parse(plan.touchdownUtc) !== Date.parse(selected)) return;
-    onConfirm(plan);
+    const controller = new AbortController(); active.current = controller;
+    setConfirming(true); setError('');
+    const timer = setTimeout(() => controller.abort(), 150_000);
+    try {
+      const plan = await loadLaunchPlan(options.runId, controller.signal, selected);
+      if (active.current !== controller) return;
+      if (!plan || !plan.sites.some(site => site.candidateId && site.launchAt)) {
+        setOptions(value => value ? { ...value, dates: value.dates.filter(date => date !== selected) } : value);
+        setSelected(null);
+        setError('No launch sites are available for this arrival date. Please choose another date.');
+        return;
+      }
+      onConfirm(plan);
+    } catch (e) {
+      if (active.current === controller) setError(controller.signal.aborted ? 'The request timed out. Please retry.' : e instanceof Error ? e.message : 'Unable to load launch options.');
+    } finally {
+      clearTimeout(timer);
+      if (active.current === controller) { active.current = null; setConfirming(false); }
+    }
   };
-  const unsupportedDate = selected !== null && Date.parse(selected) !== Date.parse(options?.firstPlan?.touchdownUtc ?? '');
 
   return <View style={{ flex: 1, minHeight: 0, gap: 10 }}>
     <Text style={styles.title}>Select an Arrival Date</Text>
@@ -44,16 +60,16 @@ export function ArrivalDatePicker({ siteId, onConfirm }: { siteId: number; onCon
     {error !== '' && <Text accessibilityRole="alert" style={styles.caption}>{error}</Text>}
     {!loading && !options && <Pressable accessibilityRole="button" onPress={() => setAttempt(n => n + 1)} style={styles.button}><Text style={styles.label}>Retry search</Text></Pressable>}
     {!loading && options && <>
-      {options.dates.length === 0 && <Text style={styles.caption}>No arrival dates meet the 48-hour conditions for this site.</Text>}
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 }}>
-        {options.dates.map(date => <Pressable key={date} accessibilityRole="radio" accessibilityLabel={date} accessibilityState={{ checked: selected === date }} onPress={() => { setSelected(date); setError(''); }} style={[styles.row, selected === date && { borderColor: NASA_RED }]}>
+      {options.dates.length === 0 ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 }}>
+        <Text style={[styles.caption, { textAlign: 'center' }]}>No arrival dates meet the 48-hour conditions for this site.</Text>
+      </View> : <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 }}>
+        {options.dates.map(date => <Pressable key={date} accessibilityRole="radio" accessibilityLabel={date} accessibilityState={{ checked: selected === date, disabled: confirming }} disabled={confirming} onPress={() => { setSelected(date); setError(''); }} style={[styles.row, selected === date && { borderColor: NASA_RED }]}>
           <Ionicons name={selected === date ? 'radio-button-on-outline' : 'radio-button-off-outline'} size={17} color={selected === date ? NASA_RED : theme.colors.muted} />
           <Text style={[styles.label, selected === date && { color: NASA_RED }]}>{date.replace('T', ' ').slice(0, 16)} UTC</Text>
         </Pressable>)}
-      </ScrollView>
-      {unsupportedDate && <Text accessibilityLiveRegion="polite" style={styles.caption}>Launch options are currently available only for the first arrival date.</Text>}
-      <Pressable accessibilityRole="button" accessibilityLabel="Confirm Arrival Date" accessibilityState={{ disabled: !selected || unsupportedDate }} disabled={!selected || unsupportedDate} onPress={confirm} style={[styles.button, (!selected || unsupportedDate) && { opacity: .4 }]}>
-        <Ionicons name="time-outline" size={18} color="#fff" /><Text style={styles.label}>Confirm Arrival Date</Text><Ionicons name="arrow-forward-outline" size={17} color="#fff" />
+      </ScrollView>}
+      <Pressable accessibilityRole="button" accessibilityLabel="Confirm Arrival Date" accessibilityState={{ disabled: !selected || confirming, busy: confirming }} disabled={!selected || confirming} onPress={confirm} style={[styles.button, (!selected || confirming) && { opacity: .4 }]}>
+        <Ionicons name="time-outline" size={18} color="#fff" /><Text style={styles.label}>{confirming ? 'Loading launch options…' : 'Confirm Arrival Date'}</Text><Ionicons name="arrow-forward-outline" size={17} color="#fff" />
       </Pressable>
     </>}
   </View>;

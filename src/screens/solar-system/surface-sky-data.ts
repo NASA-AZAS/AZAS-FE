@@ -4,7 +4,7 @@ export type SkyBody = 'sun' | 'earth';
 type BodyObservation = { azimuthDeg: number; elevationDeg: number; visible: boolean };
 type Observation = { utc: string; elapsedSeconds: number; sun: BodyObservation; earth: BodyObservation };
 export type SurfaceReport = {
-  siteId: string; touchdownUtc: string; surfaceEndUtc: string; sampleStepSeconds: number; samples: Observation[];
+  siteId: string; surfaceCandidateId?: string | null; touchdownUtc: string; surfaceEndUtc: string; sampleStepSeconds: number; samples: Observation[];
   nextTerrainOccultationUtc?: Partial<Record<SkyBody, string | null>> | null;
   meanDailyVisibility?: MeanDailyVisibility;
 };

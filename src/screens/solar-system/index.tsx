@@ -325,7 +325,7 @@ export function SolarSystemScreen() {
       const timeout = setTimeout(() => controller.abort(), 150_000);
       setTrajectoryBusy(true); setTrajectoryError('');
       try {
-        const saved = await loadTrajectory(runId, candidateId, controller.signal, savedTrajectoryIds.current.get(candidateId));
+        const saved = await loadTrajectory(runId, candidateId, controller.signal, savedTrajectoryIds.current.get(candidateId), launchPlan);
         if (trajectoryRequest.current !== controller) return;
         const route = createTransferRoute(saved.samples);
         savedTrajectoryIds.current.set(candidateId, saved.trajectoryId);
