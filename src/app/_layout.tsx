@@ -1,3 +1,4 @@
+import { AppFrame } from '../components/app-frame';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack } from 'expo-router';
@@ -8,9 +9,9 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}><SafeAreaProvider>
+    <AppFrame><GestureHandlerRootView style={{ flex: 1 }}><SafeAreaProvider>
       <StatusBar hidden />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#03070d' }, orientation: 'landscape' }} />
-    </SafeAreaProvider></GestureHandlerRootView>
+    </SafeAreaProvider></GestureHandlerRootView></AppFrame>
   );
 }
