@@ -5,11 +5,14 @@ type BodyObservation = { azimuthDeg: number; elevationDeg: number; visible: bool
 type Observation = { utc: string; elapsedSeconds: number; sun: BodyObservation; earth: BodyObservation };
 export type SurfaceReport = {
   siteId: string; touchdownUtc: string; surfaceEndUtc: string; sampleStepSeconds: number; samples: Observation[];
+  nextTerrainOccultationUtc?: Partial<Record<SkyBody, string | null>> | null;
   meanDailyVisibility?: MeanDailyVisibility;
 };
+export type TerrainOccultation = { body: SkyBody; utc: string; elapsedSeconds: number };
 type Position = { azimuth: number; elevation: number; visible: boolean | null };
 export type SurfaceTrack = {
   touchdownMs: number; durationSeconds: number; sampleTimes: number[];
+  terrainOccultations: TerrainOccultation[];
   position: (body: SkyBody, elapsed: number) => Position;
 };
 
@@ -58,7 +61,17 @@ export function createSurfaceTrack(report: SurfaceReport): SurfaceTrack | null {
     throw new Error('The sky observations for this touchdown are incomplete.');
   }
   if (samples.length === 0) return null;
+  const terrainOccultations: TerrainOccultation[] = [];
+  for (const body of ['sun', 'earth'] as const) {
+    const value = report.nextTerrainOccultationUtc?.[body];
+    const time = typeof value === 'string' ? Date.parse(value) : NaN;
+    const elapsedSeconds = (time - touchdownMs) / 1000;
+    // API events can fall beyond the requested 48-hour surface window.
+    if (Number.isFinite(time) && elapsedSeconds >= 0 && elapsedSeconds <= Math.min(48 * 3600, durationSeconds)) {
+      terrainOccultations.push({ body, utc: new Date(time).toISOString(), elapsedSeconds });
+    }
+  }
   const tracks = { sun: makeTrack(samples, 'sun', step), earth: makeTrack(samples, 'earth', step) };
-  return { touchdownMs, durationSeconds, sampleTimes: samples.map(s => s.elapsedSeconds),
+  return { touchdownMs, durationSeconds, sampleTimes: samples.map(s => s.elapsedSeconds), terrainOccultations,
     position: (body, elapsed) => tracks[body](elapsed) };
 }
