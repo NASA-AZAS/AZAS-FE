@@ -70,6 +70,7 @@ export function SolarSystemScreen() {
   const [launchPlan, setLaunchPlan] = useState<LaunchPlan | null>(null);
   const [showSiteList, setShowSiteList] = useState(false);
   const [trajectory, setTrajectory] = useState<{ runId: string; candidateId: string; route: TransferRoute } | null>(null);
+  const savedTrajectoryIds = useRef(new Map<string, string>());
   const [trajectoryBusy, setTrajectoryBusy] = useState(false);
   const [trajectoryError, setTrajectoryError] = useState('');
   const trajectoryRequest = useRef<AbortController | null>(null);
@@ -242,6 +243,7 @@ export function SolarSystemScreen() {
     if (!candidate || launchLocked.current || selectionMoving.current) return;
     cancelTour();
     chosenLanding.current = candidate;
+    savedTrajectoryIds.current.clear();
     setLaunchPlan(plan);
     setChoosingArrival(false);
     setGuideVisible(false);
@@ -315,11 +317,14 @@ export function SolarSystemScreen() {
       const timeout = setTimeout(() => controller.abort(), 150_000);
       setTrajectoryBusy(true); setTrajectoryError('');
       try {
-        const samples = await loadTrajectory(runId, candidateId, controller.signal);
+        const saved = await loadTrajectory(runId, candidateId, controller.signal, savedTrajectoryIds.current.get(candidateId));
         if (trajectoryRequest.current !== controller) return;
-        setTrajectory({ runId, candidateId, route: createTransferRoute(samples) });
+        const route = createTransferRoute(saved.samples);
+        savedTrajectoryIds.current.set(candidateId, saved.trajectoryId);
+        setTrajectory({ runId, candidateId, route });
       } catch (error) {
         if (trajectoryRequest.current === controller) {
+          savedTrajectoryIds.current.delete(candidateId);
           setTrajectoryError(controller.signal.aborted ? 'Trajectory request timed out. Try again.'
             : error instanceof Error ? error.message : 'Unable to load the transfer trajectory.');
         }

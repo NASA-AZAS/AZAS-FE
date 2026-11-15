@@ -124,22 +124,46 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promis
 }
 
 export type TrajectorySample = { elapsedSeconds: number; positionKm: number[]; velocityKmS: number[] };
-type TrajectoryResult = {
-  analysisRunId: string; candidateId: string; status: string; reason: string | null;
+type TrajectorySummary = {
+  trajectoryRunId: string; candidateId: string; executionStatus: string; status: string | null;
+};
+type TrajectoryResult = TrajectorySummary & {
+  analysisRunId: string; reason: string | null;
   frame: string; origin: string; segment: string; arrivalTarget: string; samples: TrajectorySample[];
 };
 
-export async function loadTrajectory(runId: string, candidateId: string, signal: AbortSignal) {
-  const result = await request<TrajectoryResult>(
-    `/analyses/${encodeURIComponent(runId)}/launch-options/${encodeURIComponent(candidateId)}/trajectory`,
-    signal, { method: 'POST' },
-  );
-  if (result.analysisRunId !== runId || result.candidateId !== candidateId) throw new Error('The trajectory does not match this launch.');
+function inProgress(run: TrajectorySummary) {
+  return run.executionStatus === 'PENDING' || run.executionStatus === 'RUNNING';
+}
+
+export async function loadTrajectory(runId: string, candidateId: string, signal: AbortSignal, savedId?: string) {
+  const path = `/analyses/${encodeURIComponent(runId)}`;
+  if (!savedId) {
+    const history = await request<TrajectorySummary[]>(path + '/trajectories', signal);
+    const matches = history.filter(item => item.candidateId === candidateId);
+    // History is newest first. Prefer a usable result even if a later attempt failed.
+    const saved = matches.find(item => item.executionStatus === 'SUCCEEDED' && item.status === 'PRELIMINARY')
+      ?? matches.find(inProgress)
+      ?? matches.find(item => item.executionStatus === 'SUCCEEDED' && item.status === 'NO_PRELIMINARY_SOLUTION');
+    savedId = saved?.trajectoryRunId;
+  }
+  const readSaved = (id: string) => request<TrajectoryResult>(path + '/trajectories/' + encodeURIComponent(id), signal);
+  let result = savedId ? await readSaved(savedId) : await request<TrajectoryResult>(
+    path + '/launch-options/' + encodeURIComponent(candidateId) + '/trajectory', signal, { method: 'POST' });
+  const trajectoryId = savedId ?? result.trajectoryRunId;
+  for (;;) {
+    if (!trajectoryId || result.trajectoryRunId !== trajectoryId || result.analysisRunId !== runId || result.candidateId !== candidateId) {
+      throw new Error('The trajectory does not match this launch.');
+    }
+    if (!inProgress(result)) break;
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    result = await readSaved(trajectoryId);
+  }
   if (result.status === 'NO_PRELIMINARY_SOLUTION') throw new Error('No transfer trajectory was found. Choose another launch site.');
-  if (result.status !== 'PRELIMINARY') throw new Error(`Trajectory calculation failed (${result.reason ?? 'unknown reason'}).`);
+  if (result.executionStatus !== 'SUCCEEDED' || result.status !== 'PRELIMINARY') throw new Error(`Trajectory calculation failed (${result.reason ?? 'unknown reason'}).`);
   if (result.frame !== 'ICRF' || result.origin !== 'EARTH' || result.segment !== 'TLI_TO_LUNAR_ARRIVAL'
       || result.arrivalTarget !== 'MOON_EARTH_FACING_OFFSET_2000_KM_FROM_CENTER') {
     throw new Error('This trajectory uses an unsupported coordinate frame or arrival target.');
   }
-  return result.samples;
+  return { trajectoryId, samples: result.samples };
 }
