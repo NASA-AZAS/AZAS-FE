@@ -151,20 +151,35 @@ test('preserves scrubbing clamps, rotation stop, hour accessibility steps, UTC c
   }
 });
 
-test('existing post-landing request propagates API events without another network call', async () => {
+test('sky reuses the first matching surface candidate and retries the lookup only when the plan lacks it', async () => {
   const report = { ...fixture, nextTerrainOccultationUtc: { sun: utc(start), earth: utc(end) } };
-  const requests = [];
-  const api = loadSource('mission-api.ts', {
-    './surface-sky-data': data, './launch-sites': {}, './site-conditions': { siteConditionsFromMean: () => undefined },
-  }, { fetch: async url => {
-    requests.push(url);
-    return { ok: true, json: async () => ({ success: true, data: requests.length === 1 ? {
-      analysisRunId: 'run', earliestTouchdownUtc: fixture.touchdownUtc,
-      candidates: [{ candidateId: 'candidate', proposedLandingUtc: fixture.touchdownUtc, surfaceFinishUtc: fixture.surfaceEndUtc, surfaceStatus: 'SATISFIED' }],
-    } : report }) };
-  } });
-  const result = await api.loadSurfaceSky('run', fixture.siteId, fixture.touchdownUtc, new AbortController().signal);
-  assert.deepEqual(bodies(result.track), ['sun', 'earth']);
-  assert.equal(requests.length, 2);
-  assert.match(requests[1], /surface-candidates\/candidate\/post-landing$/);
+  const candidate = { candidateId: 'surface', proposedLandingUtc: fixture.touchdownUtc, surfaceFinishUtc: fixture.surfaceEndUtc, surfaceStatus: 'SATISFIED' };
+  const opportunities = { analysisRunId: 'run', earliestTouchdownUtc: fixture.touchdownUtc, windows: [],
+    candidates: [{ ...candidate, candidateId: 'later', proposedLandingUtc: utc(start + 600000) },
+      { ...candidate, candidateId: 'unsatisfied', surfaceStatus: 'UNKNOWN' }, candidate] };
+  const skyPath = '/surface-candidates/surface/post-landing';
+  for (const initial of [opportunities, null, { ...opportunities, candidates: [] },
+    { ...opportunities, analysisRunId: 'other' }, { ...opportunities, earliestTouchdownUtc: utc(start + 600000) }]) {
+    const requests = [];
+    const api = loadSource('mission-api.ts', {
+      './surface-sky-data': data, './launch-sites': {}, './site-conditions': { siteConditionsFromMean: () => undefined },
+    }, { fetch: async url => {
+      const path = new URL(url).pathname.split('/analyses/run')[1];
+      requests.push(path);
+      let payload;
+      if (path === '') payload = { executionStatus: 'SUCCEEDED' };
+      else if (path === '/launch-options') payload = { analysisRunId: 'run', touchdownUtc: fixture.touchdownUtc, launchSites: [] };
+      else if (path === '/date-opportunities') payload = requests.length === 3 ? initial : opportunities;
+      else if (path === skyPath) payload = report;
+      else assert.fail('Unexpected request: ' + path);
+      return { ok: payload !== null, status: payload === null ? 503 : 200, json: async () => ({ success: true, data: payload }) };
+    } });
+    const signal = new AbortController().signal;
+    const plan = await api.loadLaunchPlan('run', signal);
+    assert.equal(plan.firstSurfaceCandidate?.candidateId ?? null, initial === opportunities ? 'surface' : null);
+    assert.deepEqual(requests, ['', '/launch-options', '/date-opportunities']);
+    const result = await api.loadSurfaceSky(plan, fixture.siteId, signal);
+    assert.deepEqual(requests.slice(3), initial === opportunities ? [skyPath] : ['/date-opportunities', skyPath]);
+    assert.deepEqual(bodies(result.track), ['sun', 'earth']);
+  }
 });

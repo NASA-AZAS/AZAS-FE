@@ -51,21 +51,35 @@ export async function startAnalysis(siteId: number, deadline: string, signal: Ab
 
 export class FailedAnalysis extends Error {}
 type TouchdownWindow = { startUtc: string; endUtc: string };
+type SurfaceCandidate = { candidateId: string; surfaceFinishUtc: string };
 type SurfaceOpportunities = {
   analysisRunId: string; earliestTouchdownUtc: string | null;
   windows: (TouchdownWindow & { surfaceStatus: string })[];
-  candidates: { candidateId: string; proposedLandingUtc: string; surfaceFinishUtc: string; surfaceStatus: string }[];
+  candidates: (SurfaceCandidate & { proposedLandingUtc: string; surfaceStatus: string })[];
 };
 
-export async function loadSurfaceSky(runId: string, siteCode: string, touchdownUtc: string, signal: AbortSignal) {
-  const path = `/analyses/${encodeURIComponent(runId)}`;
-  const result = await request<SurfaceOpportunities>(path + '/date-opportunities', signal);
-  const start = Date.parse(touchdownUtc);
-  if (result.analysisRunId !== runId || !result.earliestTouchdownUtc || Date.parse(result.earliestTouchdownUtc) !== start) {
+async function loadTouchdownOpportunities(runId: string, touchdownMs: number, signal: AbortSignal) {
+  const result = await request<SurfaceOpportunities>(`/analyses/${encodeURIComponent(runId)}/date-opportunities`, signal);
+  if (result.analysisRunId !== runId || !result.earliestTouchdownUtc || Date.parse(result.earliestTouchdownUtc) !== touchdownMs) {
     throw new Error('The sky observations do not match the selected touchdown.');
   }
-  const candidate = result.candidates.find(c => c.surfaceStatus === 'SATISFIED' && Date.parse(c.proposedLandingUtc) === start);
-  if (!candidate?.candidateId) throw new Error('No surface candidate was found for this touchdown.');
+  return result;
+}
+
+function firstSurfaceCandidate(opportunities: SurfaceOpportunities | null, touchdownMs: number): SurfaceCandidate | null {
+  if (!Array.isArray(opportunities?.candidates)) return null;
+  const match = opportunities.candidates.find(c => c?.surfaceStatus === 'SATISFIED' &&
+    Date.parse(c.proposedLandingUtc) === touchdownMs && typeof c.candidateId === 'string' && c.candidateId.length > 0 &&
+    Date.parse(c.surfaceFinishUtc) > touchdownMs);
+  return match ? { candidateId: match.candidateId, surfaceFinishUtc: match.surfaceFinishUtc } : null;
+}
+
+export async function loadSurfaceSky(plan: LaunchPlan, siteCode: string, signal: AbortSignal) {
+  const path = `/analyses/${encodeURIComponent(plan.runId)}`;
+  const start = Date.parse(plan.touchdownUtc);
+  const candidate = plan.firstSurfaceCandidate ??
+    firstSurfaceCandidate(await loadTouchdownOpportunities(plan.runId, start, signal), start);
+  if (!candidate) throw new Error('No surface candidate was found for this touchdown.');
   const report = await request<SurfaceReport>(
     `${path}/surface-candidates/${encodeURIComponent(candidate.candidateId)}/post-landing`, signal,
   );
@@ -80,6 +94,7 @@ export async function loadSurfaceSky(runId: string, siteCode: string, touchdownU
 }
 export type LaunchPlan = {
   runId: string; touchdownUtc: string; firstTouchdownWindow: TouchdownWindow | null; sites: LaunchSite[];
+  firstSurfaceCandidate: SurfaceCandidate | null;
 };
 
 type VisibilityWindow = { celestialBody: string; windowStartAt: string; windowEndAt: string };
@@ -121,19 +136,19 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promis
   const result = await request<LaunchOptions>(path + '/launch-options', signal);
   if (result.analysisRunId !== runId) throw new Error('The launch options do not match the selected analysis.');
   if (!result.touchdownUtc) return null;
-  const opportunities = await request<SurfaceOpportunities>(path + '/date-opportunities', signal).catch(error => {
-    if (signal.aborted) throw error;
-    return null; // The launch candidates can still be used when window data is unavailable.
-  });
   const touchdownMs = Date.parse(result.touchdownUtc);
-  const window = opportunities?.analysisRunId === runId && opportunities.earliestTouchdownUtc &&
-    Date.parse(opportunities.earliestTouchdownUtc) === touchdownMs && Array.isArray(opportunities.windows)
+  const opportunities = await loadTouchdownOpportunities(runId, touchdownMs, signal).catch(error => {
+    if (signal.aborted) throw error;
+    return null; // Launch options remain usable when surface data is unavailable.
+  });
+  const window = Array.isArray(opportunities?.windows)
     ? opportunities.windows.find(w => w?.surfaceStatus === 'SATISFIED' &&
         Date.parse(w.startUtc) === touchdownMs && Date.parse(w.endUtc) >= touchdownMs)
     : undefined;
   return {
     runId, touchdownUtc: result.touchdownUtc,
     firstTouchdownWindow: window ? { startUtc: window.startUtc, endUtc: window.endUtc } : null,
+    firstSurfaceCandidate: firstSurfaceCandidate(opportunities, touchdownMs),
     sites: result.launchSites.map(site => {
       const [candidate] = site.candidates;
       return {

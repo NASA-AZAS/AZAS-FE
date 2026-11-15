@@ -9,7 +9,7 @@ import { LunarPanorama } from './lunar-panorama';
 import { RocketCompanion } from './rocket-companion';
 import { RocketDialogue } from './rocket-dialogue';
 import type { LunarSite } from './lunar-sites';
-import { loadSurfaceSky } from './mission-api';
+import { loadSurfaceSky, type LaunchPlan } from './mission-api';
 import type { SurfaceTrack } from './surface-sky-data';
 import type { SiteConditions } from './site-conditions';
 
@@ -20,8 +20,8 @@ const arrivalPages = [
 
 type SkyState = { status: 'loaded'; track: SurfaceTrack | null; conditions?: SiteConditions } | { status: 'loading' } | { status: 'error'; message: string };
 
-export function LunarArrival({ site, runId, touchdownUtc, active, onReady }: {
-  site: LunarSite; runId: string; touchdownUtc: string; active: boolean; onReady: () => void;
+export function LunarArrival({ site, plan, active, onReady }: {
+  site: LunarSite; plan: LaunchPlan; active: boolean; onReady: () => void;
 }) {
   const [sky, setSky] = useState<SkyState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
@@ -30,7 +30,7 @@ export function LunarArrival({ site, runId, touchdownUtc, active, onReady }: {
     let current = true;
     const timeout = setTimeout(() => controller.abort(), 45000);
     setSky({ status: 'loading' });
-    loadSurfaceSky(runId, site.id, touchdownUtc, controller.signal)
+    loadSurfaceSky(plan, site.id, controller.signal)
       .then(result => {
         if (current) setSky({ status: 'loaded', ...result });
       })
@@ -40,7 +40,7 @@ export function LunarArrival({ site, runId, touchdownUtc, active, onReady }: {
       })
       .finally(() => clearTimeout(timeout));
     return () => { current = false; clearTimeout(timeout); controller.abort(); };
-  }, [runId, site.id, touchdownUtc, attempt]);
+  }, [plan, site.id, attempt]);
   const [stage, setStage] = useState<'fade' | 'video' | 'panorama'>('fade');
   const [loaded, setLoaded] = useState(false);
   const [speechVisible, setSpeechVisible] = useState(true);
