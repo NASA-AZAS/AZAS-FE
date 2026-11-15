@@ -143,16 +143,16 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal, selecte
     throw new Error('The mission service has not returned launch options for the selected arrival date. Please retry after the service is updated.');
   }
   const sites = result.launchSites.map(site => {
-        const [candidate] = site.candidates;
-        if (candidate && Date.parse(candidate.proposedLandingUtc) !== touchdownMs) throw new Error('The launch candidate does not match the selected touchdown.');
-        return {
-          id: `launch-${site.launchSiteId}`, ...launchSiteLabel(site.launchSiteCode),
-          latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
-          launchAt: candidate?.launchUtc ?? null, candidateId: candidate?.candidateId ?? null,
-          tliUtc: candidate?.tliUtc ?? null, lunarArrivalUtc: candidate?.lunarArrivalUtc ?? null,
-          proposedLandingUtc: candidate?.proposedLandingUtc ?? null,
-        };
-      });
+    const [candidate] = site.candidates;
+    if (candidate && Date.parse(candidate.proposedLandingUtc) !== touchdownMs) throw new Error('The launch candidate does not match the selected touchdown.');
+    return {
+      id: `launch-${site.launchSiteId}`, ...launchSiteLabel(site.launchSiteCode),
+      latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
+      launchAt: candidate?.launchUtc ?? null, candidateId: candidate?.candidateId ?? null,
+      tliUtc: candidate?.tliUtc ?? null, lunarArrivalUtc: candidate?.lunarArrivalUtc ?? null,
+      proposedLandingUtc: candidate?.proposedLandingUtc ?? null,
+    };
+  });
   if (result.surfaceCandidateId) {
     return {
       runId, touchdownUtc: result.touchdownUtc, surfaceCandidateId: result.surfaceCandidateId,
