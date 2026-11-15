@@ -1,0 +1,4933 @@
+{
+  "siteId": "Site01",
+  "touchdownUtc": "2027-01-19T04:10:00Z",
+  "surfaceEndUtc": "2027-01-21T04:10:00Z",
+  "sampleStepSeconds": 600,
+  "nextTerrainOccultationUtc": {
+    "earth": "2027-01-23T10:50:00Z",
+    "sun": "2027-01-26T17:30:00Z"
+  },
+  "meanDailyVisibility": {
+    "startDateUtc": "2027-01-01",
+    "endDateUtc": "2028-12-31",
+    "days": 731,
+    "sunMeanDailyVisiblePct": 16.269553,
+    "earthMeanDailyVisiblePct": 50.10744
+  },
+  "model": "BODY_CENTER_LOCAL_TERRAIN",
+  "samples": [
+    {
+      "utc": "2027-01-19T04:10:00Z",
+      "elapsedSeconds": 0,
+      "sun": {
+        "azimuthDeg": 171.866314,
+        "elevationDeg": 0.255158,
+        "terrainHorizonDeg": 0.2466383806179953,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.088221,
+        "elevationDeg": 5.844995,
+        "terrainHorizonDeg": -0.45204805051100005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T04:20:00Z",
+      "elapsedSeconds": 600,
+      "sun": {
+        "azimuthDeg": 171.782052,
+        "elevationDeg": 0.255001,
+        "terrainHorizonDeg": 0.21341896589599957,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.098993,
+        "elevationDeg": 5.840598,
+        "terrainHorizonDeg": -0.4515578275630002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T04:30:00Z",
+      "elapsedSeconds": 1200,
+      "sun": {
+        "azimuthDeg": 171.697791,
+        "elevationDeg": 0.254846,
+        "terrainHorizonDeg": 0.18352462640400288,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.109782,
+        "elevationDeg": 5.836179,
+        "terrainHorizonDeg": -0.4510662733880002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T04:40:00Z",
+      "elapsedSeconds": 1800,
+      "sun": {
+        "azimuthDeg": 171.61353,
+        "elevationDeg": 0.254691,
+        "terrainHorizonDeg": 0.14647978331999628,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.120588,
+        "elevationDeg": 5.831739,
+        "terrainHorizonDeg": -0.4505738871920001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T04:50:00Z",
+      "elapsedSeconds": 2400,
+      "sun": {
+        "azimuthDeg": 171.52927,
+        "elevationDeg": 0.254538,
+        "terrainHorizonDeg": 0.10649817516999846,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.131411,
+        "elevationDeg": 5.827279,
+        "terrainHorizonDeg": -0.4500807263739999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T05:00:00Z",
+      "elapsedSeconds": 3000,
+      "sun": {
+        "azimuthDeg": 171.445009,
+        "elevationDeg": 0.254384,
+        "terrainHorizonDeg": 0.06787412632200204,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.142251,
+        "elevationDeg": 5.822797,
+        "terrainHorizonDeg": -0.44958679093399956,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T05:10:00Z",
+      "elapsedSeconds": 3600,
+      "sun": {
+        "azimuthDeg": 171.360749,
+        "elevationDeg": 0.254232,
+        "terrainHorizonDeg": 0.029553113415993988,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.153108,
+        "elevationDeg": 5.818294,
+        "terrainHorizonDeg": -0.44909208087200014,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T05:20:00Z",
+      "elapsedSeconds": 4200,
+      "sun": {
+        "azimuthDeg": 171.276489,
+        "elevationDeg": 0.25408,
+        "terrainHorizonDeg": -0.010330109917003817,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.163981,
+        "elevationDeg": 5.813771,
+        "terrainHorizonDeg": -0.4485966417539994,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T05:30:00Z",
+      "elapsedSeconds": 4800,
+      "sun": {
+        "azimuthDeg": 171.19223,
+        "elevationDeg": 0.253929,
+        "terrainHorizonDeg": -0.05197327539000238,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.174872,
+        "elevationDeg": 5.809226,
+        "terrainHorizonDeg": -0.44810038244799977,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T05:40:00Z",
+      "elapsedSeconds": 5400,
+      "sun": {
+        "azimuthDeg": 171.107971,
+        "elevationDeg": 0.253779,
+        "terrainHorizonDeg": -0.09219068590300109,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.185779,
+        "elevationDeg": 5.804661,
+        "terrainHorizonDeg": -0.4476033940859999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T05:50:00Z",
+      "elapsedSeconds": 6000,
+      "sun": {
+        "azimuthDeg": 171.023712,
+        "elevationDeg": 0.253629,
+        "terrainHorizonDeg": -0.13174698460801046,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.196703,
+        "elevationDeg": 5.800074,
+        "terrainHorizonDeg": -0.44710563110199986,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T06:00:00Z",
+      "elapsedSeconds": 6600,
+      "sun": {
+        "azimuthDeg": 170.939453,
+        "elevationDeg": 0.25348,
+        "terrainHorizonDeg": -0.15969721796500544,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.207644,
+        "elevationDeg": 5.795466,
+        "terrainHorizonDeg": -0.44660668071999976,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T06:10:00Z",
+      "elapsedSeconds": 7200,
+      "sun": {
+        "azimuthDeg": 170.855194,
+        "elevationDeg": 0.253332,
+        "terrainHorizonDeg": -0.17045244221400002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.218602,
+        "elevationDeg": 5.790838,
+        "terrainHorizonDeg": -0.44610677675999955,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T06:20:00Z",
+      "elapsedSeconds": 7800,
+      "sun": {
+        "azimuthDeg": 170.770936,
+        "elevationDeg": 0.253184,
+        "terrainHorizonDeg": -0.17005405288800002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.229576,
+        "elevationDeg": 5.786189,
+        "terrainHorizonDeg": -0.4456061428800001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T06:30:00Z",
+      "elapsedSeconds": 8400,
+      "sun": {
+        "azimuthDeg": 170.686678,
+        "elevationDeg": 0.253038,
+        "terrainHorizonDeg": -0.16967605468600003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.240567,
+        "elevationDeg": 5.781518,
+        "terrainHorizonDeg": -0.44510473345999957,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T06:40:00Z",
+      "elapsedSeconds": 9000,
+      "sun": {
+        "azimuthDeg": 170.60242,
+        "elevationDeg": 0.252892,
+        "terrainHorizonDeg": -0.16931905353999996,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.251574,
+        "elevationDeg": 5.776827,
+        "terrainHorizonDeg": -0.4446025941199998,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T06:50:00Z",
+      "elapsedSeconds": 9600,
+      "sun": {
+        "azimuthDeg": 170.518163,
+        "elevationDeg": 0.252746,
+        "terrainHorizonDeg": -0.1684184952769998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.262599,
+        "elevationDeg": 5.772114,
+        "terrainHorizonDeg": -0.44409963362000004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T07:00:00Z",
+      "elapsedSeconds": 10200,
+      "sun": {
+        "azimuthDeg": 170.433906,
+        "elevationDeg": 0.252601,
+        "terrainHorizonDeg": -0.16753319193000002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.273639,
+        "elevationDeg": 5.767381,
+        "terrainHorizonDeg": -0.44359598881999984,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T07:10:00Z",
+      "elapsedSeconds": 10800,
+      "sun": {
+        "azimuthDeg": 170.349649,
+        "elevationDeg": 0.252458,
+        "terrainHorizonDeg": -0.16668821897499997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.284696,
+        "elevationDeg": 5.762627,
+        "terrainHorizonDeg": -0.4430915684800007,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T07:20:00Z",
+      "elapsedSeconds": 11400,
+      "sun": {
+        "azimuthDeg": 170.265392,
+        "elevationDeg": 0.252314,
+        "terrainHorizonDeg": -0.16588637523199995,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.29577,
+        "elevationDeg": 5.757852,
+        "terrainHorizonDeg": -0.44258637260000033,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T07:30:00Z",
+      "elapsedSeconds": 12000,
+      "sun": {
+        "azimuthDeg": 170.181135,
+        "elevationDeg": 0.252172,
+        "terrainHorizonDeg": -0.16512762679500015,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.30686,
+        "elevationDeg": 5.753056,
+        "terrainHorizonDeg": -0.44208008321999975,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T07:40:00Z",
+      "elapsedSeconds": 12600,
+      "sun": {
+        "azimuthDeg": 170.096879,
+        "elevationDeg": 0.25203,
+        "terrainHorizonDeg": -0.1644119784309999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.317966,
+        "elevationDeg": 5.748239,
+        "terrainHorizonDeg": -0.44157283888199994,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T07:50:00Z",
+      "elapsedSeconds": 13200,
+      "sun": {
+        "azimuthDeg": 170.012623,
+        "elevationDeg": 0.251889,
+        "terrainHorizonDeg": -0.16374728284699988,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.329089,
+        "elevationDeg": 5.743401,
+        "terrainHorizonDeg": -0.441064818103,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T08:00:00Z",
+      "elapsedSeconds": 13800,
+      "sun": {
+        "azimuthDeg": 169.928368,
+        "elevationDeg": 0.251748,
+        "terrainHorizonDeg": -0.16442096743999998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.340228,
+        "elevationDeg": 5.738543,
+        "terrainHorizonDeg": -0.44055606655599994,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T08:10:00Z",
+      "elapsedSeconds": 14400,
+      "sun": {
+        "azimuthDeg": 169.844112,
+        "elevationDeg": 0.251609,
+        "terrainHorizonDeg": -0.1657880101280001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.351384,
+        "elevationDeg": 5.733663,
+        "terrainHorizonDeg": -0.4400465385679997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T08:20:00Z",
+      "elapsedSeconds": 15000,
+      "sun": {
+        "azimuthDeg": 169.759857,
+        "elevationDeg": 0.25147,
+        "terrainHorizonDeg": -0.16670570642899998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.362555,
+        "elevationDeg": 5.728763,
+        "terrainHorizonDeg": -0.4395363254850001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T08:30:00Z",
+      "elapsedSeconds": 15600,
+      "sun": {
+        "azimuthDeg": 169.675602,
+        "elevationDeg": 0.251332,
+        "terrainHorizonDeg": -0.166794199774,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.373743,
+        "elevationDeg": 5.723841,
+        "terrainHorizonDeg": -0.43902533596099935,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T08:40:00Z",
+      "elapsedSeconds": 16200,
+      "sun": {
+        "azimuthDeg": 169.591347,
+        "elevationDeg": 0.251194,
+        "terrainHorizonDeg": -0.16668829891800002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.384947,
+        "elevationDeg": 5.718899,
+        "terrainHorizonDeg": -0.4385136156690005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T08:50:00Z",
+      "elapsedSeconds": 16800,
+      "sun": {
+        "azimuthDeg": 169.507093,
+        "elevationDeg": 0.251057,
+        "terrainHorizonDeg": -0.16660455044199998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.396168,
+        "elevationDeg": 5.713936,
+        "terrainHorizonDeg": -0.43800111893599947,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T09:00:00Z",
+      "elapsedSeconds": 17400,
+      "sun": {
+        "azimuthDeg": 169.422839,
+        "elevationDeg": 0.250921,
+        "terrainHorizonDeg": -0.16654341013900004,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.407404,
+        "elevationDeg": 5.708952,
+        "terrainHorizonDeg": -0.43748755950400015,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T09:10:00Z",
+      "elapsedSeconds": 18000,
+      "sun": {
+        "azimuthDeg": 169.338585,
+        "elevationDeg": 0.250786,
+        "terrainHorizonDeg": -0.16650234268,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.418656,
+        "elevationDeg": 5.703947,
+        "terrainHorizonDeg": -0.43697307305599953,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T09:20:00Z",
+      "elapsedSeconds": 18600,
+      "sun": {
+        "azimuthDeg": 169.254331,
+        "elevationDeg": 0.250651,
+        "terrainHorizonDeg": -0.16648134806499998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.429925,
+        "elevationDeg": 5.698921,
+        "terrainHorizonDeg": -0.4364578092999999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T09:30:00Z",
+      "elapsedSeconds": 19200,
+      "sun": {
+        "azimuthDeg": 169.170078,
+        "elevationDeg": 0.250517,
+        "terrainHorizonDeg": -0.166480366272,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.441209,
+        "elevationDeg": 5.693875,
+        "terrainHorizonDeg": -0.43594185968399984,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T09:40:00Z",
+      "elapsedSeconds": 19800,
+      "sun": {
+        "azimuthDeg": 169.085824,
+        "elevationDeg": 0.250384,
+        "terrainHorizonDeg": -0.166499320192,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.45251,
+        "elevationDeg": 5.688808,
+        "terrainHorizonDeg": -0.4354251327599997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T09:50:00Z",
+      "elapsedSeconds": 20400,
+      "sun": {
+        "azimuthDeg": 169.001571,
+        "elevationDeg": 0.250251,
+        "terrainHorizonDeg": -0.166538666343,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.463826,
+        "elevationDeg": 5.68372,
+        "terrainHorizonDeg": -0.4349077199760003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T10:00:00Z",
+      "elapsedSeconds": 21000,
+      "sun": {
+        "azimuthDeg": 168.917319,
+        "elevationDeg": 0.250119,
+        "terrainHorizonDeg": -0.16660215487900001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.475158,
+        "elevationDeg": 5.678611,
+        "terrainHorizonDeg": -0.43438957560800057,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T10:10:00Z",
+      "elapsedSeconds": 21600,
+      "sun": {
+        "azimuthDeg": 168.833066,
+        "elevationDeg": 0.249988,
+        "terrainHorizonDeg": -0.16668558069999997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.486507,
+        "elevationDeg": 5.673481,
+        "terrainHorizonDeg": -0.43387065393199975,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T10:20:00Z",
+      "elapsedSeconds": 22200,
+      "sun": {
+        "azimuthDeg": 168.748814,
+        "elevationDeg": 0.249857,
+        "terrainHorizonDeg": -0.16678888923999996,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.497871,
+        "elevationDeg": 5.66833,
+        "terrainHorizonDeg": -0.4333510463959996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T10:30:00Z",
+      "elapsedSeconds": 22800,
+      "sun": {
+        "azimuthDeg": 168.664562,
+        "elevationDeg": 0.249728,
+        "terrainHorizonDeg": -0.16711455667200018,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.50925,
+        "elevationDeg": 5.663159,
+        "terrainHorizonDeg": -0.43283029975000015,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T10:40:00Z",
+      "elapsedSeconds": 23400,
+      "sun": {
+        "azimuthDeg": 168.58031,
+        "elevationDeg": 0.249599,
+        "terrainHorizonDeg": -0.16765485839999997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.520646,
+        "elevationDeg": 5.657967,
+        "terrainHorizonDeg": -0.43230867064200057,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T10:50:00Z",
+      "elapsedSeconds": 24000,
+      "sun": {
+        "azimuthDeg": 168.496059,
+        "elevationDeg": 0.24947,
+        "terrainHorizonDeg": -0.16794003837199994,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.532057,
+        "elevationDeg": 5.652754,
+        "terrainHorizonDeg": -0.43178635493900064,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T11:00:00Z",
+      "elapsedSeconds": 24600,
+      "sun": {
+        "azimuthDeg": 168.411808,
+        "elevationDeg": 0.249343,
+        "terrainHorizonDeg": -0.1682679432639999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.543484,
+        "elevationDeg": 5.647521,
+        "terrainHorizonDeg": -0.43126330686799946,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T11:10:00Z",
+      "elapsedSeconds": 25200,
+      "sun": {
+        "azimuthDeg": 168.327557,
+        "elevationDeg": 0.249216,
+        "terrainHorizonDeg": -0.16863431538899987,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.554927,
+        "elevationDeg": 5.642266,
+        "terrainHorizonDeg": -0.4307395264290001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T11:20:00Z",
+      "elapsedSeconds": 25800,
+      "sun": {
+        "azimuthDeg": 168.243306,
+        "elevationDeg": 0.24909,
+        "terrainHorizonDeg": -0.16903711877000008,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.566385,
+        "elevationDeg": 5.636991,
+        "terrainHorizonDeg": -0.4302150593950004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T11:30:00Z",
+      "elapsedSeconds": 26400,
+      "sun": {
+        "azimuthDeg": 168.159056,
+        "elevationDeg": 0.248964,
+        "terrainHorizonDeg": -0.16947623689600008,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.577858,
+        "elevationDeg": 5.631695,
+        "terrainHorizonDeg": -0.4296899057659993,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T11:40:00Z",
+      "elapsedSeconds": 27000,
+      "sun": {
+        "azimuthDeg": 168.074805,
+        "elevationDeg": 0.248839,
+        "terrainHorizonDeg": -0.16995162273000003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.589348,
+        "elevationDeg": 5.626379,
+        "terrainHorizonDeg": -0.4291639739960002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T11:50:00Z",
+      "elapsedSeconds": 27600,
+      "sun": {
+        "azimuthDeg": 167.990555,
+        "elevationDeg": 0.248715,
+        "terrainHorizonDeg": -0.17046329863500004,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.600852,
+        "elevationDeg": 5.621042,
+        "terrainHorizonDeg": -0.4286373605079996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T12:00:00Z",
+      "elapsedSeconds": 28200,
+      "sun": {
+        "azimuthDeg": 167.906306,
+        "elevationDeg": 0.248592,
+        "terrainHorizonDeg": -0.17101453984200005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.612373,
+        "elevationDeg": 5.615684,
+        "terrainHorizonDeg": -0.4281094567669999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T12:10:00Z",
+      "elapsedSeconds": 28800,
+      "sun": {
+        "azimuthDeg": 167.822056,
+        "elevationDeg": 0.248469,
+        "terrainHorizonDeg": -0.17160686408,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.623908,
+        "elevationDeg": 5.610305,
+        "terrainHorizonDeg": -0.42758091153199973,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T12:20:00Z",
+      "elapsedSeconds": 29400,
+      "sun": {
+        "azimuthDeg": 167.737807,
+        "elevationDeg": 0.248347,
+        "terrainHorizonDeg": -0.17223540460700001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.635459,
+        "elevationDeg": 5.604906,
+        "terrainHorizonDeg": -0.42705163316100037,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T12:30:00Z",
+      "elapsedSeconds": 30000,
+      "sun": {
+        "azimuthDeg": 167.653558,
+        "elevationDeg": 0.248226,
+        "terrainHorizonDeg": -0.17290004125000002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.647025,
+        "elevationDeg": 5.599486,
+        "terrainHorizonDeg": -0.42652166747499964,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T12:40:00Z",
+      "elapsedSeconds": 30600,
+      "sun": {
+        "azimuthDeg": 167.569309,
+        "elevationDeg": 0.248105,
+        "terrainHorizonDeg": -0.17360067715000002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.658607,
+        "elevationDeg": 5.594045,
+        "terrainHorizonDeg": -0.4259909686529997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T12:50:00Z",
+      "elapsedSeconds": 31200,
+      "sun": {
+        "azimuthDeg": 167.485061,
+        "elevationDeg": 0.247986,
+        "terrainHorizonDeg": -0.17433728026400003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.670204,
+        "elevationDeg": 5.588584,
+        "terrainHorizonDeg": -0.42545958251600047,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T13:00:00Z",
+      "elapsedSeconds": 31800,
+      "sun": {
+        "azimuthDeg": 167.400812,
+        "elevationDeg": 0.247866,
+        "terrainHorizonDeg": -0.17511034908800002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.681816,
+        "elevationDeg": 5.583101,
+        "terrainHorizonDeg": -0.4249275090639998,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T13:10:00Z",
+      "elapsedSeconds": 32400,
+      "sun": {
+        "azimuthDeg": 167.316564,
+        "elevationDeg": 0.247748,
+        "terrainHorizonDeg": -0.17592721263600003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.693443,
+        "elevationDeg": 5.577599,
+        "terrainHorizonDeg": -0.4243947482969999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T13:20:00Z",
+      "elapsedSeconds": 33000,
+      "sun": {
+        "azimuthDeg": 167.232317,
+        "elevationDeg": 0.24763,
+        "terrainHorizonDeg": -0.17677989099200012,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.705086,
+        "elevationDeg": 5.572076,
+        "terrainHorizonDeg": -0.4238610255240008,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T13:30:00Z",
+      "elapsedSeconds": 33600,
+      "sun": {
+        "azimuthDeg": 167.148069,
+        "elevationDeg": 0.247513,
+        "terrainHorizonDeg": -0.17766840245700016,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.716743,
+        "elevationDeg": 5.566532,
+        "terrainHorizonDeg": -0.42332636556200015,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T13:40:00Z",
+      "elapsedSeconds": 34200,
+      "sun": {
+        "azimuthDeg": 167.063822,
+        "elevationDeg": 0.247397,
+        "terrainHorizonDeg": -0.17859268988200022,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.728416,
+        "elevationDeg": 5.560967,
+        "terrainHorizonDeg": -0.42279097174400027,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T13:50:00Z",
+      "elapsedSeconds": 34800,
+      "sun": {
+        "azimuthDeg": 166.979575,
+        "elevationDeg": 0.247281,
+        "terrainHorizonDeg": -0.17955273117499973,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.740103,
+        "elevationDeg": 5.555382,
+        "terrainHorizonDeg": -0.422254935802,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T14:00:00Z",
+      "elapsedSeconds": 35400,
+      "sun": {
+        "azimuthDeg": 166.895328,
+        "elevationDeg": 0.247166,
+        "terrainHorizonDeg": -0.18056293478399973,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.751806,
+        "elevationDeg": 5.549776,
+        "terrainHorizonDeg": -0.4217181660039995,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T14:10:00Z",
+      "elapsedSeconds": 36000,
+      "sun": {
+        "azimuthDeg": 166.811081,
+        "elevationDeg": 0.247052,
+        "terrainHorizonDeg": -0.1818600858429998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.763524,
+        "elevationDeg": 5.54415,
+        "terrainHorizonDeg": -0.42118070821599973,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T14:20:00Z",
+      "elapsedSeconds": 36600,
+      "sun": {
+        "azimuthDeg": 166.726835,
+        "elevationDeg": 0.246939,
+        "terrainHorizonDeg": -0.18357813975000037,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.775256,
+        "elevationDeg": 5.538503,
+        "terrainHorizonDeg": -0.4206426083040004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T14:30:00Z",
+      "elapsedSeconds": 37200,
+      "sun": {
+        "azimuthDeg": 166.642589,
+        "elevationDeg": 0.246826,
+        "terrainHorizonDeg": -0.18535448860500003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.787004,
+        "elevationDeg": 5.532836,
+        "terrainHorizonDeg": -0.4201037745359999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T14:40:00Z",
+      "elapsedSeconds": 37800,
+      "sun": {
+        "azimuthDeg": 166.558343,
+        "elevationDeg": 0.246714,
+        "terrainHorizonDeg": -0.18712437237699972,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.798766,
+        "elevationDeg": 5.527148,
+        "terrainHorizonDeg": -0.41956429864399997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T14:50:00Z",
+      "elapsedSeconds": 38400,
+      "sun": {
+        "azimuthDeg": 166.474097,
+        "elevationDeg": 0.246602,
+        "terrainHorizonDeg": -0.18888779199799988,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.810543,
+        "elevationDeg": 5.52144,
+        "terrainHorizonDeg": -0.41902366032699967,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T15:00:00Z",
+      "elapsedSeconds": 39000,
+      "sun": {
+        "azimuthDeg": 166.389852,
+        "elevationDeg": 0.246492,
+        "terrainHorizonDeg": -0.19064469425600009,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.822334,
+        "elevationDeg": 5.515711,
+        "terrainHorizonDeg": -0.4184823237259999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T15:10:00Z",
+      "elapsedSeconds": 39600,
+      "sun": {
+        "azimuthDeg": 166.305606,
+        "elevationDeg": 0.246382,
+        "terrainHorizonDeg": -0.19239465216799975,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.834141,
+        "elevationDeg": 5.509961,
+        "terrainHorizonDeg": -0.417940252549,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T15:20:00Z",
+      "elapsedSeconds": 40200,
+      "sun": {
+        "azimuthDeg": 166.221361,
+        "elevationDeg": 0.246272,
+        "terrainHorizonDeg": -0.19413719724199996,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.845962,
+        "elevationDeg": 5.504191,
+        "terrainHorizonDeg": -0.4173975386179996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T15:30:00Z",
+      "elapsedSeconds": 40800,
+      "sun": {
+        "azimuthDeg": 166.137117,
+        "elevationDeg": 0.246164,
+        "terrainHorizonDeg": -0.19587328367200021,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.857798,
+        "elevationDeg": 5.498401,
+        "terrainHorizonDeg": -0.4168541360219999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T15:40:00Z",
+      "elapsedSeconds": 41400,
+      "sun": {
+        "azimuthDeg": 166.052872,
+        "elevationDeg": 0.246056,
+        "terrainHorizonDeg": -0.19760295271999995,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.869648,
+        "elevationDeg": 5.49259,
+        "terrainHorizonDeg": -0.41631009067199976,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T15:50:00Z",
+      "elapsedSeconds": 42000,
+      "sun": {
+        "azimuthDeg": 165.968628,
+        "elevationDeg": 0.245949,
+        "terrainHorizonDeg": -0.1993261633120002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.881513,
+        "elevationDeg": 5.486758,
+        "terrainHorizonDeg": -0.4157653566570002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T16:00:00Z",
+      "elapsedSeconds": 42600,
+      "sun": {
+        "azimuthDeg": 165.884384,
+        "elevationDeg": 0.245842,
+        "terrainHorizonDeg": -0.20104293603200002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.893392,
+        "elevationDeg": 5.480906,
+        "terrainHorizonDeg": -0.4152199798880003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T16:10:00Z",
+      "elapsedSeconds": 43200,
+      "sun": {
+        "azimuthDeg": 165.80014,
+        "elevationDeg": 0.245737,
+        "terrainHorizonDeg": -0.2027532577199998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.905286,
+        "elevationDeg": 5.475034,
+        "terrainHorizonDeg": -0.414673687156,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T16:20:00Z",
+      "elapsedSeconds": 43800,
+      "sun": {
+        "azimuthDeg": 165.715897,
+        "elevationDeg": 0.245631,
+        "terrainHorizonDeg": -0.20445565342399963,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.917195,
+        "elevationDeg": 5.469141,
+        "terrainHorizonDeg": -0.41412642096999935,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T16:30:00Z",
+      "elapsedSeconds": 44400,
+      "sun": {
+        "azimuthDeg": 165.631653,
+        "elevationDeg": 0.245527,
+        "terrainHorizonDeg": -0.2061516999049999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.929117,
+        "elevationDeg": 5.463228,
+        "terrainHorizonDeg": -0.41357855738200017,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T16:40:00Z",
+      "elapsedSeconds": 45000,
+      "sun": {
+        "azimuthDeg": 165.54741,
+        "elevationDeg": 0.245423,
+        "terrainHorizonDeg": -0.20784125179999974,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.941055,
+        "elevationDeg": 5.457295,
+        "terrainHorizonDeg": -0.41302995852999974,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T16:50:00Z",
+      "elapsedSeconds": 45600,
+      "sun": {
+        "azimuthDeg": 165.463167,
+        "elevationDeg": 0.245321,
+        "terrainHorizonDeg": -0.20952440802400002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.953006,
+        "elevationDeg": 5.451341,
+        "terrainHorizonDeg": -0.41248076227599983,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T17:00:00Z",
+      "elapsedSeconds": 46200,
+      "sun": {
+        "azimuthDeg": 165.378925,
+        "elevationDeg": 0.245218,
+        "terrainHorizonDeg": -0.2112012015499999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.964972,
+        "elevationDeg": 5.445366,
+        "terrainHorizonDeg": -0.41193087671199946,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T17:10:00Z",
+      "elapsedSeconds": 46800,
+      "sun": {
+        "azimuthDeg": 165.294682,
+        "elevationDeg": 0.245117,
+        "terrainHorizonDeg": -0.21287157732000023,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.976951,
+        "elevationDeg": 5.439372,
+        "terrainHorizonDeg": -0.41138039374599966,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T17:20:00Z",
+      "elapsedSeconds": 47400,
+      "sun": {
+        "azimuthDeg": 165.21044,
+        "elevationDeg": 0.245016,
+        "terrainHorizonDeg": -0.21453451439999965,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 125.988946,
+        "elevationDeg": 5.433357,
+        "terrainHorizonDeg": -0.4108291755160006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T17:30:00Z",
+      "elapsedSeconds": 48000,
+      "sun": {
+        "azimuthDeg": 165.126198,
+        "elevationDeg": 0.244916,
+        "terrainHorizonDeg": -0.21619058789400047,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.000954,
+        "elevationDeg": 5.427321,
+        "terrainHorizonDeg": -0.4102773217239999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T17:40:00Z",
+      "elapsedSeconds": 48600,
+      "sun": {
+        "azimuthDeg": 165.041956,
+        "elevationDeg": 0.244816,
+        "terrainHorizonDeg": -0.21784035041999988,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.012976,
+        "elevationDeg": 5.421266,
+        "terrainHorizonDeg": -0.40972438185599985,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T17:50:00Z",
+      "elapsedSeconds": 49200,
+      "sun": {
+        "azimuthDeg": 164.957715,
+        "elevationDeg": 0.244718,
+        "terrainHorizonDeg": -0.21948370838499986,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.025013,
+        "elevationDeg": 5.41519,
+        "terrainHorizonDeg": -0.40917075207800047,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T18:00:00Z",
+      "elapsedSeconds": 49800,
+      "sun": {
+        "azimuthDeg": 164.873474,
+        "elevationDeg": 0.244619,
+        "terrainHorizonDeg": -0.22112065556800023,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.037063,
+        "elevationDeg": 5.409093,
+        "terrainHorizonDeg": -0.40861652437799945,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T18:10:00Z",
+      "elapsedSeconds": 50400,
+      "sun": {
+        "azimuthDeg": 164.789233,
+        "elevationDeg": 0.244522,
+        "terrainHorizonDeg": -0.22275123392500018,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.049127,
+        "elevationDeg": 5.402977,
+        "terrainHorizonDeg": -0.40806165276200007,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T18:20:00Z",
+      "elapsedSeconds": 51000,
+      "sun": {
+        "azimuthDeg": 164.704992,
+        "elevationDeg": 0.244425,
+        "terrainHorizonDeg": -0.22437497920000013,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.061206,
+        "elevationDeg": 5.39684,
+        "terrainHorizonDeg": -0.40750609123600035,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T18:30:00Z",
+      "elapsedSeconds": 51600,
+      "sun": {
+        "azimuthDeg": 164.620751,
+        "elevationDeg": 0.24433,
+        "terrainHorizonDeg": -0.22599143356699963,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.073298,
+        "elevationDeg": 5.390683,
+        "terrainHorizonDeg": -0.40694993178800004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T18:40:00Z",
+      "elapsedSeconds": 52200,
+      "sun": {
+        "azimuthDeg": 164.536511,
+        "elevationDeg": 0.244234,
+        "terrainHorizonDeg": -0.2276015050100001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.085404,
+        "elevationDeg": 5.384505,
+        "terrainHorizonDeg": -0.40639312842400027,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T18:50:00Z",
+      "elapsedSeconds": 52800,
+      "sun": {
+        "azimuthDeg": 164.452271,
+        "elevationDeg": 0.24414,
+        "terrainHorizonDeg": -0.22920520781300008,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.097524,
+        "elevationDeg": 5.378308,
+        "terrainHorizonDeg": -0.4058356811440001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T19:00:00Z",
+      "elapsedSeconds": 53400,
+      "sun": {
+        "azimuthDeg": 164.368031,
+        "elevationDeg": 0.244046,
+        "terrainHorizonDeg": -0.2308025739450001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.109658,
+        "elevationDeg": 5.37209,
+        "terrainHorizonDeg": -0.40527721328600047,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T19:10:00Z",
+      "elapsedSeconds": 54000,
+      "sun": {
+        "azimuthDeg": 164.283791,
+        "elevationDeg": 0.243953,
+        "terrainHorizonDeg": -0.23239363991699963,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.121805,
+        "elevationDeg": 5.365852,
+        "terrainHorizonDeg": -0.4047180504350002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T19:20:00Z",
+      "elapsedSeconds": 54600,
+      "sun": {
+        "azimuthDeg": 164.199552,
+        "elevationDeg": 0.24386,
+        "terrainHorizonDeg": -0.2339783870079997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.133966,
+        "elevationDeg": 5.359594,
+        "terrainHorizonDeg": -0.40415824312199955,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T19:30:00Z",
+      "elapsedSeconds": 55200,
+      "sun": {
+        "azimuthDeg": 164.115312,
+        "elevationDeg": 0.243769,
+        "terrainHorizonDeg": -0.2355554440480001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.146141,
+        "elevationDeg": 5.353315,
+        "terrainHorizonDeg": -0.4035977913470005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T19:40:00Z",
+      "elapsedSeconds": 55800,
+      "sun": {
+        "azimuthDeg": 164.031073,
+        "elevationDeg": 0.243677,
+        "terrainHorizonDeg": -0.23712607215600012,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.158329,
+        "elevationDeg": 5.347017,
+        "terrainHorizonDeg": -0.4030367411429998,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T19:50:00Z",
+      "elapsedSeconds": 56400,
+      "sun": {
+        "azimuthDeg": 163.946835,
+        "elevationDeg": 0.243587,
+        "terrainHorizonDeg": -0.23869041960500023,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.170531,
+        "elevationDeg": 5.340698,
+        "terrainHorizonDeg": -0.4024750464769997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T20:00:00Z",
+      "elapsedSeconds": 57000,
+      "sun": {
+        "azimuthDeg": 163.862596,
+        "elevationDeg": 0.243497,
+        "terrainHorizonDeg": -0.2402484793760003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.182747,
+        "elevationDeg": 5.334359,
+        "terrainHorizonDeg": -0.4019127073489992,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T20:10:00Z",
+      "elapsedSeconds": 57600,
+      "sun": {
+        "azimuthDeg": 163.778358,
+        "elevationDeg": 0.243408,
+        "terrainHorizonDeg": -0.24180019562599994,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.194976,
+        "elevationDeg": 5.328,
+        "terrainHorizonDeg": -0.40134976979200016,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T20:20:00Z",
+      "elapsedSeconds": 58200,
+      "sun": {
+        "azimuthDeg": 163.69412,
+        "elevationDeg": 0.24332,
+        "terrainHorizonDeg": -0.24334568056000003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.207218,
+        "elevationDeg": 5.321621,
+        "terrainHorizonDeg": -0.4007859667400005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T20:30:00Z",
+      "elapsedSeconds": 58800,
+      "sun": {
+        "azimuthDeg": 163.609882,
+        "elevationDeg": 0.243233,
+        "terrainHorizonDeg": -0.2448840349160001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.219474,
+        "elevationDeg": 5.315222,
+        "terrainHorizonDeg": -0.4002213328199994,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T20:40:00Z",
+      "elapsedSeconds": 59400,
+      "sun": {
+        "azimuthDeg": 163.525644,
+        "elevationDeg": 0.243146,
+        "terrainHorizonDeg": -0.2464155485199998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.231743,
+        "elevationDeg": 5.308803,
+        "terrainHorizonDeg": -0.39965609998999974,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T20:50:00Z",
+      "elapsedSeconds": 60000,
+      "sun": {
+        "azimuthDeg": 163.441407,
+        "elevationDeg": 0.24306,
+        "terrainHorizonDeg": -0.24794080284699993,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.244025,
+        "elevationDeg": 5.302364,
+        "terrainHorizonDeg": -0.39909026825000055,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T21:00:00Z",
+      "elapsedSeconds": 60600,
+      "sun": {
+        "azimuthDeg": 163.357169,
+        "elevationDeg": 0.242974,
+        "terrainHorizonDeg": -0.249459801197,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.256321,
+        "elevationDeg": 5.295904,
+        "terrainHorizonDeg": -0.3985237915299999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T21:10:00Z",
+      "elapsedSeconds": 61200,
+      "sun": {
+        "azimuthDeg": 163.272932,
+        "elevationDeg": 0.242889,
+        "terrainHorizonDeg": -0.25097250892800016,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.26863,
+        "elevationDeg": 5.289425,
+        "terrainHorizonDeg": -0.3979567158999997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T21:20:00Z",
+      "elapsedSeconds": 61800,
+      "sun": {
+        "azimuthDeg": 163.188695,
+        "elevationDeg": 0.242805,
+        "terrainHorizonDeg": -0.25247899682999986,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.280952,
+        "elevationDeg": 5.282926,
+        "terrainHorizonDeg": -0.3973890413599999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T21:30:00Z",
+      "elapsedSeconds": 62400,
+      "sun": {
+        "azimuthDeg": 163.104459,
+        "elevationDeg": 0.242722,
+        "terrainHorizonDeg": -0.25397890304600007,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.293287,
+        "elevationDeg": 5.276406,
+        "terrainHorizonDeg": -0.3968207679099996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T21:40:00Z",
+      "elapsedSeconds": 63000,
+      "sun": {
+        "azimuthDeg": 163.020222,
+        "elevationDeg": 0.242639,
+        "terrainHorizonDeg": -0.25547148749200016,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.305635,
+        "elevationDeg": 5.269867,
+        "terrainHorizonDeg": -0.39625169269000077,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T21:50:00Z",
+      "elapsedSeconds": 63600,
+      "sun": {
+        "azimuthDeg": 162.935986,
+        "elevationDeg": 0.242557,
+        "terrainHorizonDeg": -0.25695788273599995,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.317997,
+        "elevationDeg": 5.263308,
+        "terrainHorizonDeg": -0.39568173031799936,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T22:00:00Z",
+      "elapsedSeconds": 64200,
+      "sun": {
+        "azimuthDeg": 162.85175,
+        "elevationDeg": 0.242476,
+        "terrainHorizonDeg": -0.25843811549999973,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.330371,
+        "elevationDeg": 5.256729,
+        "terrainHorizonDeg": -0.39511121467400045,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T22:10:00Z",
+      "elapsedSeconds": 64800,
+      "sun": {
+        "azimuthDeg": 162.767515,
+        "elevationDeg": 0.242395,
+        "terrainHorizonDeg": -0.25991213585499995,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.342758,
+        "elevationDeg": 5.25013,
+        "terrainHorizonDeg": -0.3945400996519999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T22:20:00Z",
+      "elapsedSeconds": 65400,
+      "sun": {
+        "azimuthDeg": 162.683279,
+        "elevationDeg": 0.242315,
+        "terrainHorizonDeg": -0.2613799595130001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.355159,
+        "elevationDeg": 5.243511,
+        "terrainHorizonDeg": -0.3939683391459999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T22:30:00Z",
+      "elapsedSeconds": 66000,
+      "sun": {
+        "azimuthDeg": 162.599044,
+        "elevationDeg": 0.242236,
+        "terrainHorizonDeg": -0.2628416024719999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.367572,
+        "elevationDeg": 5.236872,
+        "terrainHorizonDeg": -0.3933960253680002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T22:40:00Z",
+      "elapsedSeconds": 66600,
+      "sun": {
+        "azimuthDeg": 162.514809,
+        "elevationDeg": 0.242158,
+        "terrainHorizonDeg": -0.26429566704199975,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.379998,
+        "elevationDeg": 5.230213,
+        "terrainHorizonDeg": -0.39282311221199995,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T22:50:00Z",
+      "elapsedSeconds": 67200,
+      "sun": {
+        "azimuthDeg": 162.430574,
+        "elevationDeg": 0.24208,
+        "terrainHorizonDeg": -0.265743552698,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.392436,
+        "elevationDeg": 5.223534,
+        "terrainHorizonDeg": -0.3922496457840001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T23:00:00Z",
+      "elapsedSeconds": 67800,
+      "sun": {
+        "azimuthDeg": 162.346339,
+        "elevationDeg": 0.242003,
+        "terrainHorizonDeg": -0.2671852908630002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.404888,
+        "elevationDeg": 5.216836,
+        "terrainHorizonDeg": -0.3916753676799998,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T23:10:00Z",
+      "elapsedSeconds": 68400,
+      "sun": {
+        "azimuthDeg": 162.262105,
+        "elevationDeg": 0.241926,
+        "terrainHorizonDeg": -0.26862084973500006,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.417352,
+        "elevationDeg": 5.210117,
+        "terrainHorizonDeg": -0.3911002787200008,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T23:20:00Z",
+      "elapsedSeconds": 69000,
+      "sun": {
+        "azimuthDeg": 162.17787,
+        "elevationDeg": 0.24185,
+        "terrainHorizonDeg": -0.2699483989999999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.429829,
+        "elevationDeg": 5.203379,
+        "terrainHorizonDeg": -0.39052458994000017,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T23:30:00Z",
+      "elapsedSeconds": 69600,
+      "sun": {
+        "azimuthDeg": 162.093636,
+        "elevationDeg": 0.241775,
+        "terrainHorizonDeg": -0.27097489301599986,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.442318,
+        "elevationDeg": 5.196621,
+        "terrainHorizonDeg": -0.38994834747999996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T23:40:00Z",
+      "elapsedSeconds": 70200,
+      "sun": {
+        "azimuthDeg": 162.009403,
+        "elevationDeg": 0.241701,
+        "terrainHorizonDeg": -0.271884104018,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.45482,
+        "elevationDeg": 5.189843,
+        "terrainHorizonDeg": -0.3893715052000002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-19T23:50:00Z",
+      "elapsedSeconds": 70800,
+      "sun": {
+        "azimuthDeg": 161.925169,
+        "elevationDeg": 0.241627,
+        "terrainHorizonDeg": -0.272792427842,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.467334,
+        "elevationDeg": 5.183046,
+        "terrainHorizonDeg": -0.3887941092400008,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T00:00:00Z",
+      "elapsedSeconds": 71400,
+      "sun": {
+        "azimuthDeg": 161.840936,
+        "elevationDeg": 0.241554,
+        "terrainHorizonDeg": -0.2736998602159999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.479861,
+        "elevationDeg": 5.176228,
+        "terrainHorizonDeg": -0.38821611345999973,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T00:10:00Z",
+      "elapsedSeconds": 72000,
+      "sun": {
+        "azimuthDeg": 161.756702,
+        "elevationDeg": 0.241482,
+        "terrainHorizonDeg": -0.274606456586,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.492401,
+        "elevationDeg": 5.169391,
+        "terrainHorizonDeg": -0.38763751786000017,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T00:20:00Z",
+      "elapsedSeconds": 72600,
+      "sun": {
+        "azimuthDeg": 161.672469,
+        "elevationDeg": 0.24141,
+        "terrainHorizonDeg": -0.275512220595,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.504952,
+        "elevationDeg": 5.162535,
+        "terrainHorizonDeg": -0.3870582562559999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T00:30:00Z",
+      "elapsedSeconds": 73200,
+      "sun": {
+        "azimuthDeg": 161.588237,
+        "elevationDeg": 0.241339,
+        "terrainHorizonDeg": -0.2764171522790002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.517516,
+        "elevationDeg": 5.155658,
+        "terrainHorizonDeg": -0.38647815124799995,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T00:40:00Z",
+      "elapsedSeconds": 73800,
+      "sun": {
+        "azimuthDeg": 161.504004,
+        "elevationDeg": 0.241269,
+        "terrainHorizonDeg": -0.2773212250679999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.530093,
+        "elevationDeg": 5.148762,
+        "terrainHorizonDeg": -0.38589744600400055,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T00:50:00Z",
+      "elapsedSeconds": 74400,
+      "sun": {
+        "azimuthDeg": 161.419772,
+        "elevationDeg": 0.2412,
+        "terrainHorizonDeg": -0.27822424416000013,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.542681,
+        "elevationDeg": 5.141847,
+        "terrainHorizonDeg": -0.3853162328680003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T01:00:00Z",
+      "elapsedSeconds": 75000,
+      "sun": {
+        "azimuthDeg": 161.33554,
+        "elevationDeg": 0.241131,
+        "terrainHorizonDeg": -0.27912637321999983,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.555282,
+        "elevationDeg": 5.134911,
+        "terrainHorizonDeg": -0.3847344194959995,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T01:10:00Z",
+      "elapsedSeconds": 75600,
+      "sun": {
+        "azimuthDeg": 161.251308,
+        "elevationDeg": 0.241063,
+        "terrainHorizonDeg": -0.2800277096320001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.567895,
+        "elevationDeg": 5.127956,
+        "terrainHorizonDeg": -0.3841520520600001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T01:20:00Z",
+      "elapsedSeconds": 76200,
+      "sun": {
+        "azimuthDeg": 161.167076,
+        "elevationDeg": 0.240995,
+        "terrainHorizonDeg": -0.28092822709200005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.58052,
+        "elevationDeg": 5.120982,
+        "terrainHorizonDeg": -0.38356913055999997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T01:30:00Z",
+      "elapsedSeconds": 76800,
+      "sun": {
+        "azimuthDeg": 161.082844,
+        "elevationDeg": 0.240929,
+        "terrainHorizonDeg": -0.28182785452,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.593157,
+        "elevationDeg": 5.113988,
+        "terrainHorizonDeg": -0.3829856549960002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T01:40:00Z",
+      "elapsedSeconds": 77400,
+      "sun": {
+        "azimuthDeg": 160.998613,
+        "elevationDeg": 0.240862,
+        "terrainHorizonDeg": -0.282730536983,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.605806,
+        "elevationDeg": 5.106974,
+        "terrainHorizonDeg": -0.3824014453819997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T01:50:00Z",
+      "elapsedSeconds": 78000,
+      "sun": {
+        "azimuthDeg": 160.914382,
+        "elevationDeg": 0.240797,
+        "terrainHorizonDeg": -0.2838684135620003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.618468,
+        "elevationDeg": 5.099941,
+        "terrainHorizonDeg": -0.3818164229960007,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T02:00:00Z",
+      "elapsedSeconds": 78600,
+      "sun": {
+        "azimuthDeg": 160.830151,
+        "elevationDeg": 0.240732,
+        "terrainHorizonDeg": -0.285093042599,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.631141,
+        "elevationDeg": 5.092888,
+        "terrainHorizonDeg": -0.3812308923769999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T02:10:00Z",
+      "elapsedSeconds": 79200,
+      "sun": {
+        "azimuthDeg": 160.74592,
+        "elevationDeg": 0.240668,
+        "terrainHorizonDeg": -0.28633407391999965,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.643826,
+        "elevationDeg": 5.085816,
+        "terrainHorizonDeg": -0.3806448073219994,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T02:20:00Z",
+      "elapsedSeconds": 79800,
+      "sun": {
+        "azimuthDeg": 160.66169,
+        "elevationDeg": 0.240605,
+        "terrainHorizonDeg": -0.28757328038,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.656522,
+        "elevationDeg": 5.078724,
+        "terrainHorizonDeg": -0.3800582140340002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T02:30:00Z",
+      "elapsedSeconds": 80400,
+      "sun": {
+        "azimuthDeg": 160.57746,
+        "elevationDeg": 0.240542,
+        "terrainHorizonDeg": -0.28881068434000007,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.669231,
+        "elevationDeg": 5.071612,
+        "terrainHorizonDeg": -0.3794710201070004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T02:40:00Z",
+      "elapsedSeconds": 81000,
+      "sun": {
+        "azimuthDeg": 160.493229,
+        "elevationDeg": 0.24048,
+        "terrainHorizonDeg": -0.2900462612949997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.681951,
+        "elevationDeg": 5.064482,
+        "terrainHorizonDeg": -0.3788833179469998,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T02:50:00Z",
+      "elapsedSeconds": 81600,
+      "sun": {
+        "azimuthDeg": 160.409,
+        "elevationDeg": 0.240419,
+        "terrainHorizonDeg": -0.2912797950000001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.694683,
+        "elevationDeg": 5.057332,
+        "terrainHorizonDeg": -0.3782950613510006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T03:00:00Z",
+      "elapsedSeconds": 82200,
+      "sun": {
+        "azimuthDeg": 160.32477,
+        "elevationDeg": 0.240359,
+        "terrainHorizonDeg": -0.29251131214000015,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.707427,
+        "elevationDeg": 5.050162,
+        "terrainHorizonDeg": -0.37770604236299965,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T03:10:00Z",
+      "elapsedSeconds": 82800,
+      "sun": {
+        "azimuthDeg": 160.24054,
+        "elevationDeg": 0.240299,
+        "terrainHorizonDeg": -0.29363448799999986,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.720182,
+        "elevationDeg": 5.042973,
+        "terrainHorizonDeg": -0.37711636595799997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T03:20:00Z",
+      "elapsedSeconds": 83400,
+      "sun": {
+        "azimuthDeg": 160.156311,
+        "elevationDeg": 0.24024,
+        "terrainHorizonDeg": -0.29427537968800005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.732949,
+        "elevationDeg": 5.035765,
+        "terrainHorizonDeg": -0.3765261347809996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T03:30:00Z",
+      "elapsedSeconds": 84000,
+      "sun": {
+        "azimuthDeg": 160.072082,
+        "elevationDeg": 0.240181,
+        "terrainHorizonDeg": -0.294515991066,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.745727,
+        "elevationDeg": 5.028537,
+        "terrainHorizonDeg": -0.37593539506299944,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T03:40:00Z",
+      "elapsedSeconds": 84600,
+      "sun": {
+        "azimuthDeg": 159.987853,
+        "elevationDeg": 0.240123,
+        "terrainHorizonDeg": -0.294769951754,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.758517,
+        "elevationDeg": 5.02129,
+        "terrainHorizonDeg": -0.3753441005729997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T03:50:00Z",
+      "elapsedSeconds": 85200,
+      "sun": {
+        "azimuthDeg": 159.903624,
+        "elevationDeg": 0.240066,
+        "terrainHorizonDeg": -0.29503796843200003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.771318,
+        "elevationDeg": 5.014024,
+        "terrainHorizonDeg": -0.3747522975420002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T04:00:00Z",
+      "elapsedSeconds": 85800,
+      "sun": {
+        "azimuthDeg": 159.819396,
+        "elevationDeg": 0.24001,
+        "terrainHorizonDeg": -0.2953215385,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.784131,
+        "elevationDeg": 5.006738,
+        "terrainHorizonDeg": -0.3741599397389999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T04:10:00Z",
+      "elapsedSeconds": 86400,
+      "sun": {
+        "azimuthDeg": 159.735168,
+        "elevationDeg": 0.239954,
+        "terrainHorizonDeg": -0.29561838540800006,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.796955,
+        "elevationDeg": 4.999434,
+        "terrainHorizonDeg": -0.3735670733949999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T04:20:00Z",
+      "elapsedSeconds": 87000,
+      "sun": {
+        "azimuthDeg": 159.650939,
+        "elevationDeg": 0.239899,
+        "terrainHorizonDeg": -0.295928467482,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.80979,
+        "elevationDeg": 4.992109,
+        "terrainHorizonDeg": -0.37297343418000006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T04:30:00Z",
+      "elapsedSeconds": 87600,
+      "sun": {
+        "azimuthDeg": 159.566712,
+        "elevationDeg": 0.239844,
+        "terrainHorizonDeg": -0.29625172075199996,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.822637,
+        "elevationDeg": 4.984766,
+        "terrainHorizonDeg": -0.37237915765399954,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T04:40:00Z",
+      "elapsedSeconds": 88200,
+      "sun": {
+        "azimuthDeg": 159.482484,
+        "elevationDeg": 0.239791,
+        "terrainHorizonDeg": -0.29658810382,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.835494,
+        "elevationDeg": 4.977404,
+        "terrainHorizonDeg": -0.37178441854800026,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T04:50:00Z",
+      "elapsedSeconds": 88800,
+      "sun": {
+        "azimuthDeg": 159.398256,
+        "elevationDeg": 0.239738,
+        "terrainHorizonDeg": -0.29693756198400006,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.848363,
+        "elevationDeg": 4.970022,
+        "terrainHorizonDeg": -0.37118912434599916,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T05:00:00Z",
+      "elapsedSeconds": 89400,
+      "sun": {
+        "azimuthDeg": 159.314029,
+        "elevationDeg": 0.239685,
+        "terrainHorizonDeg": -0.297302770256,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.861243,
+        "elevationDeg": 4.962621,
+        "terrainHorizonDeg": -0.37059332130599937,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T05:10:00Z",
+      "elapsedSeconds": 90000,
+      "sun": {
+        "azimuthDeg": 159.229802,
+        "elevationDeg": 0.239634,
+        "terrainHorizonDeg": -0.2976813161479999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.874134,
+        "elevationDeg": 4.955201,
+        "terrainHorizonDeg": -0.3699970094279998,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T05:20:00Z",
+      "elapsedSeconds": 90600,
+      "sun": {
+        "azimuthDeg": 159.145575,
+        "elevationDeg": 0.239583,
+        "terrainHorizonDeg": -0.2980728682999999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.887036,
+        "elevationDeg": 4.947762,
+        "terrainHorizonDeg": -0.3694001887120005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T05:30:00Z",
+      "elapsedSeconds": 91200,
+      "sun": {
+        "azimuthDeg": 159.061348,
+        "elevationDeg": 0.239532,
+        "terrainHorizonDeg": -0.29847734940799997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.899949,
+        "elevationDeg": 4.940304,
+        "terrainHorizonDeg": -0.3688028591579993,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T05:40:00Z",
+      "elapsedSeconds": 91800,
+      "sun": {
+        "azimuthDeg": 158.977122,
+        "elevationDeg": 0.239483,
+        "terrainHorizonDeg": -0.29889469477599995,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.912872,
+        "elevationDeg": 4.932826,
+        "terrainHorizonDeg": -0.36811560662400034,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T05:50:00Z",
+      "elapsedSeconds": 92400,
+      "sun": {
+        "azimuthDeg": 158.892895,
+        "elevationDeg": 0.239434,
+        "terrainHorizonDeg": -0.299324907295,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.925807,
+        "elevationDeg": 4.92533,
+        "terrainHorizonDeg": -0.36742736114399954,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T06:00:00Z",
+      "elapsedSeconds": 93000,
+      "sun": {
+        "azimuthDeg": 158.808669,
+        "elevationDeg": 0.239386,
+        "terrainHorizonDeg": -0.29976953634899994,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.938752,
+        "elevationDeg": 4.917814,
+        "terrainHorizonDeg": -0.366738583584,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T06:10:00Z",
+      "elapsedSeconds": 93600,
+      "sun": {
+        "azimuthDeg": 158.724443,
+        "elevationDeg": 0.239338,
+        "terrainHorizonDeg": -0.3002282945619999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.951709,
+        "elevationDeg": 4.91028,
+        "terrainHorizonDeg": -0.36604916752800093,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T06:20:00Z",
+      "elapsedSeconds": 94200,
+      "sun": {
+        "azimuthDeg": 158.640217,
+        "elevationDeg": 0.239291,
+        "terrainHorizonDeg": -0.30069979351599996,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.964675,
+        "elevationDeg": 4.902727,
+        "terrainHorizonDeg": -0.3653592726000006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T06:30:00Z",
+      "elapsedSeconds": 94800,
+      "sun": {
+        "azimuthDeg": 158.555992,
+        "elevationDeg": 0.239245,
+        "terrainHorizonDeg": -0.3011839746959999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.977653,
+        "elevationDeg": 4.895154,
+        "terrainHorizonDeg": -0.3646687391759995,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T06:40:00Z",
+      "elapsedSeconds": 95400,
+      "sun": {
+        "azimuthDeg": 158.471766,
+        "elevationDeg": 0.239199,
+        "terrainHorizonDeg": -0.301680796914,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 126.990641,
+        "elevationDeg": 4.887563,
+        "terrainHorizonDeg": -0.36397767367199974,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T06:50:00Z",
+      "elapsedSeconds": 96000,
+      "sun": {
+        "azimuthDeg": 158.387541,
+        "elevationDeg": 0.239155,
+        "terrainHorizonDeg": -0.3021902080949999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.00364,
+        "elevationDeg": 4.879953,
+        "terrainHorizonDeg": -0.3632635495200003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T07:00:00Z",
+      "elapsedSeconds": 96600,
+      "sun": {
+        "azimuthDeg": 158.303316,
+        "elevationDeg": 0.23911,
+        "terrainHorizonDeg": -0.30271282422,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.016649,
+        "elevationDeg": 4.872323,
+        "terrainHorizonDeg": -0.3624910490819996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T07:10:00Z",
+      "elapsedSeconds": 97200,
+      "sun": {
+        "azimuthDeg": 158.219091,
+        "elevationDeg": 0.239067,
+        "terrainHorizonDeg": -0.3032503276010001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.029669,
+        "elevationDeg": 4.864675,
+        "terrainHorizonDeg": -0.3617178954420006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T07:20:00Z",
+      "elapsedSeconds": 97800,
+      "sun": {
+        "azimuthDeg": 158.134866,
+        "elevationDeg": 0.239024,
+        "terrainHorizonDeg": -0.3038002303800001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.042699,
+        "elevationDeg": 4.857008,
+        "terrainHorizonDeg": -0.3609441479820004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T07:30:00Z",
+      "elapsedSeconds": 98400,
+      "sun": {
+        "azimuthDeg": 158.050642,
+        "elevationDeg": 0.238982,
+        "terrainHorizonDeg": -0.30436261457399993,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.055739,
+        "elevationDeg": 4.849323,
+        "terrainHorizonDeg": -0.3601698067020004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T07:40:00Z",
+      "elapsedSeconds": 99000,
+      "sun": {
+        "azimuthDeg": 157.966418,
+        "elevationDeg": 0.238941,
+        "terrainHorizonDeg": -0.304937424006,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.06879,
+        "elevationDeg": 4.841618,
+        "terrainHorizonDeg": -0.35939481221999925,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T07:50:00Z",
+      "elapsedSeconds": 99600,
+      "sun": {
+        "azimuthDeg": 157.882194,
+        "elevationDeg": 0.2389,
+        "terrainHorizonDeg": -0.30552455407799994,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.081851,
+        "elevationDeg": 4.833895,
+        "terrainHorizonDeg": -0.3586192239179996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T08:00:00Z",
+      "elapsedSeconds": 100200,
+      "sun": {
+        "azimuthDeg": 157.79797,
+        "elevationDeg": 0.23886,
+        "terrainHorizonDeg": -0.3061240027600001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.094923,
+        "elevationDeg": 4.826152,
+        "terrainHorizonDeg": -0.3578429824140003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T08:10:00Z",
+      "elapsedSeconds": 100800,
+      "sun": {
+        "azimuthDeg": 157.713746,
+        "elevationDeg": 0.23882,
+        "terrainHorizonDeg": -0.30673816416800004,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.108004,
+        "elevationDeg": 4.818391,
+        "terrainHorizonDeg": -0.35706596635200105,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T08:20:00Z",
+      "elapsedSeconds": 101400,
+      "sun": {
+        "azimuthDeg": 157.629522,
+        "elevationDeg": 0.238782,
+        "terrainHorizonDeg": -0.30736501161600005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.121096,
+        "elevationDeg": 4.810612,
+        "terrainHorizonDeg": -0.35628814444800067,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T08:30:00Z",
+      "elapsedSeconds": 102000,
+      "sun": {
+        "azimuthDeg": 157.545299,
+        "elevationDeg": 0.238744,
+        "terrainHorizonDeg": -0.30800400794900007,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.134198,
+        "elevationDeg": 4.802814,
+        "terrainHorizonDeg": -0.35550972842400047,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T08:40:00Z",
+      "elapsedSeconds": 102600,
+      "sun": {
+        "azimuthDeg": 157.461076,
+        "elevationDeg": 0.238706,
+        "terrainHorizonDeg": -0.30919036314799997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.14731,
+        "elevationDeg": 4.794997,
+        "terrainHorizonDeg": -0.354730718279999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T08:50:00Z",
+      "elapsedSeconds": 103200,
+      "sun": {
+        "azimuthDeg": 157.376853,
+        "elevationDeg": 0.23867,
+        "terrainHorizonDeg": -0.3113274880649998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.160431,
+        "elevationDeg": 4.787161,
+        "terrainHorizonDeg": -0.3539511734280003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T09:00:00Z",
+      "elapsedSeconds": 103800,
+      "sun": {
+        "azimuthDeg": 157.29263,
+        "elevationDeg": 0.238634,
+        "terrainHorizonDeg": -0.3143074261699997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.173563,
+        "elevationDeg": 4.779307,
+        "terrainHorizonDeg": -0.35317097504399925,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T09:10:00Z",
+      "elapsedSeconds": 104400,
+      "sun": {
+        "azimuthDeg": 157.208407,
+        "elevationDeg": 0.238598,
+        "terrainHorizonDeg": -0.3172755289130004,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.186705,
+        "elevationDeg": 4.771434,
+        "terrainHorizonDeg": -0.35239018253999965,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T09:20:00Z",
+      "elapsedSeconds": 105000,
+      "sun": {
+        "azimuthDeg": 157.124185,
+        "elevationDeg": 0.238564,
+        "terrainHorizonDeg": -0.3202319967199996,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.199856,
+        "elevationDeg": 4.763542,
+        "terrainHorizonDeg": -0.35160885532799996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T09:30:00Z",
+      "elapsedSeconds": 105600,
+      "sun": {
+        "azimuthDeg": 157.039963,
+        "elevationDeg": 0.23853,
+        "terrainHorizonDeg": -0.32086782887199994,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.213017,
+        "elevationDeg": 4.755632,
+        "terrainHorizonDeg": -0.3508265695200006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T09:40:00Z",
+      "elapsedSeconds": 106200,
+      "sun": {
+        "azimuthDeg": 156.95574,
+        "elevationDeg": 0.238496,
+        "terrainHorizonDeg": -0.32047166074,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.226188,
+        "elevationDeg": 4.747704,
+        "terrainHorizonDeg": -0.35004368527999985,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T09:50:00Z",
+      "elapsedSeconds": 106800,
+      "sun": {
+        "azimuthDeg": 156.871519,
+        "elevationDeg": 0.238464,
+        "terrainHorizonDeg": -0.3199581697060001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.239369,
+        "elevationDeg": 4.739757,
+        "terrainHorizonDeg": -0.3492602066400007,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T10:00:00Z",
+      "elapsedSeconds": 107400,
+      "sun": {
+        "azimuthDeg": 156.787297,
+        "elevationDeg": 0.238432,
+        "terrainHorizonDeg": -0.31937470552099995,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.252559,
+        "elevationDeg": 4.731791,
+        "terrainHorizonDeg": -0.3484761930400002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T10:10:00Z",
+      "elapsedSeconds": 108000,
+      "sun": {
+        "azimuthDeg": 156.703075,
+        "elevationDeg": 0.238401,
+        "terrainHorizonDeg": -0.3187183634750001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.265759,
+        "elevationDeg": 4.723807,
+        "terrainHorizonDeg": -0.34769158503999986,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T10:20:00Z",
+      "elapsedSeconds": 108600,
+      "sun": {
+        "azimuthDeg": 156.618854,
+        "elevationDeg": 0.23837,
+        "terrainHorizonDeg": -0.3179796660320001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.278968,
+        "elevationDeg": 4.715805,
+        "terrainHorizonDeg": -0.34690644207999943,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T10:30:00Z",
+      "elapsedSeconds": 109200,
+      "sun": {
+        "azimuthDeg": 156.534633,
+        "elevationDeg": 0.23834,
+        "terrainHorizonDeg": -0.31717176142700004,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.292187,
+        "elevationDeg": 4.707784,
+        "terrainHorizonDeg": -0.3461207047200006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T10:40:00Z",
+      "elapsedSeconds": 109800,
+      "sun": {
+        "azimuthDeg": 156.450412,
+        "elevationDeg": 0.238311,
+        "terrainHorizonDeg": -0.31629481072400006,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.305416,
+        "elevationDeg": 4.699745,
+        "terrainHorizonDeg": -0.3453342375600006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T10:50:00Z",
+      "elapsedSeconds": 110400,
+      "sun": {
+        "azimuthDeg": 156.366191,
+        "elevationDeg": 0.238282,
+        "terrainHorizonDeg": -0.3153490395299998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.318654,
+        "elevationDeg": 4.691687,
+        "terrainHorizonDeg": -0.3445470398900005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T11:00:00Z",
+      "elapsedSeconds": 111000,
+      "sun": {
+        "azimuthDeg": 156.28197,
+        "elevationDeg": 0.238254,
+        "terrainHorizonDeg": -0.31433469313,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.331901,
+        "elevationDeg": 4.683611,
+        "terrainHorizonDeg": -0.3437593070350004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T11:10:00Z",
+      "elapsedSeconds": 111600,
+      "sun": {
+        "azimuthDeg": 156.19775,
+        "elevationDeg": 0.238227,
+        "terrainHorizonDeg": -0.31325199375000023,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.345157,
+        "elevationDeg": 4.675517,
+        "terrainHorizonDeg": -0.3429710389950003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T11:20:00Z",
+      "elapsedSeconds": 112200,
+      "sun": {
+        "azimuthDeg": 156.113529,
+        "elevationDeg": 0.2382,
+        "terrainHorizonDeg": -0.3120876384249999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.358423,
+        "elevationDeg": 4.667404,
+        "terrainHorizonDeg": -0.34218217630500036,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T11:30:00Z",
+      "elapsedSeconds": 112800,
+      "sun": {
+        "azimuthDeg": 156.029309,
+        "elevationDeg": 0.238175,
+        "terrainHorizonDeg": -0.3108532421440002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.371698,
+        "elevationDeg": 4.659274,
+        "terrainHorizonDeg": -0.3413927784300005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T11:40:00Z",
+      "elapsedSeconds": 113400,
+      "sun": {
+        "azimuthDeg": 155.945089,
+        "elevationDeg": 0.238149,
+        "terrainHorizonDeg": -0.3095511865560001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.384981,
+        "elevationDeg": 4.651125,
+        "terrainHorizonDeg": -0.3406029048350004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T11:50:00Z",
+      "elapsedSeconds": 114000,
+      "sun": {
+        "azimuthDeg": 155.860869,
+        "elevationDeg": 0.238125,
+        "terrainHorizonDeg": -0.30818174703400003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.398275,
+        "elevationDeg": 4.642957,
+        "terrainHorizonDeg": -0.3398123771250006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T12:00:00Z",
+      "elapsedSeconds": 114600,
+      "sun": {
+        "azimuthDeg": 155.77665,
+        "elevationDeg": 0.238101,
+        "terrainHorizonDeg": -0.3067451405499999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.411577,
+        "elevationDeg": 4.634772,
+        "terrainHorizonDeg": -0.3390210958470007,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T12:10:00Z",
+      "elapsedSeconds": 115200,
+      "sun": {
+        "azimuthDeg": 155.69243,
+        "elevationDeg": 0.238078,
+        "terrainHorizonDeg": -0.30524143063000025,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.424888,
+        "elevationDeg": 4.626569,
+        "terrainHorizonDeg": -0.3382292377680008,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T12:20:00Z",
+      "elapsedSeconds": 115800,
+      "sun": {
+        "azimuthDeg": 155.608211,
+        "elevationDeg": 0.238055,
+        "terrainHorizonDeg": -0.30366308235100015,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.438208,
+        "elevationDeg": 4.618347,
+        "terrainHorizonDeg": -0.33743684428799947,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T12:30:00Z",
+      "elapsedSeconds": 116400,
+      "sun": {
+        "azimuthDeg": 155.523992,
+        "elevationDeg": 0.238033,
+        "terrainHorizonDeg": -0.302010854296,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.451537,
+        "elevationDeg": 4.610107,
+        "terrainHorizonDeg": -0.33664391540699956,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T12:40:00Z",
+      "elapsedSeconds": 117000,
+      "sun": {
+        "azimuthDeg": 155.439773,
+        "elevationDeg": 0.238012,
+        "terrainHorizonDeg": -0.3002924658670003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.464875,
+        "elevationDeg": 4.601849,
+        "terrainHorizonDeg": -0.33585045112499967,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T12:50:00Z",
+      "elapsedSeconds": 117600,
+      "sun": {
+        "azimuthDeg": 155.355554,
+        "elevationDeg": 0.237992,
+        "terrainHorizonDeg": -0.29850805522200013,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.478221,
+        "elevationDeg": 4.593573,
+        "terrainHorizonDeg": -0.3350565109309996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T13:00:00Z",
+      "elapsedSeconds": 118200,
+      "sun": {
+        "azimuthDeg": 155.271335,
+        "elevationDeg": 0.237972,
+        "terrainHorizonDeg": -0.296657842335,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.491577,
+        "elevationDeg": 4.585279,
+        "terrainHorizonDeg": -0.3342619758469996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T13:10:00Z",
+      "elapsedSeconds": 118800,
+      "sun": {
+        "azimuthDeg": 155.187117,
+        "elevationDeg": 0.237953,
+        "terrainHorizonDeg": -0.2947421280519998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.504941,
+        "elevationDeg": 4.576968,
+        "terrainHorizonDeg": -0.33346686108999957,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T13:20:00Z",
+      "elapsedSeconds": 119400,
+      "sun": {
+        "azimuthDeg": 155.102898,
+        "elevationDeg": 0.237934,
+        "terrainHorizonDeg": -0.29275826528800014,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.518313,
+        "elevationDeg": 4.568638,
+        "terrainHorizonDeg": -0.3326710933699993,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T13:30:00Z",
+      "elapsedSeconds": 120000,
+      "sun": {
+        "azimuthDeg": 155.01868,
+        "elevationDeg": 0.237916,
+        "terrainHorizonDeg": -0.29069725339999986,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.531694,
+        "elevationDeg": 4.56029,
+        "terrainHorizonDeg": -0.3318747900600004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T13:40:00Z",
+      "elapsedSeconds": 120600,
+      "sun": {
+        "azimuthDeg": 154.934462,
+        "elevationDeg": 0.237899,
+        "terrainHorizonDeg": -0.29210621885400045,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.545084,
+        "elevationDeg": 4.551924,
+        "terrainHorizonDeg": -0.33107795116000016,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T13:50:00Z",
+      "elapsedSeconds": 121200,
+      "sun": {
+        "azimuthDeg": 154.850245,
+        "elevationDeg": 0.237883,
+        "terrainHorizonDeg": -0.29475285107500016,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.558483,
+        "elevationDeg": 4.54354,
+        "terrainHorizonDeg": -0.33028057666999994,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T14:00:00Z",
+      "elapsedSeconds": 121800,
+      "sun": {
+        "azimuthDeg": 154.766027,
+        "elevationDeg": 0.237867,
+        "terrainHorizonDeg": -0.2975996758189997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.571889,
+        "elevationDeg": 4.535139,
+        "terrainHorizonDeg": -0.3294827856099994,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T14:10:00Z",
+      "elapsedSeconds": 122400,
+      "sun": {
+        "azimuthDeg": 154.681809,
+        "elevationDeg": 0.237852,
+        "terrainHorizonDeg": -0.3005037953580008,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.585304,
+        "elevationDeg": 4.52672,
+        "terrainHorizonDeg": -0.3286844589600002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T14:20:00Z",
+      "elapsedSeconds": 123000,
+      "sun": {
+        "azimuthDeg": 154.597592,
+        "elevationDeg": 0.237837,
+        "terrainHorizonDeg": -0.3034650085360005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.598728,
+        "elevationDeg": 4.518282,
+        "terrainHorizonDeg": -0.327885596720001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T14:30:00Z",
+      "elapsedSeconds": 123600,
+      "sun": {
+        "azimuthDeg": 154.513375,
+        "elevationDeg": 0.237823,
+        "terrainHorizonDeg": -0.30649404137500014,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.61216,
+        "elevationDeg": 4.509828,
+        "terrainHorizonDeg": -0.32708602736000036,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T14:40:00Z",
+      "elapsedSeconds": 124200,
+      "sun": {
+        "azimuthDeg": 154.429158,
+        "elevationDeg": 0.23781,
+        "terrainHorizonDeg": -0.3095817313899998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.6256,
+        "elevationDeg": 4.501355,
+        "terrainHorizonDeg": -0.32628595759999945,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T14:50:00Z",
+      "elapsedSeconds": 124800,
+      "sun": {
+        "azimuthDeg": 154.344941,
+        "elevationDeg": 0.237798,
+        "terrainHorizonDeg": -0.31272580946199935,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.639048,
+        "elevationDeg": 4.492864,
+        "terrainHorizonDeg": -0.3254854116079998,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T15:00:00Z",
+      "elapsedSeconds": 125400,
+      "sun": {
+        "azimuthDeg": 154.260725,
+        "elevationDeg": 0.237786,
+        "terrainHorizonDeg": -0.314054088125,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.652504,
+        "elevationDeg": 4.484356,
+        "terrainHorizonDeg": -0.324684389384,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T15:10:00Z",
+      "elapsedSeconds": 126000,
+      "sun": {
+        "azimuthDeg": 154.176508,
+        "elevationDeg": 0.237775,
+        "terrainHorizonDeg": -0.3131458190360002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.665968,
+        "elevationDeg": 4.475831,
+        "terrainHorizonDeg": -0.32388289092800016,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T15:20:00Z",
+      "elapsedSeconds": 126600,
+      "sun": {
+        "azimuthDeg": 154.092292,
+        "elevationDeg": 0.237764,
+        "terrainHorizonDeg": -0.3118944603,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.679441,
+        "elevationDeg": 4.467287,
+        "terrainHorizonDeg": -0.3230808567110002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T15:30:00Z",
+      "elapsedSeconds": 127200,
+      "sun": {
+        "azimuthDeg": 154.008075,
+        "elevationDeg": 0.237754,
+        "terrainHorizonDeg": -0.3106080456249998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.692921,
+        "elevationDeg": 4.458726,
+        "terrainHorizonDeg": -0.3222784057909999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T15:40:00Z",
+      "elapsedSeconds": 127800,
+      "sun": {
+        "azimuthDeg": 153.923859,
+        "elevationDeg": 0.237745,
+        "terrainHorizonDeg": -0.3092868497879999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.706409,
+        "elevationDeg": 4.450148,
+        "terrainHorizonDeg": -0.3214753696860009,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T15:50:00Z",
+      "elapsedSeconds": 128400,
+      "sun": {
+        "azimuthDeg": 153.839644,
+        "elevationDeg": 0.237737,
+        "terrainHorizonDeg": -0.30793463814,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.719906,
+        "elevationDeg": 4.441551,
+        "terrainHorizonDeg": -0.3206716773240005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T16:00:00Z",
+      "elapsedSeconds": 129000,
+      "sun": {
+        "azimuthDeg": 153.755428,
+        "elevationDeg": 0.237729,
+        "terrainHorizonDeg": -0.30655141106399975,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.73341,
+        "elevationDeg": 4.432938,
+        "terrainHorizonDeg": -0.31986756813999984,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T16:10:00Z",
+      "elapsedSeconds": 129600,
+      "sun": {
+        "azimuthDeg": 153.671212,
+        "elevationDeg": 0.237722,
+        "terrainHorizonDeg": -0.30513732823199985,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.746921,
+        "elevationDeg": 4.424307,
+        "terrainHorizonDeg": -0.31906304213400016,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T16:20:00Z",
+      "elapsedSeconds": 130200,
+      "sun": {
+        "azimuthDeg": 153.586997,
+        "elevationDeg": 0.237715,
+        "terrainHorizonDeg": -0.30405226837800003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.760441,
+        "elevationDeg": 4.415658,
+        "terrainHorizonDeg": -0.31825798021400054,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T16:30:00Z",
+      "elapsedSeconds": 130800,
+      "sun": {
+        "azimuthDeg": 153.502782,
+        "elevationDeg": 0.237709,
+        "terrainHorizonDeg": -0.304905029468,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.773968,
+        "elevationDeg": 4.406992,
+        "terrainHorizonDeg": -0.31745250147200055,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T16:40:00Z",
+      "elapsedSeconds": 131400,
+      "sun": {
+        "azimuthDeg": 153.418567,
+        "elevationDeg": 0.237704,
+        "terrainHorizonDeg": -0.3089379120740008,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.787503,
+        "elevationDeg": 4.398308,
+        "terrainHorizonDeg": -0.31664654636200046,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T16:50:00Z",
+      "elapsedSeconds": 132000,
+      "sun": {
+        "azimuthDeg": 153.334352,
+        "elevationDeg": 0.237699,
+        "terrainHorizonDeg": -0.3131238153920005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.801045,
+        "elevationDeg": 4.389607,
+        "terrainHorizonDeg": -0.3158401587550001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T17:00:00Z",
+      "elapsedSeconds": 132600,
+      "sun": {
+        "azimuthDeg": 153.250137,
+        "elevationDeg": 0.237696,
+        "terrainHorizonDeg": -0.31543196367200005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.814595,
+        "elevationDeg": 4.380889,
+        "terrainHorizonDeg": -0.31503310720499955,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T17:10:00Z",
+      "elapsedSeconds": 133200,
+      "sun": {
+        "azimuthDeg": 153.165922,
+        "elevationDeg": 0.237692,
+        "terrainHorizonDeg": -0.31572689239600005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.828152,
+        "elevationDeg": 4.372154,
+        "terrainHorizonDeg": -0.314225638728,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T17:20:00Z",
+      "elapsedSeconds": 133800,
+      "sun": {
+        "azimuthDeg": 153.081708,
+        "elevationDeg": 0.23769,
+        "terrainHorizonDeg": -0.3149801522719998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.841717,
+        "elevationDeg": 4.363401,
+        "terrainHorizonDeg": -0.3134176937630004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T17:30:00Z",
+      "elapsedSeconds": 134400,
+      "sun": {
+        "azimuthDeg": 152.997494,
+        "elevationDeg": 0.237688,
+        "terrainHorizonDeg": -0.31424941678199986,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.855289,
+        "elevationDeg": 4.354631,
+        "terrainHorizonDeg": -0.3126093318710004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T17:40:00Z",
+      "elapsedSeconds": 135000,
+      "sun": {
+        "azimuthDeg": 152.913279,
+        "elevationDeg": 0.237687,
+        "terrainHorizonDeg": -0.3135375473869999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.868868,
+        "elevationDeg": 4.345843,
+        "terrainHorizonDeg": -0.31180055305200016,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T17:50:00Z",
+      "elapsedSeconds": 135600,
+      "sun": {
+        "azimuthDeg": 152.829065,
+        "elevationDeg": 0.237686,
+        "terrainHorizonDeg": -0.3128420724300001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.882455,
+        "elevationDeg": 4.337039,
+        "terrainHorizonDeg": -0.3109912977450011,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T18:00:00Z",
+      "elapsedSeconds": 136200,
+      "sun": {
+        "azimuthDeg": 152.744851,
+        "elevationDeg": 0.237686,
+        "terrainHorizonDeg": -0.31216234919200014,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.896049,
+        "elevationDeg": 4.328217,
+        "terrainHorizonDeg": -0.31018162551100037,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T18:10:00Z",
+      "elapsedSeconds": 136800,
+      "sun": {
+        "azimuthDeg": 152.660638,
+        "elevationDeg": 0.237687,
+        "terrainHorizonDeg": -0.3114148066300002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.90965,
+        "elevationDeg": 4.319378,
+        "terrainHorizonDeg": -0.30937141089999937,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T18:20:00Z",
+      "elapsedSeconds": 137400,
+      "sun": {
+        "azimuthDeg": 152.576424,
+        "elevationDeg": 0.237688,
+        "terrainHorizonDeg": -0.310569455168,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.923258,
+        "elevationDeg": 4.310522,
+        "terrainHorizonDeg": -0.30856072790799943,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T18:30:00Z",
+      "elapsedSeconds": 138000,
+      "sun": {
+        "azimuthDeg": 152.492211,
+        "elevationDeg": 0.23769,
+        "terrainHorizonDeg": -0.309690314243,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.936873,
+        "elevationDeg": 4.301649,
+        "terrainHorizonDeg": -0.30774962789799915,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T18:40:00Z",
+      "elapsedSeconds": 138600,
+      "sun": {
+        "azimuthDeg": 152.407998,
+        "elevationDeg": 0.237693,
+        "terrainHorizonDeg": -0.308804982974,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.950495,
+        "elevationDeg": 4.292759,
+        "terrainHorizonDeg": -0.30693811086999995,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T18:50:00Z",
+      "elapsedSeconds": 139200,
+      "sun": {
+        "azimuthDeg": 152.323784,
+        "elevationDeg": 0.237696,
+        "terrainHorizonDeg": -0.3079133152639998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.964124,
+        "elevationDeg": 4.283851,
+        "terrainHorizonDeg": -0.30612617682400045,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T19:00:00Z",
+      "elapsedSeconds": 139800,
+      "sun": {
+        "azimuthDeg": 152.239571,
+        "elevationDeg": 0.2377,
+        "terrainHorizonDeg": -0.3070161599960003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.97776,
+        "elevationDeg": 4.274927,
+        "terrainHorizonDeg": -0.30531382575999927,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T19:10:00Z",
+      "elapsedSeconds": 140400,
+      "sun": {
+        "azimuthDeg": 152.155359,
+        "elevationDeg": 0.237705,
+        "terrainHorizonDeg": -0.30611345212200003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 127.991403,
+        "elevationDeg": 4.265986,
+        "terrainHorizonDeg": -0.3045010576779992,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T19:20:00Z",
+      "elapsedSeconds": 141000,
+      "sun": {
+        "azimuthDeg": 152.071146,
+        "elevationDeg": 0.23771,
+        "terrainHorizonDeg": -0.305205151494,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.005052,
+        "elevationDeg": 4.257028,
+        "terrainHorizonDeg": -0.303687881632,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T19:30:00Z",
+      "elapsedSeconds": 141600,
+      "sun": {
+        "azimuthDeg": 151.986933,
+        "elevationDeg": 0.237716,
+        "terrainHorizonDeg": -0.304291334494,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.018709,
+        "elevationDeg": 4.248053,
+        "terrainHorizonDeg": -0.3028741429440006,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T19:40:00Z",
+      "elapsedSeconds": 142200,
+      "sun": {
+        "azimuthDeg": 151.902721,
+        "elevationDeg": 0.237723,
+        "terrainHorizonDeg": -0.3033719078780002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.032372,
+        "elevationDeg": 4.239061,
+        "terrainHorizonDeg": -0.30206004675199943,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T19:50:00Z",
+      "elapsedSeconds": 142800,
+      "sun": {
+        "azimuthDeg": 151.818509,
+        "elevationDeg": 0.23773,
+        "terrainHorizonDeg": -0.30244588049099996,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.046041,
+        "elevationDeg": 4.230052,
+        "terrainHorizonDeg": -0.3012455930559992,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T20:00:00Z",
+      "elapsedSeconds": 143400,
+      "sun": {
+        "azimuthDeg": 151.734297,
+        "elevationDeg": 0.237738,
+        "terrainHorizonDeg": -0.3015145078689999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.059717,
+        "elevationDeg": 4.221027,
+        "terrainHorizonDeg": -0.30043072227199996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T20:10:00Z",
+      "elapsedSeconds": 144000,
+      "sun": {
+        "azimuthDeg": 151.650085,
+        "elevationDeg": 0.237747,
+        "terrainHorizonDeg": -0.30057769834499987,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.0734,
+        "elevationDeg": 4.211985,
+        "terrainHorizonDeg": -0.29961543440000044,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T20:20:00Z",
+      "elapsedSeconds": 144600,
+      "sun": {
+        "azimuthDeg": 151.565873,
+        "elevationDeg": 0.237756,
+        "terrainHorizonDeg": -0.2996354831550001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.087089,
+        "elevationDeg": 4.202926,
+        "terrainHorizonDeg": -0.2987997890240005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T20:30:00Z",
+      "elapsedSeconds": 145200,
+      "sun": {
+        "azimuthDeg": 151.481661,
+        "elevationDeg": 0.237766,
+        "terrainHorizonDeg": -0.29868793089300005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.100785,
+        "elevationDeg": 4.19385,
+        "terrainHorizonDeg": -0.2979837202800002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T20:40:00Z",
+      "elapsedSeconds": 145800,
+      "sun": {
+        "azimuthDeg": 151.39745,
+        "elevationDeg": 0.237777,
+        "terrainHorizonDeg": -0.29773505549999973,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.114486,
+        "elevationDeg": 4.184757,
+        "terrainHorizonDeg": -0.2971672502880007,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T20:50:00Z",
+      "elapsedSeconds": 146400,
+      "sun": {
+        "azimuthDeg": 151.313238,
+        "elevationDeg": 0.237788,
+        "terrainHorizonDeg": -0.29677588082,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.128195,
+        "elevationDeg": 4.175648,
+        "terrainHorizonDeg": -0.29635030355999964,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T21:00:00Z",
+      "elapsedSeconds": 147000,
+      "sun": {
+        "azimuthDeg": 151.229027,
+        "elevationDeg": 0.2378,
+        "terrainHorizonDeg": -0.29581118163599995,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.141909,
+        "elevationDeg": 4.166523,
+        "terrainHorizonDeg": -0.29553305887200076,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T21:10:00Z",
+      "elapsedSeconds": 147600,
+      "sun": {
+        "azimuthDeg": 151.144816,
+        "elevationDeg": 0.237812,
+        "terrainHorizonDeg": -0.2948412559039999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.15563,
+        "elevationDeg": 4.15738,
+        "terrainHorizonDeg": -0.29471539704000016,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T21:20:00Z",
+      "elapsedSeconds": 148200,
+      "sun": {
+        "azimuthDeg": 151.060605,
+        "elevationDeg": 0.237826,
+        "terrainHorizonDeg": -0.29386609070500014,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.169357,
+        "elevationDeg": 4.148221,
+        "terrainHorizonDeg": -0.2938973776560005,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T21:30:00Z",
+      "elapsedSeconds": 148800,
+      "sun": {
+        "azimuthDeg": 150.976394,
+        "elevationDeg": 0.23784,
+        "terrainHorizonDeg": -0.292885704224,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.183089,
+        "elevationDeg": 4.139046,
+        "terrainHorizonDeg": -0.29307906031200026,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T21:40:00Z",
+      "elapsedSeconds": 149400,
+      "sun": {
+        "azimuthDeg": 150.892183,
+        "elevationDeg": 0.237854,
+        "terrainHorizonDeg": -0.29190017827599973,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.196828,
+        "elevationDeg": 4.129854,
+        "terrainHorizonDeg": -0.2922603258239997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T21:50:00Z",
+      "elapsedSeconds": 150000,
+      "sun": {
+        "azimuthDeg": 150.807973,
+        "elevationDeg": 0.237869,
+        "terrainHorizonDeg": -0.2909088581559999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.210573,
+        "elevationDeg": 4.120646,
+        "terrainHorizonDeg": -0.29144115977299867,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T22:00:00Z",
+      "elapsedSeconds": 150600,
+      "sun": {
+        "azimuthDeg": 150.723762,
+        "elevationDeg": 0.237885,
+        "terrainHorizonDeg": -0.28991188465199985,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.224324,
+        "elevationDeg": 4.111421,
+        "terrainHorizonDeg": -0.29062161392399993,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T22:10:00Z",
+      "elapsedSeconds": 151200,
+      "sun": {
+        "azimuthDeg": 150.639552,
+        "elevationDeg": 0.237901,
+        "terrainHorizonDeg": -0.28900996172800003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.238081,
+        "elevationDeg": 4.10218,
+        "terrainHorizonDeg": -0.2898017104810007,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T22:20:00Z",
+      "elapsedSeconds": 151800,
+      "sun": {
+        "azimuthDeg": 150.555342,
+        "elevationDeg": 0.237918,
+        "terrainHorizonDeg": -0.28829572582599994,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.251844,
+        "elevationDeg": 4.092922,
+        "terrainHorizonDeg": -0.28898144944399967,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T22:30:00Z",
+      "elapsedSeconds": 152400,
+      "sun": {
+        "azimuthDeg": 150.471132,
+        "elevationDeg": 0.237936,
+        "terrainHorizonDeg": -0.28770085623600006,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.265612,
+        "elevationDeg": 4.083649,
+        "terrainHorizonDeg": -0.28816089041199944,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T22:40:00Z",
+      "elapsedSeconds": 153000,
+      "sun": {
+        "azimuthDeg": 150.386922,
+        "elevationDeg": 0.237955,
+        "terrainHorizonDeg": -0.28707382924600006,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.279386,
+        "elevationDeg": 4.074358,
+        "terrainHorizonDeg": -0.2873399737860014,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T22:50:00Z",
+      "elapsedSeconds": 153600,
+      "sun": {
+        "azimuthDeg": 150.302712,
+        "elevationDeg": 0.237974,
+        "terrainHorizonDeg": -0.2864133702160001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.293166,
+        "elevationDeg": 4.065052,
+        "terrainHorizonDeg": -0.28651869956599885,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T23:00:00Z",
+      "elapsedSeconds": 154200,
+      "sun": {
+        "azimuthDeg": 150.218503,
+        "elevationDeg": 0.237993,
+        "terrainHorizonDeg": -0.2857150229240001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.306951,
+        "elevationDeg": 4.055729,
+        "terrainHorizonDeg": -0.2856970995469998,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T23:10:00Z",
+      "elapsedSeconds": 154800,
+      "sun": {
+        "azimuthDeg": 150.134293,
+        "elevationDeg": 0.238014,
+        "terrainHorizonDeg": -0.2849849839030002,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.320742,
+        "elevationDeg": 4.046391,
+        "terrainHorizonDeg": -0.2848751145740003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T23:20:00Z",
+      "elapsedSeconds": 155400,
+      "sun": {
+        "azimuthDeg": 150.050084,
+        "elevationDeg": 0.238035,
+        "terrainHorizonDeg": -0.2842234753199999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.334538,
+        "elevationDeg": 4.037035,
+        "terrainHorizonDeg": -0.2840528315859988,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T23:30:00Z",
+      "elapsedSeconds": 156000,
+      "sun": {
+        "azimuthDeg": 149.965875,
+        "elevationDeg": 0.238056,
+        "terrainHorizonDeg": -0.28343059700000006,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.34834,
+        "elevationDeg": 4.027664,
+        "terrainHorizonDeg": -0.2832301909799996,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T23:40:00Z",
+      "elapsedSeconds": 156600,
+      "sun": {
+        "azimuthDeg": 149.881666,
+        "elevationDeg": 0.238079,
+        "terrainHorizonDeg": -0.28260647490599994,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.362148,
+        "elevationDeg": 4.018277,
+        "terrainHorizonDeg": -0.28240719275600124,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-20T23:50:00Z",
+      "elapsedSeconds": 157200,
+      "sun": {
+        "azimuthDeg": 149.797457,
+        "elevationDeg": 0.238102,
+        "terrainHorizonDeg": -0.28175191891800005,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.37596,
+        "elevationDeg": 4.008874,
+        "terrainHorizonDeg": -0.2815839561200008,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T00:00:00Z",
+      "elapsedSeconds": 157800,
+      "sun": {
+        "azimuthDeg": 149.713248,
+        "elevationDeg": 0.238125,
+        "terrainHorizonDeg": -0.28087833475199997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.389778,
+        "elevationDeg": 3.999454,
+        "terrainHorizonDeg": -0.28076036186599995,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T00:10:00Z",
+      "elapsedSeconds": 158400,
+      "sun": {
+        "azimuthDeg": 149.629039,
+        "elevationDeg": 0.238149,
+        "terrainHorizonDeg": -0.2800462627710001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.403601,
+        "elevationDeg": 3.990019,
+        "terrainHorizonDeg": -0.27993646239499975,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T00:20:00Z",
+      "elapsedSeconds": 159000,
+      "sun": {
+        "azimuthDeg": 149.54483,
+        "elevationDeg": 0.238174,
+        "terrainHorizonDeg": -0.27919678335000003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.41743,
+        "elevationDeg": 3.980568,
+        "terrainHorizonDeg": -0.27911218485000056,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T00:30:00Z",
+      "elapsedSeconds": 159600,
+      "sun": {
+        "azimuthDeg": 149.460622,
+        "elevationDeg": 0.2382,
+        "terrainHorizonDeg": -0.27812989746000016,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.431263,
+        "elevationDeg": 3.971101,
+        "terrainHorizonDeg": -0.27828766888500056,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T00:40:00Z",
+      "elapsedSeconds": 160200,
+      "sun": {
+        "azimuthDeg": 149.376414,
+        "elevationDeg": 0.238226,
+        "terrainHorizonDeg": -0.2764807640540007,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.445102,
+        "elevationDeg": 3.961617,
+        "terrainHorizonDeg": -0.2774627952900002,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T00:50:00Z",
+      "elapsedSeconds": 160800,
+      "sun": {
+        "azimuthDeg": 149.292205,
+        "elevationDeg": 0.238253,
+        "terrainHorizonDeg": -0.27392860241499967,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.458945,
+        "elevationDeg": 3.952118,
+        "terrainHorizonDeg": -0.2766376832750004,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T01:00:00Z",
+      "elapsedSeconds": 161400,
+      "sun": {
+        "azimuthDeg": 149.207997,
+        "elevationDeg": 0.23828,
+        "terrainHorizonDeg": -0.27133811171100003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.472794,
+        "elevationDeg": 3.942604,
+        "terrainHorizonDeg": -0.2758122136300001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T01:10:00Z",
+      "elapsedSeconds": 162000,
+      "sun": {
+        "azimuthDeg": 149.123789,
+        "elevationDeg": 0.238308,
+        "terrainHorizonDeg": -0.26926669412799975,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.486647,
+        "elevationDeg": 3.933073,
+        "terrainHorizonDeg": -0.27498650556500037,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T01:20:00Z",
+      "elapsedSeconds": 162600,
+      "sun": {
+        "azimuthDeg": 149.039581,
+        "elevationDeg": 0.238337,
+        "terrainHorizonDeg": -0.267610989313,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.500505,
+        "elevationDeg": 3.923527,
+        "terrainHorizonDeg": -0.2741604994750001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T01:30:00Z",
+      "elapsedSeconds": 163200,
+      "sun": {
+        "azimuthDeg": 148.955374,
+        "elevationDeg": 0.238366,
+        "terrainHorizonDeg": -0.2661119064740001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.514369,
+        "elevationDeg": 3.913965,
+        "terrainHorizonDeg": -0.27333413575500076,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T01:40:00Z",
+      "elapsedSeconds": 163800,
+      "sun": {
+        "azimuthDeg": 148.871166,
+        "elevationDeg": 0.238396,
+        "terrainHorizonDeg": -0.2646347202779999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.528236,
+        "elevationDeg": 3.904387,
+        "terrainHorizonDeg": -0.27250759322000045,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T01:50:00Z",
+      "elapsedSeconds": 164400,
+      "sun": {
+        "azimuthDeg": 148.786959,
+        "elevationDeg": 0.238427,
+        "terrainHorizonDeg": -0.263179268262,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.542109,
+        "elevationDeg": 3.894793,
+        "terrainHorizonDeg": -0.2716806930549997,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T02:00:00Z",
+      "elapsedSeconds": 165000,
+      "sun": {
+        "azimuthDeg": 148.702751,
+        "elevationDeg": 0.238458,
+        "terrainHorizonDeg": -0.26174621651800023,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.555986,
+        "elevationDeg": 3.885184,
+        "terrainHorizonDeg": -0.2708535544700009,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T02:10:00Z",
+      "elapsedSeconds": 165600,
+      "sun": {
+        "azimuthDeg": 148.618544,
+        "elevationDeg": 0.23849,
+        "terrainHorizonDeg": -0.26033867752000034,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.569868,
+        "elevationDeg": 3.87556,
+        "terrainHorizonDeg": -0.27002611785999886,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T02:20:00Z",
+      "elapsedSeconds": 166200,
+      "sun": {
+        "azimuthDeg": 148.534337,
+        "elevationDeg": 0.238523,
+        "terrainHorizonDeg": -0.2589523551150001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.583754,
+        "elevationDeg": 3.865919,
+        "terrainHorizonDeg": -0.2691984428300001,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T02:30:00Z",
+      "elapsedSeconds": 166800,
+      "sun": {
+        "azimuthDeg": 148.45013,
+        "elevationDeg": 0.238556,
+        "terrainHorizonDeg": -0.2575870914399998,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.597645,
+        "elevationDeg": 3.856264,
+        "terrainHorizonDeg": -0.26837046977499934,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T02:40:00Z",
+      "elapsedSeconds": 167400,
+      "sun": {
+        "azimuthDeg": 148.365923,
+        "elevationDeg": 0.23859,
+        "terrainHorizonDeg": -0.2562427627090003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.611541,
+        "elevationDeg": 3.846593,
+        "terrainHorizonDeg": -0.2675422217770007,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T02:50:00Z",
+      "elapsedSeconds": 168000,
+      "sun": {
+        "azimuthDeg": 148.281716,
+        "elevationDeg": 0.238624,
+        "terrainHorizonDeg": -0.2549192271119997,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.62544,
+        "elevationDeg": 3.836906,
+        "terrainHorizonDeg": -0.26671379967999986,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T03:00:00Z",
+      "elapsedSeconds": 168600,
+      "sun": {
+        "azimuthDeg": 148.19751,
+        "elevationDeg": 0.238659,
+        "terrainHorizonDeg": -0.25361629930999985,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.639344,
+        "elevationDeg": 3.827204,
+        "terrainHorizonDeg": -0.26588507956800106,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T03:10:00Z",
+      "elapsedSeconds": 169200,
+      "sun": {
+        "azimuthDeg": 148.113303,
+        "elevationDeg": 0.238695,
+        "terrainHorizonDeg": -0.252337952843,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.653252,
+        "elevationDeg": 3.817486,
+        "terrainHorizonDeg": -0.2650561210439988,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T03:20:00Z",
+      "elapsedSeconds": 169800,
+      "sun": {
+        "azimuthDeg": 148.029097,
+        "elevationDeg": 0.238731,
+        "terrainHorizonDeg": -0.251080537942,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.667165,
+        "elevationDeg": 3.807754,
+        "terrainHorizonDeg": -0.26422686450499866,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T03:30:00Z",
+      "elapsedSeconds": 170400,
+      "sun": {
+        "azimuthDeg": 147.944891,
+        "elevationDeg": 0.238768,
+        "terrainHorizonDeg": -0.2498432494720001,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.681081,
+        "elevationDeg": 3.798006,
+        "terrainHorizonDeg": -0.2633974291570003,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T03:40:00Z",
+      "elapsedSeconds": 171000,
+      "sun": {
+        "azimuthDeg": 147.860684,
+        "elevationDeg": 0.238806,
+        "terrainHorizonDeg": -0.2486259811999999,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.695002,
+        "elevationDeg": 3.788242,
+        "terrainHorizonDeg": -0.26256769579400135,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T03:50:00Z",
+      "elapsedSeconds": 171600,
+      "sun": {
+        "azimuthDeg": 147.776478,
+        "elevationDeg": 0.238844,
+        "terrainHorizonDeg": -0.24742858621399996,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.708927,
+        "elevationDeg": 3.778464,
+        "terrainHorizonDeg": -0.26173776865400034,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T04:00:00Z",
+      "elapsedSeconds": 172200,
+      "sun": {
+        "azimuthDeg": 147.692272,
+        "elevationDeg": 0.238883,
+        "terrainHorizonDeg": -0.24625082547200003,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.722856,
+        "elevationDeg": 3.76867,
+        "terrainHorizonDeg": -0.2609076281119999,
+        "visible": true
+      },
+      "jointVisible": true
+    },
+    {
+      "utc": "2027-01-21T04:10:00Z",
+      "elapsedSeconds": 172800,
+      "sun": {
+        "azimuthDeg": 147.608067,
+        "elevationDeg": 0.238923,
+        "terrainHorizonDeg": -0.24509502764200009,
+        "visible": true
+      },
+      "earth": {
+        "azimuthDeg": 128.736788,
+        "elevationDeg": 3.758861,
+        "terrainHorizonDeg": -0.26007730877600127,
+        "visible": true
+      },
+      "jointVisible": true
+    }
+  ]
+}

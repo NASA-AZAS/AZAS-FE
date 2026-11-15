@@ -1,7 +1,7 @@
 {
   "harnesskit": "0.1.0",
   "created": "2026-11-13T21:22:37",
-  "updated": "2026-11-14T10:05:07+09:00",
+  "updated": "2026-11-14T10:11:38+09:00",
   "runtimes": [
     "codex"
   ],
@@ -426,7 +426,7 @@
       ".agents/skills/expo-examples/SKILL.md": "ae6a5384e1a2bf949c2450823882751431465727bfec5dffa678f4e79e225640",
       ".agents/skills/expo-examples/agents/openai.yaml": "efdcc54de3f666d0d3f5515ee38e0c07ecc2d302a3c9e9acd742ce8f2f42f52d",
       ".agents/skills/expo-examples/references/catalog.md": "024aa05d82dffcc2a5e3b29e87ec4e800122bc39825c36e2e389f7b7e090d4fc",
-      ".agents/skills/expo-hackathon/SKILL.md": "7c9599ad8b1c14821882f2ef369b52f55842de1e96b124f2a58e74181dc0d28e",
+      ".agents/skills/expo-hackathon/SKILL.md": "4c99d143e7e4662556edc9f52acfdbe8ed4da4bbf618d2eb9fc1672416e3c3dd",
       ".agents/skills/expo-hackathon/references/skills.md": "6a1a09595ddec2523b04188ff8167df9ac6968b08cb383d3ed266652d606b390",
       ".agents/skills/expo-hackathon/references/ui.md": "c356e3602d074744f0e9680a98e92f293f9a6599a2eecaba212e374ef0815001",
       ".agents/skills/expo-native-ui/SKILL.md": "0247e28800ebbbeeea3a792e7e574a6a3974e63dcfaa1f20bc83cabff0bf1452",
@@ -559,7 +559,8 @@
       ".agents/skills/vercel-react-native-skills/rules/ui-styling.md": "cdef4d8b1a097b844e5992ab78e66a2dc604faf1e90f8d325a0eb116e8ef6a7e",
       ".codex/agents/expo-debug.toml": "0ff14a608072505534260ca428142f311ca1b7b8f12065453f656b9506cc56c3",
       ".codex/agents/expo-quick.toml": "d944d9007b71467ae5f57a7428025e44bc14ff0e0f656cff1299fc9b3f4990dc",
-      ".codex/agents/expo-ui.toml": "3ef85f24f9445fab7b0f8ee8abd19e4fabc5758051773d611934e89c4dd11808"
+      ".codex/agents/expo-ui.toml": "3ef85f24f9445fab7b0f8ee8abd19e4fabc5758051773d611934e89c4dd11808",
+      ".codex/config.toml": "47d80e2f9b5fa6a7aae0434d923dcb62ed14328b8133a104ad19930f32f87cc2"
     }
   },
   "env_snapshot": {

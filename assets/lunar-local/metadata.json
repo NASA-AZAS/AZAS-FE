@@ -1,0 +1,20 @@
+{
+  "sourceFile": "SP_Mosaic.tif",
+  "sha256": "abfbf359c3d1987819f2f85a9036b6169c673ce5f618096f46a2a7669bcb665b",
+  "sourceSize": [
+    6082,
+    6082
+  ],
+  "sourceMetersPerPixel": 100,
+  "projection": "south polar stereographic; spherical radius 1737400m; lon0=0; lat0=-90; k=1",
+  "pixelCenter": [
+    3041,
+    3041
+  ],
+  "georeferencing": "calibrated from printed resolution and centered graticule; no GeoTIFF transform/CRS tags present",
+  "candidatesIncluded": 27,
+  "candidatesExcluded": [],
+  "overviewPixels": 2048,
+  "detailCropPixels": 256,
+  "detailCropResampled": false
+}

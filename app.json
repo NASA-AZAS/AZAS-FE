@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "AZAS",
+    "slug": "azas-app",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#03070d",
+    "ios": {
+      "supportsTablet": true,
+      "requireFullScreen": true
+    },
+    "android": {
+      "package": "com.azas.orbit"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "LANDSCAPE"
+        }
+      ],
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#03070d",
+          "image": "./assets/startup-brand.png",
+          "imageWidth": 360,
+          "resizeMode": "contain"
+        }
+      ],
+      "expo-video"
+    ],
+    "web": {
+      "bundler": "metro",
+      "name": "AZAS · Orbital Explorer"
+    },
+    "scheme": "azas"
+  }
+}
