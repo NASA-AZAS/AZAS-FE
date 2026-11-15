@@ -15,7 +15,7 @@ import { PanoramaMinimap } from './panorama-minimap';
 import { type LunarSite } from './lunar-sites';
 import { lunarPanoramas } from './lunar-panorama-assets';
 
-function ViewAngles({ heading, pitch, landed }: { landed?: boolean; heading: SharedValue<number>; pitch: SharedValue<number> }) {
+function ViewAngles({ heading, pitch, landed, occultationCount = 0 }: { landed?: boolean; occultationCount?: number; heading: SharedValue<number>; pitch: SharedValue<number> }) {
   const [angles, setAngles] = useState({ azimuth: '0.0', elevation: '0.0' });
   useEffect(() => {
     // Sample the displayed camera angle at 10Hz without rerendering the panorama scene.
@@ -27,7 +27,7 @@ function ViewAngles({ heading, pitch, landed }: { landed?: boolean; heading: Sha
     }, 100);
     return () => clearInterval(timer);
   }, [heading, pitch]);
-  return <Text testID="panorama-view-angles" pointerEvents="none" style={[styles.orientation, landed && { bottom: 64 }]}>Azimuth {angles.azimuth}° / Elevation {angles.elevation}°</Text>;
+  return <Text testID="panorama-view-angles" pointerEvents="none" style={[styles.orientation, landed && { bottom: 64 + (occultationCount ? 22 + occultationCount * 16 : 0) }]}>Azimuth {angles.azimuth}° / Elevation {angles.elevation}°</Text>;
 }
 
 class PanoramaBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -122,11 +122,11 @@ export function LunarPanorama({ site, conditions, onReady, landed = false, surfa
           }} />}
           <PanoramaMinimap conditions={conditions} skyMarkers={landed && track ? skyMarkers : undefined} side={landed ? 'right' : 'left'} site={site} heading={heading} horizontalFov={2 * Math.atan(Math.tan(65 * Math.PI / 360) * viewerSize.width / Math.max(1, viewerSize.height))} />
           {loading && <ActivityIndicator color="#fff" style={StyleSheet.absoluteFill} />}
-          <ViewAngles heading={heading} pitch={pitch} landed={landed} />
+          <ViewAngles heading={heading} pitch={pitch} landed={landed} occultationCount={track?.terrainOccultations.length} />
         </View>
       </GestureDetector>
     </PanoramaBoundary>
-    {landed && track && <SurfaceTimeline touchdownMs={track.touchdownMs} durationSeconds={track.durationSeconds} elapsed={elapsed} autoRotate={autoRotate} scrubbing={scrubbing} />}
+    {landed && track && <SurfaceTimeline touchdownMs={track.touchdownMs} durationSeconds={track.durationSeconds} terrainOccultations={track.terrainOccultations} elapsed={elapsed} autoRotate={autoRotate} scrubbing={scrubbing} />}
   </View>;
 }
 const styles = StyleSheet.create({
