@@ -13,6 +13,7 @@ import { scale, viewDistance, INITIAL_MOON_ANGLE, introMoonDistance } from './sc
 export type ViewControls = {
   yaw: number; pitch: number; zoom: number; locked: boolean;
   revision: number; fromBody: BodyId | null;
+  surfaceFocus?: { siteId: string; startYaw: number; startPitch: number; progress: number };
 };
 export type LunarProjection = { id: string; x: number; y: number; visible: boolean; opacity?: number }[];
 type Props = {
@@ -286,8 +287,22 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
     if (controls.current.locked && selected === 'moon') { flight.yaw = moonViewYaw; flight.pitch = exploring ? .22 : 0; }
     const angleProgress = smooth(u);
     const yawDelta = THREE.MathUtils.euclideanModulo(flight.yaw - flight.startYaw + Math.PI, Math.PI * 2) - Math.PI;
-    const yaw = controls.current.locked ? flight.startYaw + yawDelta * angleProgress : controls.current.yaw;
-    const pitch = controls.current.locked ? THREE.MathUtils.lerp(flight.startPitch, flight.pitch, angleProgress) : controls.current.pitch;
+    let yaw = controls.current.locked ? flight.startYaw + yawDelta * angleProgress : controls.current.yaw;
+    let pitch = controls.current.locked ? THREE.MathUtils.lerp(flight.startPitch, flight.pitch, angleProgress) : controls.current.pitch;
+    const surfaceFocus = controls.current.surfaceFocus;
+    if (earthExploring && earth.current && surfaceFocus) {
+      const site = launchSites.find(site => site.id === surfaceFocus.siteId);
+      if (site) {
+        earth.current.updateWorldMatrix(true, false);
+        const lat = THREE.MathUtils.degToRad(site.latitude), lon = THREE.MathUtils.degToRad(site.longitude);
+        const normal = new THREE.Vector3(Math.cos(lat) * Math.cos(lon), Math.sin(lat), -Math.cos(lat) * Math.sin(lon)).applyQuaternion(earth.current.getWorldQuaternion(new THREE.Quaternion()));
+        const targetYaw = Math.atan2(normal.x, normal.z);
+        const deltaYaw = Math.atan2(Math.sin(targetYaw - surfaceFocus.startYaw), Math.cos(targetYaw - surfaceFocus.startYaw));
+        yaw = surfaceFocus.startYaw + deltaYaw * surfaceFocus.progress;
+        pitch = THREE.MathUtils.lerp(surfaceFocus.startPitch, Math.asin(normal.y), surfaceFocus.progress);
+        controls.current.yaw = yaw; controls.current.pitch = pitch;
+      }
+    }
     if (controls.current.locked) { controls.current.yaw = yaw; controls.current.pitch = pitch; }
     desired.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(distance);
     if (controls.current.locked) camera.position.copy(desired);
