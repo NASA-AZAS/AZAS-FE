@@ -14,6 +14,7 @@ export type ViewControls = {
   yaw: number; pitch: number; zoom: number; locked: boolean;
   revision: number; fromBody: BodyId | null;
   surfaceFocus?: { siteId: string; startYaw: number; startPitch: number; progress: number };
+  snapView?: boolean;
 };
 export type LunarProjection = { id: string; x: number; y: number; visible: boolean; opacity?: number }[];
 type Props = {
@@ -305,8 +306,9 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
     }
     if (controls.current.locked) { controls.current.yaw = yaw; controls.current.pitch = pitch; }
     desired.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(distance);
-    if (controls.current.locked) camera.position.copy(desired);
+    if (controls.current.locked || controls.current.snapView) camera.position.copy(desired);
     else camera.position.lerp(desired, 1 - Math.exp(-dt * 9));
+    controls.current.snapView = false;
     if (exploring) camera.up.set(-Math.sin(yaw) * Math.sin(pitch), Math.cos(pitch), -Math.cos(yaw) * Math.sin(pitch));
     else camera.up.set(0, 1, 0);
     camera.lookAt(0, 0, 0);

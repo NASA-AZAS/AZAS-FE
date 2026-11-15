@@ -30,11 +30,12 @@
           "imageWidth": 360,
           "resizeMode": "contain"
         }
-      ]
+      ],
+      "expo-video"
     ],
     "web": {
       "bundler": "metro",
-      "name": "AZAS \u00b7 Orbital Explorer"
+      "name": "AZAS · Orbital Explorer"
     },
     "scheme": "azas"
   }

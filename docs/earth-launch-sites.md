@@ -54,3 +54,12 @@ Florida label separation: Kennedy Space Center and Cape Canaveral Space Force St
 
 Callout validation: typecheck passed. Browser confirmed the two displaced names have non-overlapping bounds, the Cape name selects its site, and no runtime errors occur. Native hardware was not directly tested.
 
+## Next Stop The Moon
+
+The launch confirmation button is now `Next Stop The Moon`. It plays the user-supplied `KakaoTalk_Video_2026-11-15-12-41-13.mp4` (about five seconds, H.264/AAC) through SDK-compatible `expo-video`, with no playback controls, fullscreen, picture-in-picture or touch interaction. Playback pauses while the app is inactive. The existing global input lock spans playback and the entire Earth return move.
+
+The real `playToEnd` event starts a 1.6-second Earth zoom from 3× view distance to the standard axis/equator view, followed by a short camera settling interval. Earth rotation and orbital simulation stay paused. Only the confirmed launch-site pin/name remain, in NASA RED; axis N/S labels remain. The STEP 02 guide, time list and detail panel are hidden. Camera orbit/zoom controls unlock after arrival. Video errors restore the detail view and previous pause state so the same button can retry. No API or trajectory calculation is added.
+
+`expo-video` is included in Expo Go; a custom native runtime needs rebuilding after adding this dependency. Playback uses the original video in the repository root.
+
+Validation: typecheck passed. Browser played the actual MP4, verified hidden playback controls and input lock, waited for its real end event and Earth arrival, confirmed exactly one stationary launch-site pin, and verified camera input unlocks afterward. No page runtime errors. Native iPhone / Expo Go playback was not directly tested.
