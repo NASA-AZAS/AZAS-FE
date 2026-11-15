@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { AccessibilityInfo, AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 
-export function RocketDialogue({ pages, onFinished }: { pages: string[]; onFinished?: () => void }) {
+export function RocketDialogue({ pages, onFinished, showPageNumber = false }: { pages: string[]; onFinished?: () => void; showPageNumber?: boolean }) {
   const [page, setPage] = useState(0);
   if (!pages.length) return null;
   const reserveText = pages.reduce((a, b) => a.length > b.length ? a : b);
-  return <DialoguePage key={page} text={pages[page]} reserveText={reserveText} hasNext={page < pages.length - 1} onFinished={onFinished} onNext={() => setPage(value => Math.min(value + 1, pages.length - 1))} />;
+  return <DialoguePage key={page} pageLabel={showPageNumber ? `${page + 1}/${pages.length}` : undefined} text={pages[page]} reserveText={reserveText} hasNext={page < pages.length - 1} onFinished={onFinished} onNext={() => setPage(value => Math.min(value + 1, pages.length - 1))} />;
 }
 // All rocket speech shares italic typography and a stable-height typewriter bubble.
-function DialoguePage({ text, reserveText, hasNext, onNext, onFinished }: { text: string; reserveText: string; hasNext: boolean; onNext: () => void; onFinished?: () => void }) {
+function DialoguePage({ text, reserveText, hasNext, onNext, onFinished, pageLabel }: { pageLabel?: string; text: string; reserveText: string; hasNext: boolean; onNext: () => void; onFinished?: () => void }) {
   const [count, setCount] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [active, setActive] = useState(AppState.currentState !== 'background');
@@ -45,6 +45,7 @@ function DialoguePage({ text, reserveText, hasNext, onNext, onFinished }: { text
   return <Pressable testID="rocket-dialogue-bubble" accessibilityRole="button" accessibilityLabel={hasNext ? 'Next rocket message' : 'Rocket message'} accessibilityState={{ disabled: !complete || !hasNext }} disabled={!complete || !hasNext} onPress={onNext} style={styles.bubble}>
     <Text accessible={false} style={[styles.speech, { opacity: 0 }]}>{reserveText}</Text>
     <Text testID="rocket-dialogue-text" accessibilityLabel={text} style={[styles.speech, styles.typing]}>{text.slice(0, count)}</Text>
+    {pageLabel && <Text testID="rocket-page-number" pointerEvents="none" style={{ position: 'absolute', right: 12, top: 10, color: '#9AABBE', fontSize: 9 }}>{pageLabel}</Text>}
     {complete && hasNext && <Animated.Text testID="rocket-next-page" accessible={false} style={[styles.next, hintStyle]}>{'>'}</Animated.Text>}
     <View pointerEvents="none" style={styles.tail} />
   </Pressable>;

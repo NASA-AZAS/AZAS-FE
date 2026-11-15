@@ -46,7 +46,7 @@ function PanoramaScene({ source, heading, targetHeading, autoRotate, pitch, read
   });
   return <mesh geometry={geometry}><meshBasicMaterial map={texture} /></mesh>;
 }
-export function LunarPanorama({ site }: { site: LunarSite }) {
+export function LunarPanorama({ site, onReady }: { site: LunarSite; onReady?: () => void }) {
   const siteId = site.id;
   const reducedMotion = useReducedMotion();
   const autoRotate = useSharedValue(!reducedMotion);
@@ -57,7 +57,7 @@ export function LunarPanorama({ site }: { site: LunarSite }) {
     targetHeading.set(0); targetPitch.set(0); heading.set(0); pitch.set(0); autoRotate.set(!reducedMotion);
   }, [siteId, targetHeading, targetPitch, heading, pitch, autoRotate, reducedMotion]);
   const [loading, setLoading] = useState(true);
-  const ready = useMemo(() => () => setLoading(false), []);
+  const ready = useMemo(() => () => { setLoading(false); onReady?.(); }, [onReady]);
   const drag = useMemo(() => Gesture.Pan().maxPointers(1).minDistance(3)
     .onTouchesDown(() => autoRotate.set(false))
     .onChange(e => {

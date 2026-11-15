@@ -117,3 +117,45 @@ The countdown no longer dims the screen. Preview labels, header and the bottom g
 The countdown now replaces the narration inside the existing bottom rocket speech bubble; no centered numeral or full-screen countdown dimmer is used. On completion, a 350ms black fade covers the unchanged route preview, then the preloaded video fades in over 350ms. The Earth camera dive has been removed. Input remains locked continuously from button press through countdown, transition, and playback. The arrow cue and subsequent preview/back behavior are retained.
 
 Validation: typecheck passed. Browser confirmed the countdown stays inside the bottom speech bubble, the preloaded video stays paused while counting, the fade leads to real playback, and preview/back navigation work without runtime errors. The countdown layout was visually checked; native hardware was not tested.
+
+## Third-person flight after the video
+
+The video now finishes into a followed rocket flight, rather than returning to the route preview. The same sampled mock route drives both the dashed preview and the rocket, including Earth departure loops, the curved transfer and lunar approach. `transfer-route.ts` provides cumulative arc-length sampling; moving by route length avoids speed jumps at boundaries between densely and sparsely sampled sections.
+
+The flight is a 120-second active demo. Time pauses while the app is inactive. Remaining distance is the unflown arc length converted back from half-scale scene coordinates to km (`scene units × 2,000,000`), not a straight-line Earth–Moon distance or a calculated launch opportunity. The HUD samples telemetry at 4Hz and shows remaining time, distance and percentage. On arrival all counters stop at 0:00 / 0 km / 100%; no landing is performed.
+
+Camera yaw/pitch are relative to the moving rocket, with continuous 360-degree orbit and pinch/wheel distance adjustment. The camera follow radius is constrained by Earth/Moon surface clearance to prevent passing through either body. The existing 2D rocket artwork is used as a camera-facing layered card with raised eyes, a shadow layer and a small exhaust effect. Its size stays readable as the follow camera distance changes. Reduced motion disables automatic heading turns, while user camera control remains available.
+
+The standard bottom floating narrator and typewriter bubble stay visible throughout the trip and after arrival. Twenty English cards can be advanced manually, with a page counter. Educational material is paraphrased from [NASA Moon Facts](https://science.nasa.gov/moon/facts/), [NASA Moon Phases](https://science.nasa.gov/moon/moon-phases/) and [NASA Moon Exploration](https://science.nasa.gov/moon/exploration/).
+
+Flight timing uses active wall-clock elapsed time, independent of render frame rate. Camera heading favors an Earth backdrop during parking loops, blends toward the travel direction during cruise, then favors a lunar backdrop during approach; manual orbit offsets remain under user control. A modest flight-only ambient fill keeps body silhouettes readable.
+
+Validation: TypeScript and whitespace checks passed. A pure route check covered cumulative lengths, finite samples, Earth/Moon surface clearance, departure/arrival radii, and km conversion at four lunar directions. Browser E2E played the real video, entered the followed rocket scene, exercised orbit gestures, advanced all 20 fact pages, checked landscape phone bounds, and completed the full demo with 0:00 / 0 km / 100% and a stopped rocket. No page runtime errors. Departure, cruise and arrival frames were inspected. iPhone / Expo Go was not directly tested.
+
+## Flight map and playback controls
+
+The default trip is now 60 active seconds. A compact upper-left route schematic uses the same arc-length sampler and a live cyan location marker. Red Earth/Moon endpoint labels show the selected launch and landing names. Projected red pin/name labels also appear on the corresponding 3D body when their positions are within the usable screen area.
+
+The smaller upper-right HUD has three outlined controls beneath it: speed cycles 0.25× / 0.5× / 1× / 1.5× / 2×, pause/resume freezes route progress, and skip jumps to the lunar endpoint even while paused. ETA accounts for speed; arrival still stops at 0:00 / 0 km / 100% and disables playback controls.
+
+Rocket scale is derived from camera distance and viewport height to stay at approximately 100 screen pixels regardless of zoom. The route now projects into clip-space line segments and uses screen-linear dash distances (8px on / 6px off), so perspective/zoom cannot stretch dash lengths. Depth testing is retained against the planetary geometry. These remain mock route measurements, not a solved lunar trajectory.
+
+Validation: typecheck/whitespace checks passed. A route initialization check confirms the 60-second default. Browser verified live minimap movement, frozen progress when paused, resume, 2× ETA, skip while paused reaching 0 km / 100%, endpoint labels, phone landscape layout, and no runtime/shader compilation errors. Zoom-before/after and lunar arrival frames were visually inspected. Native iPhone / Expo Go remains unverified.
+
+## Flight HUD and zoom-size correction
+
+Rocket world size now uses the nominal follow distance before the user zoom multiplier: zooming in enlarges the rocket and zooming out shrinks it. This supersedes the fixed-pixel rocket behavior. Screen-space dash sizing remains unchanged.
+
+The transfer minimap now contains only its title, white route and yellow current-position dot; red endpoint text/pins and the cyan trail are removed from the minimap. Red geographic labels in the 3D scene remain. The HUD replaces the percentage/progress bar with speed in km/h, derived from mock route length and compressed demo time, multiplied by playback speed. Pause/arrival show 0 km/h. The multiplier appears as a white tag beside velocity only when not 1×; the fast-forward button is icon-only.
+
+Validation: typecheck passed. Browser verified the minimap contains no endpoint labels, its marker is yellow, the multiplier is beside velocity and absent from the speed button, pause/arrival show zero velocity, and resume/skip still work. Zoom screenshots confirm the rocket grows when zooming in. Native hardware remains unverified.
+
+## Four-day mission clock and reference average
+
+The prominent HUD clock now shows `Mission time`, advancing from 0d to 4d with route progress. This is the user-selected four-day mission timeline, compressed into the existing one-minute playback. Travel duration depends on the real mission; four days is a representative demo assumption rather than a universal lunar flight time.
+
+`Avg. speed` is now a constant reference average of about 4,004 km/h: [NASA's mean Earth–Moon separation of 384,400 km](https://spaceplace.nasa.gov/moon-distance/en/) divided by 96 hours. It is not a measured instantaneous rocket velocity, nor a speed calculated from the mock spiral route. Playback speed changes how quickly the visualization runs, not this average value, including while paused or after arrival. The multiplier remains beside average speed.
+
+Small remaining playback time moves to the lower-right of the transfer-map card. The map adds blue Earth and gray Moon endpoint dots with labels beneath them while retaining the yellow current-position dot. 3D site callouts use white bent leaders, white planet names and white pin outlines; only site-name text is NASA RED.
+
+Validation: typecheck passed. Browser verified the fixed 4,004 km/h reference remains unchanged at 2× and while paused, remaining playback time lives in the map, skip ends at 4d / 0 km, and controls still work without runtime errors. The updated landscape layout was visually checked; native hardware remains unverified.

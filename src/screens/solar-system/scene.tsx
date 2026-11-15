@@ -1,12 +1,14 @@
 import { useFrame, useThree } from '@react-three/fiber';
-import { useReducedMotion } from 'react-native-reanimated';
-import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
+import { useReducedMotion, type SharedValue } from 'react-native-reanimated';
+import { useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import * as THREE from 'three';
 import { useLoader } from './render-surface';
 import { launchSites } from './launch-sites';
 import { lunarSites } from './lunar-sites';
 import { Sun } from './sun';
 import { TransferTrajectory } from './transfer-trajectory';
+import { FlightRocket } from './flight-rocket';
+import { createTransferRoute, FLIGHT_DURATION_SECONDS, AVERAGE_SPEED_KMH, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
 import { SIMULATION_RATE } from './simulation-clock';
 import type { BodyId } from './space-hud';
 
@@ -25,6 +27,14 @@ type Props = {
   exploring?: boolean;
   earthExploring?: boolean;
   missionTransfer?: boolean;
+  missionFlight?: boolean;
+  flightActive?: boolean;
+  flightTelemetry?: MutableRefObject<FlightTelemetry>;
+  flightPlayback?: MutableRefObject<FlightPlayback>;
+  flightMarkers?: SharedValue<FlightMarkers>;
+  flightLaunchId?: string;
+  flightLandingId?: string;
+  onFlightArrived?: () => void;
   onTransferReady?: () => void;
   candidateSelected?: boolean;
   onExplorerArrival?: () => void;
@@ -157,14 +167,15 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
-  const [earthMap, moonMap, earthNormal, cloudsMap] = useLoader(THREE.TextureLoader, [
+export function SolarScene({ missionFlight, flightActive, flightTelemetry, flightPlayback, flightMarkers, flightLaunchId, flightLandingId, onFlightArrived, missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+  const [earthMap, moonMap, earthNormal, cloudsMap, rocketMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
     require('../../../assets/textures/earth-normal.jpg'),
     require('../../../assets/textures/earth-clouds.png'),
+    require('../../../assets/rocket-neon-dark.png'),
   ]);
-  earthMap.colorSpace = moonMap.colorSpace = cloudsMap.colorSpace = THREE.SRGBColorSpace;
+  earthMap.colorSpace = moonMap.colorSpace = cloudsMap.colorSpace = rocketMap.colorSpace = THREE.SRGBColorSpace;
   const earthSystem = useRef<THREE.Group>(null);
   const earth = useRef<THREE.Mesh>(null);
   const moon = useRef<THREE.Mesh>(null);
@@ -193,6 +204,14 @@ export function SolarScene({ missionTransfer, onTransferReady, startup, onStartu
   }, [missionTransfer, simulationSeconds]);
   const reducedMotion = useReducedMotion();
   const transferView = useRef({ elapsed: 0, startDistance: 1, startCenter: new THREE.Vector3(), startRotation: new THREE.Quaternion() });
+  const flightRoute = useMemo(() => createTransferRoute(transferMoon), [transferMoon]);
+  const flightSpriteSize = useRef(.001);
+  const rocketView = useMemo(() => ({ elapsed: 0, lastTick: 0, completed: false, initialized: false, yaw: 0, pitch: .35, bearing: 0, distance: .001, point: new THREE.Vector3(), ahead: new THREE.Vector3(), tangent: new THREE.Vector3(), up: new THREE.Vector3() }), []);
+  useLayoutEffect(() => {
+    if (missionFlight) { rocketView.elapsed = 0; rocketView.completed = false; rocketView.initialized = false; }
+    rocketView.lastTick = performance.now();
+  }, [missionFlight, rocketView]);
+  useLayoutEffect(() => { rocketView.lastTick = performance.now(); }, [flightActive, rocketView]);
   useEffect(() => {
     if (missionTransfer) transferView.current = { elapsed: 0, startDistance: camera.position.length(), startCenter: center.clone(), startRotation: camera.quaternion.clone() };
   }, [missionTransfer, camera, center]);
@@ -349,7 +368,7 @@ export function SolarScene({ missionTransfer, onTransferReady, startup, onStartu
         onStartupDone();
       }
     }
-    if (missionTransfer) {
+    if (missionTransfer && !missionFlight) {
       const view = transferView.current;
       view.elapsed += dt;
       const t = reducedMotion ? 1 : Math.min(1, view.elapsed / 1.8), p = t*t*t*(t*(t*6-15)+10);
@@ -366,12 +385,72 @@ export function SolarScene({ missionTransfer, onTransferReady, startup, onStartu
       camera.position.set(0, 0, d).applyQuaternion(camera.quaternion);
       camera.near = Math.max(d / 1000, .000001); camera.updateProjectionMatrix();
     }
+    if (missionFlight && flightTelemetry) {
+      const view = rocketView;
+      const now = performance.now();
+      const playback = flightPlayback?.current;
+      if (playback?.skip) { view.elapsed = FLIGHT_DURATION_SECONDS; playback.skip = false; view.initialized = false; controls.current.yaw = .35; controls.current.pitch = .4; controls.current.zoom = 1; }
+      else if (flightActive && !playback?.paused) view.elapsed = Math.min(FLIGHT_DURATION_SECONDS, view.elapsed + Math.max(0, now - view.lastTick) / 1000 * (playback?.speed ?? 1));
+      view.lastTick = now;
+      const progress = view.elapsed / FLIGHT_DURATION_SECONDS;
+      flightRoute.sample(progress, view.point);
+      flightRoute.sample(progress < 1 ? Math.min(1, progress + .0002) : .9998, view.ahead);
+      if (progress < 1) view.tangent.subVectors(view.ahead, view.point).normalize();
+      else view.tangent.subVectors(view.point, view.ahead).normalize();
+      const angleDelta = (to: number, from: number) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
+      const behind = Math.atan2(-view.tangent.x, -view.tangent.z);
+      const earthBearing = Math.atan2(view.point.x, view.point.z);
+      const departureBlend = THREE.MathUtils.smoothstep(progress, .24, .38);
+      let bearing = earthBearing + angleDelta(behind, earthBearing) * departureBlend;
+      const lunarOffset = view.ahead.subVectors(view.point, transferMoon);
+      const lunarBlend = 1 - THREE.MathUtils.smoothstep(lunarOffset.length(), .006, .035);
+      bearing += angleDelta(Math.atan2(lunarOffset.x, lunarOffset.z), bearing) * lunarBlend;
+      if (!view.initialized) { view.bearing = bearing; view.yaw = controls.current.yaw; view.pitch = controls.current.pitch; view.initialized = true; }
+      if (!reducedMotion) view.bearing += angleDelta(bearing, view.bearing) * (1 - Math.exp(-dt * 5));
+      view.yaw += angleDelta(controls.current.yaw, view.yaw) * (1 - Math.exp(-dt * 12));
+      view.pitch += angleDelta(controls.current.pitch, view.pitch) * (1 - Math.exp(-dt * 12));
+      const cameraYaw = view.bearing + view.yaw, cameraPitch = view.pitch;
+      // A camera sphere smaller than surface clearance cannot pass through Earth or the Moon.
+      const clearance = Math.min(view.point.length() - scale.earthRadius, view.point.distanceTo(transferMoon) - scale.moonRadius);
+      const baseDistance = Math.min(.008, Math.max(.00015, clearance * .6));
+      const followDistance = Math.max(.00005, Math.min(baseDistance * controls.current.zoom, clearance * .85));
+      view.distance = followDistance;
+      view.up.set(-Math.sin(cameraYaw) * Math.sin(cameraPitch), Math.cos(cameraPitch), -Math.cos(cameraYaw) * Math.sin(cameraPitch));
+      center.set(ex, 0, ez).add(view.point);
+      physicalSystem.current?.position.copy(center).negate();
+      camera.position.set(Math.sin(cameraYaw) * Math.cos(cameraPitch), Math.sin(cameraPitch), Math.cos(cameraYaw) * Math.cos(cameraPitch)).multiplyScalar(followDistance);
+      camera.up.copy(view.up);
+      camera.lookAt(view.up.clone().multiplyScalar(-followDistance * .075));
+      camera.near = Math.max(followDistance / 1000, .0000001); camera.updateProjectionMatrix();
+      if (flightMarkers && earth.current && moon.current) {
+        physicalSystem.current?.updateWorldMatrix(true, true);
+        camera.updateMatrixWorld();
+        const projectSite = (mesh: THREE.Mesh, radius: number, site: { latitude: number; longitude: number } | undefined) => {
+          const lat = THREE.MathUtils.degToRad(site?.latitude ?? 0), lon = THREE.MathUtils.degToRad(site?.longitude ?? 0);
+          const p = mesh.localToWorld(new THREE.Vector3(radius * Math.cos(lat) * Math.cos(lon), radius * Math.sin(lat), -radius * Math.cos(lat) * Math.sin(lon))).project(camera);
+          const x = (p.x + 1) * size.width / 2, y = (1 - p.y) * size.height / 2;
+          const covered = y < 225 && (x - 75 < 200 || x + 75 > size.width - 220);
+          const visible = p.z > -1 && p.z < 1 && x > 75 && x < size.width - 75 && y > 55 && y < size.height - 150 && !covered;
+          return { x: visible ? x : 0, y: visible ? y : 0, visible };
+        };
+        const e = projectSite(earth.current, 1.03, launchSites.find(site => site.id === flightLaunchId));
+        const m = projectSite(moon.current, .365, lunarSites.find(site => site.id === flightLandingId));
+        const sunPoint = sunVisual.current?.getWorldPosition(new THREE.Vector3()).project(camera);
+        const sx = sunPoint ? (sunPoint.x + 1) * size.width / 2 : 0;
+        const sy = sunPoint ? (1 - sunPoint.y) * size.height / 2 : 0;
+        const sunVisible = !!sunPoint && sunPoint.z > -1 && sunPoint.z < 1 && sx > 75 && sx < size.width - 75 && sy > 55 && sy < size.height - 150;
+        flightMarkers.set({ sunX: sx, sunY: sy, sunVisible, earthX: e.x, earthY: e.y, earthVisible: e.visible, moonX: m.x, moonY: m.y, moonVisible: m.visible });
+      }
+      flightSpriteSize.current = baseDistance * 2 * Math.tan(43 * Math.PI / 360) * 100 / size.height;
+      flightTelemetry.current = { progress, remainingSeconds: Math.max(0, FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1), remainingKm: Math.max(0, (1 - progress) * flightRoute.totalLength * 2_000_000), speedKmh: AVERAGE_SPEED_KMH, arrived: progress === 1 };
+      if ((FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1) <= 1.35 && !view.completed) { view.completed = true; onFlightArrived?.(); }
+    }
     if (exploring && !controls.current.locked && !explorerArrived.current) {
       explorerArrived.current = true;
       onExplorerArrival?.();
     }
     const focusMesh = earthExploring ? earth.current : moon.current;
-    if (exploring && focusMesh && onLunarProjection) {
+    if (exploring && !missionFlight && focusMesh && onLunarProjection) {
       projectionTimer.current += dt;
       if (projectionTimer.current > 1 / 30) {
         projectionTimer.current = 0;
@@ -418,7 +497,7 @@ export function SolarScene({ missionTransfer, onTransferReady, startup, onStartu
   return (
     <>
       <color attach="background" args={['#03070d']} />
-      <ambientLight intensity={.035} />
+      <ambientLight intensity={missionFlight ? .12 : .035} />
       <DeepSpace />
       <StarField />
       <group ref={physicalSystem}>
@@ -428,7 +507,8 @@ export function SolarScene({ missionTransfer, onTransferReady, startup, onStartu
       <group ref={earthSystem} onClick={(event) => {
         if (!selected && !intro && !controls.current.locked) { event.stopPropagation(); onSystemFocus(); }
       }}>
-        {missionTransfer && onTransferReady && <TransferTrajectory moon={transferMoon} onComplete={onTransferReady} />}
+        {missionTransfer && onTransferReady && <TransferTrajectory moon={transferMoon} flight={missionFlight} onComplete={onTransferReady} />}
+        {missionFlight && flightTelemetry && <FlightRocket map={rocketMap} route={flightRoute} telemetry={flightTelemetry} size={flightSpriteSize} />}
         {!selected && !intro && <>
           <mesh><sphereGeometry args={[6, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
           <mesh ref={moonHit}><sphereGeometry args={[3, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>

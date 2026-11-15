@@ -3,12 +3,12 @@ import { ActivityIndicator, StyleSheet } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-export function MoonLaunchVideo({ active, visible, onComplete, onError }: { active: boolean; visible: boolean; onComplete: () => void; onError: () => void }) {
+export function MoonLaunchVideo({ active, visible, onComplete, onError, source }: { source?: number; active: boolean; visible: boolean; onComplete: () => void; onError: () => void }) {
   const [ready, setReady] = useState(false);
   const opacity = useSharedValue(0);
   useEffect(() => { opacity.set(withTiming(visible && ready ? 1 : 0, { duration: 350 })); }, [visible, ready, opacity]);
   const fade = useAnimatedStyle(() => ({ opacity: opacity.get() }));
-  const player = useVideoPlayer(require('../../../KakaoTalk_Video_2026-11-15-12-41-13.mp4'), player => {
+  const player = useVideoPlayer(source ?? require('../../../KakaoTalk_Video_2026-11-15-12-41-13.mp4'), player => {
     player.loop = false;
   });
   useEffect(() => {
