@@ -4,7 +4,7 @@ import Animated, { cancelAnimation, FadeIn, FadeOut, ReduceMotion, useAnimatedSt
 import { scheduleOnRN } from 'react-native-worklets';
 import { theme } from '../../theme';
 import { JourneyVideoFade } from './journey-countdown';
-import { MoonLaunchVideo } from './moon-launch-video';
+import { ArrivalVideo } from './arrival-video';
 import { LunarPanorama } from './lunar-panorama';
 import { MissionEnding } from './mission-ending';
 import { RocketCompanion } from './rocket-companion';
@@ -70,7 +70,7 @@ export function LunarArrival({ site, plan, active, onReady, onHome, onPrepareHom
   const surface = sky.status === 'loaded' ? sky : undefined;
   return <>
     {!(stage === 'panorama' && loaded) && <JourneyVideoFade active={active && stage === 'fade'} onComplete={play} />}
-    {!(stage === 'panorama' && loaded) && <MoonLaunchVideo autoplay source={require('../../../KakaoTalk_Video_2026-11-15-15-26-33.mp4')} visible={stage === 'video' || (stage === 'panorama' && !loaded)} active={active && stage === 'video'} onComplete={finish} onError={finish} />}
+    {!(stage === 'panorama' && loaded) && <ArrivalVideo visible={stage === 'video' || (stage === 'panorama' && !loaded)} active={active && stage === 'video'} onComplete={finish} onError={finish} />}
     {stage === 'panorama' && <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 880, backgroundColor: '#03070d' }]}>
       {Array.from({ length: 85 }, (_, i) => <View key={i} style={{ position: 'absolute', left: `${(i * 73.71) % 100}%`, top: `${(i * 41.13) % 100}%`, width: i % 5 === 0 ? 2 : 1, height: i % 5 === 0 ? 2 : 1, borderRadius: 1, backgroundColor: '#fff', opacity: .2 + (i % 4) * .15 }} />)}
     </Animated.View>}

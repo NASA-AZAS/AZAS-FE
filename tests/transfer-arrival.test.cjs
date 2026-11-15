@@ -30,7 +30,7 @@ test('manual and automatic arrival request the same skip operation', () => {
   mod.exports.requestFlightSkip(playback);
   assert.equal(playback.skip, true);
   const hud = readFileSync('src/screens/solar-system/moon-flight-hud.tsx', 'utf8');
-  assert.match(hud, /flight.remainingSeconds > 3/);
+  assert.match(hud, /flight.remainingSeconds > \.5/);
   assert.match(hud, /autoSkipped.current = true;\s*update\('skip'\)/);
   assert.match(hud, /onPress=\{\(\) => update\('skip'\)\}/);
   assert.match(hud, /requestFlightSkip\(playback.current\)/);

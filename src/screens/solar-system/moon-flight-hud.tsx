@@ -42,7 +42,7 @@ export function MoonFlightHud({ telemetry, playback, route }: { telemetry: Mutab
     setSettings({ ...playback.current });
   }, [playback, telemetry]);
   useEffect(() => {
-    if (autoSkipped.current || flight.arrived || playback.current.paused || flight.remainingSeconds > 3 || flight.remainingSeconds <= 0) return;
+    if (autoSkipped.current || flight.arrived || playback.current.paused || flight.remainingSeconds > .5 || flight.remainingSeconds <= 0) return;
     autoSkipped.current = true;
     update('skip');
   }, [flight, playback, update]);
