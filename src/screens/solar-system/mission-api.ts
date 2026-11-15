@@ -97,7 +97,10 @@ export async function loadTouchdownDay(runId: string, touchdownUtc: string, sign
 
 type LaunchOptions = {
   touchdownUtc: string | null;
-  launchSites: { launchSiteId: number; launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number; candidates: { launchUtc: string; candidateId: string }[] }[];
+  launchSites: {
+    launchSiteId: number; launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number;
+    candidates: { candidateId: string; launchUtc: string; tliUtc: string; lunarArrivalUtc: string; proposedLandingUtc: string }[];
+  }[];
 };
 
 export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promise<LaunchPlan | null> {
@@ -115,11 +118,16 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promis
   if (!result.touchdownUtc) return null;
   return {
     runId, touchdownUtc: result.touchdownUtc,
-    sites: result.launchSites.map(site => ({
-      id: `launch-${site.launchSiteId}`, ...launchSiteLabel(site.launchSiteCode),
-      latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
-      launchAt: site.candidates[0]?.launchUtc ?? null, candidateId: site.candidates[0]?.candidateId ?? null,
-    })),
+    sites: result.launchSites.map(site => {
+      const [candidate] = site.candidates;
+      return {
+        id: `launch-${site.launchSiteId}`, ...launchSiteLabel(site.launchSiteCode),
+        latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
+        launchAt: candidate?.launchUtc ?? null, candidateId: candidate?.candidateId ?? null,
+        tliUtc: candidate?.tliUtc ?? null, lunarArrivalUtc: candidate?.lunarArrivalUtc ?? null,
+        proposedLandingUtc: candidate?.proposedLandingUtc ?? null,
+      };
+    }),
   };
 }
 
