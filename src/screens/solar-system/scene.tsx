@@ -3,8 +3,8 @@ import { useReducedMotion, type SharedValue } from 'react-native-reanimated';
 import { useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import * as THREE from 'three';
 import { useLoader } from './render-surface';
-import { launchSites } from './launch-sites';
-import { lunarSites } from './lunar-sites';
+import type { LaunchSite } from './launch-sites';
+import type { LunarSite } from './lunar-sites';
 import { Sun } from './sun';
 import { TransferTrajectory } from './transfer-trajectory';
 import { FlightRocket } from './flight-rocket';
@@ -22,6 +22,8 @@ export type ViewControls = {
 };
 export type LunarProjection = { id: string; x: number; y: number; visible: boolean; opacity?: number }[];
 type Props = {
+  lunarSites: LunarSite[];
+  launchSites: LaunchSite[];
   startup: 'loading' | 'flight' | 'done';
   onStartupDone: () => void;
   exploring?: boolean;
@@ -167,7 +169,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ missionFlight, flightActive, flightTelemetry, flightPlayback, flightMarkers, flightLaunchId, flightLandingId, onFlightArrived, missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+export function SolarScene({ lunarSites, launchSites, missionFlight, flightActive, flightTelemetry, flightPlayback, flightMarkers, flightLaunchId, flightLandingId, onFlightArrived, missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap, rocketMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),

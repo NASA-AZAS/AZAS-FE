@@ -75,6 +75,8 @@ export function LunarPanorama({ site, onReady, landed = false, surfaceActive = t
       pitch.set(withTiming(targetPitch.get(), timing));
     }), [heading, pitch, targetHeading, targetPitch, autoRotate]);
   const source = lunarPanoramas[siteId];
+  useEffect(() => { if (source == null) onReady?.(); }, [onReady, source]);
+  if (source == null) return <Text style={styles.failure}>Panorama unavailable for this landing site.</Text>;
   return <View style={{ flex: 1, minHeight: 0 }}>
     <PanoramaBoundary>
       <GestureDetector gesture={drag} touchAction="none">

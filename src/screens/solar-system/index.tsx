@@ -10,7 +10,8 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { Canvas } from './render-surface';
 import { SolarScene, type LunarProjection, type ViewControls } from './scene';
 import { SpaceHud, type BodyId } from './space-hud';
-import { launchSites } from './launch-sites';
+import { loadLandingSites, type LaunchPlan } from './mission-api';
+import type { LaunchSite } from './launch-sites';
 import { LaunchOverview } from './launch-overview';
 import { LaunchSiteInfo } from './launch-site-info';
 import { LunarArrival } from './lunar-arrival';
@@ -29,11 +30,11 @@ import { localMinimaps } from './local-minimap-assets';
 import { lunarPanoramas } from './lunar-panorama-assets';
 import { LunarPanorama } from './lunar-panorama';
 import { ArrivalDatePicker } from './arrival-date-picker';
-import type { ArrivalWindow } from './arrival-windows';
 import { PolarOverview } from './polar-overview';
-import { NASA_RED, lunarSites, type LunarSite } from './lunar-sites';
+import { NASA_RED, type LunarSite } from './lunar-sites';
 import { viewDistance, INITIAL_MOON_ANGLE, introMoonDistance } from './scale';
 
+const noLaunchSites: LaunchSite[] = [];
 const initialView = (): ViewControls => ({ yaw: .18, pitch: .48, zoom: 1, locked: false, revision: 0, fromBody: null });
 const sceneTouchStyle: ViewStyle & { touchAction?: 'none' } = Platform.OS === 'web' ? { touchAction: 'none' } : {};
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
@@ -66,10 +67,34 @@ export function SolarSystemScreen() {
   const [earthStage, setEarthStage] = useState(false);
   const earthStageRef = useRef(false);
   const chosenLanding = useRef<LunarSite | null>(null);
-  const chosenArrival = useRef<ArrivalWindow | null>(null);
+  const [launchPlan, setLaunchPlan] = useState<LaunchPlan | null>(null);
+  const launchSites = launchPlan?.sites ?? noLaunchSites;
+  const [lunarSites, setLunarSites] = useState<LunarSite[]>([]);
+  const [catalogMessage, setCatalogMessage] = useState('Loading landing sites…');
+  const [catalogAttempt, setCatalogAttempt] = useState(0);
+  const [catalogPending, setCatalogPending] = useState(true);
+  useEffect(() => {
+    let current = true;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20_000);
+    setCatalogPending(true);
+    setCatalogMessage('Loading landing sites…');
+    loadLandingSites(controller.signal).then(sites => {
+      if (!current) return;
+      setLunarSites(sites);
+      setCatalogMessage(sites.length ? '' : 'No landing sites are available.');
+    }).catch(() => {
+      if (current) setCatalogMessage('Unable to load landing sites.');
+    }).finally(() => {
+      clearTimeout(timer);
+      if (current) setCatalogPending(false);
+    });
+    return () => { current = false; clearTimeout(timer); controller.abort(); };
+  }, [catalogAttempt]);
   const [choosingArrival, setChoosingArrival] = useState(false);
   const [launchSiteId, setLaunchSiteId] = useState<string | null>(null);
   const [launchDetail, setLaunchDetail] = useState<string | null>(null);
+  const detailSite = launchSites.find(site => site.id === launchDetail);
   const [missionStage, setMissionStage] = useState<'idle' | 'countdown' | 'fade' | 'video' | 'return' | 'ready' | 'flight' | 'arrived'>('idle');
   const missionStageRef = useRef<'idle' | 'countdown' | 'fade' | 'video' | 'return' | 'ready' | 'flight' | 'arrived'>('idle');
   const previewVisible = missionStage === 'ready' || missionStage === 'countdown' || missionStage === 'fade';
@@ -201,11 +226,11 @@ export function SolarSystemScreen() {
     moveTo('moon', false, true);
   };
   const openExplorer = (launchHandoff = false) => { if (launchLocked.current && !launchHandoff) return; setGuideVisible(false); setExploring(true); setCandidate(null); moveTo('moon', false, false, launchHandoff); controls.current.revision += 1; controls.current.locked = true; launchLocked.current = true; setLaunchBusy(true); };
-  const chooseLanding = (arrival: ArrivalWindow) => {
+  const chooseLanding = (plan: LaunchPlan) => {
     if (!candidate || launchLocked.current || selectionMoving.current) return;
     cancelTour();
     chosenLanding.current = candidate;
-    chosenArrival.current = arrival;
+    setLaunchPlan(plan);
     setChoosingArrival(false);
     setGuideVisible(false);
     setCandidate(null);
@@ -213,6 +238,13 @@ export function SolarSystemScreen() {
     earthStageRef.current = true; setEarthStage(true);
     moveTo('earth');
     launchLocked.current = true; setLaunchBusy(true);
+  };
+  const changeLandingSite = () => {
+    if (launchLocked.current || selectionMoving.current) return;
+    earthStageRef.current = false; setEarthStage(false);
+    setLaunchPlan(null); setLaunchSiteId(null); setLunarPoints([]);
+    chosenLanding.current = null;
+    openExplorer();
   };
   const selectLaunchSite = useCallback((id: string) => {
     if (missionStageRef.current !== 'idle' || launchLocked.current || controls.current.locked || selectionMoving.current) return;
@@ -259,7 +291,7 @@ export function SolarSystemScreen() {
     selectionFrame.current = requestAnimationFrame(restore);
   };
   const openTransferPreview = () => {
-    if (!launchDetail || launchLocked.current || missionStageRef.current !== 'idle') return;
+    if (!launchDetail || !detailSite?.launchAt || launchLocked.current || missionStageRef.current !== 'idle') return;
     confirmedLaunch.current = launchDetail;
     setLaunchSiteId(launchDetail);
     previousPause.current = paused;
@@ -384,7 +416,7 @@ export function SolarSystemScreen() {
             gl={{ antialias: true, alpha: false }}
             >
             <Suspense fallback={null}>
-              <SolarScene missionFlight={missionFlying} flightActive={active && missionStage === 'flight'} flightTelemetry={flightTelemetry} flightPlayback={flightPlayback} flightMarkers={flightMarkers} flightLaunchId={confirmedLaunch.current ?? undefined} flightLandingId={chosenLanding.current?.id} onFlightArrived={flightArrived} missionTransfer={missionStage !== 'idle'} onTransferReady={transferReady} earthExploring={earthStage} startup={startup} onStartupDone={startupDone} onExplorerArrival={explorerArrival} candidateSelected={candidate !== null} exploring={exploring} onLunarProjection={setLunarPoints} speed={speed} simulationSeconds={simulationSeconds} onMoonIntro={openMoonIntro} systemView={systemView} onSystemFocus={openEarthSystem} intro={intro} controls={controls} selected={selected} paused={paused || !active || startup !== 'done'} onReady={ready} />
+              <SolarScene lunarSites={lunarSites} launchSites={launchSites} missionFlight={missionFlying} flightActive={active && missionStage === 'flight'} flightTelemetry={flightTelemetry} flightPlayback={flightPlayback} flightMarkers={flightMarkers} flightLaunchId={confirmedLaunch.current ?? undefined} flightLandingId={chosenLanding.current?.id} onFlightArrived={flightArrived} missionTransfer={missionStage !== 'idle'} onTransferReady={transferReady} earthExploring={earthStage} startup={startup} onStartupDone={startupDone} onExplorerArrival={explorerArrival} candidateSelected={candidate !== null} exploring={exploring} onLunarProjection={setLunarPoints} speed={speed} simulationSeconds={simulationSeconds} onMoonIntro={openMoonIntro} systemView={systemView} onSystemFocus={openEarthSystem} intro={intro} controls={controls} selected={selected} paused={paused || !active || startup !== 'done'} onReady={ready} />
             </Suspense>
           </Canvas>
         </SceneBoundary>
@@ -393,7 +425,7 @@ export function SolarSystemScreen() {
         onReset={reset} loading={loading} error={error} /></Animated.View>}
       {exploring && <>
         {(candidate || launchDetail) && <Animated.View entering={FadeIn.duration(350)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '100%', backgroundColor: '#03070d' }} pointerEvents="none">{Array.from({ length: 85 }, (_, i) => <View key={i} style={{ position: 'absolute', left: `${(i * 73.71) % 100}%`, top: `${(i * 41.13) % 100}%`, width: i % 5 === 0 ? 2 : 1, height: i % 5 === 0 ? 2 : 1, borderRadius: 1, backgroundColor: '#fff', opacity: .2 + (i % 4) * .15 }} />)}</Animated.View>}
-        {candidate && <Animated.View entering={FadeIn.duration(350)} style={{ position: 'absolute', left: 76, top: 20, width: Math.min(width * .54 - 56, height - 100), height: Math.min(width * .54 - 56, height - 100) + 60 }}><PolarOverview selected={candidate} onSelect={selectCandidate} /></Animated.View>}
+        {candidate && <Animated.View entering={FadeIn.duration(350)} style={{ position: 'absolute', left: 76, top: 20, width: Math.min(width * .54 - 56, height - 100), height: Math.min(width * .54 - 56, height - 100) + 60 }}><PolarOverview lunarSites={lunarSites} selected={candidate} onSelect={selectCandidate} /></Animated.View>}
         <Animated.View key={previewVisible ? 'transfer-labels' : 'explorer-labels'} entering={previewVisible ? FadeIn.duration(650) : undefined} pointerEvents="box-none" style={[StyleSheet.absoluteFill, candidate && { right: '46%' }]}>
           {!candidate && !launchDetail && (missionStage === 'idle' || previewVisible) && lunarPoints.filter(p => p.visible && p.id !== 'South Pole Surface' && p.id !== 'earth-select-anchor' && (missionStage === 'idle' || p.id === 'transfer-moon' || p.id === 'transfer-earth')).map(point => point.id === 'transfer-earth' || point.id === 'transfer-moon' ? <View key={point.id} pointerEvents="none" style={{ position: 'absolute', left: point.x - 70, top: point.y - 38, width: 140, height: 110, alignItems: 'center' }}>
               <Text style={{ color: '#fff', fontSize: 11 }}>{point.id === 'transfer-earth' ? 'Departure' : 'Destination'}</Text>
@@ -412,8 +444,8 @@ export function SolarSystemScreen() {
               </View>)}
         </Animated.View>
         {candidate && <View style={{ position: 'absolute', right: 16, top: 20, bottom: 20, width: '50%', padding: 12, gap: 12, ...theme.outlineSurface, borderRadius: 14 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>{choosingArrival && <Pressable accessibilityRole="button" accessibilityLabel="Back to panorama" onPress={() => setChoosingArrival(false)} style={{ padding: 8 }}><Ionicons name="arrow-back-outline" size={18} color="#fff" /></Pressable>}<Text style={{ color: '#fff', fontSize: 16 }}>{candidate.name} | {choosingArrival ? 'Arrival Date' : 'DEM 360° Panorama'}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Close candidate map" onPress={closeCandidate} style={{ padding: 10 }}><Text style={{ color: '#fff' }}>✕</Text></Pressable></View>
-          {choosingArrival ? <ArrivalDatePicker key={candidate.id} onConfirm={chooseLanding} /> : <>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>{choosingArrival && <Pressable accessibilityRole="button" accessibilityLabel="Back to panorama" onPress={() => setChoosingArrival(false)} style={{ padding: 8 }}><Ionicons name="arrow-back-outline" size={18} color="#fff" /></Pressable>}<Text style={{ color: '#fff', fontSize: 16 }}>{candidate.name} | {choosingArrival ? 'Touchdown' : 'DEM 360° Panorama'}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Close candidate map" onPress={closeCandidate} style={{ padding: 10 }}><Text style={{ color: '#fff' }}>✕</Text></Pressable></View>
+          {choosingArrival ? <ArrivalDatePicker siteId={candidate.landingSiteId} key={candidate.landingSiteId} onConfirm={chooseLanding} /> : <>
           <LunarPanorama key={candidate.id} site={candidate} />
           <Pressable testID="choose-landing-site" accessibilityRole="button" accessibilityLabel="Confirm Landing Site" onPress={() => setChoosingArrival(true)} style={({ pressed }) => ({ minHeight: 48, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', ...theme.outlineSurface, borderWidth: .3, borderRadius: 8, opacity: pressed ? .65 : 1 })}>
             <MaterialCommunityIcons name="bullseye" size={19} color="#fff" accessible={false} />
@@ -423,26 +455,32 @@ export function SolarSystemScreen() {
           </>}
         </View>}
       </>}
-      {launchDetail && <>
+      {detailSite && <>
         <Animated.View entering={FadeIn.duration(350)} style={{ position: 'absolute', left: 76, top: 20, width: Math.min(width * .5 - 108, height - 100), height: Math.min(width * .5 - 108, height - 100) + 60 }}>
-          <LaunchOverview selected={launchSites.find(site => site.id === launchDetail)!} onSelect={selectLaunchSite} />
+          <LaunchOverview launchSites={launchSites} selected={detailSite} onSelect={selectLaunchSite} />
         </Animated.View>
         <View testID="launch-detail-panel" style={{ position: 'absolute', right: 16, top: 20, bottom: 20, width: '50%', padding: 12, ...theme.outlineSurface, borderRadius: 14 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text numberOfLines={2} style={{ flex: 1, color: '#fff', fontSize: 16 }}>{launchSites.find(site => site.id === launchDetail)?.name}</Text>
+            <Text numberOfLines={2} style={{ flex: 1, color: '#fff', fontSize: 16 }}>{detailSite.name}</Text>
             <Pressable accessibilityRole="button" accessibilityLabel="Close launch site" onPress={closeLaunchDetail} style={{ padding: 10 }}><Text style={{ color: '#fff' }}>✕</Text></Pressable>
           </View>
-          {chosenArrival.current && <LaunchSiteInfo siteId={launchDetail} arrivalAt={chosenArrival.current.arrivalAt} />}
+          <LaunchSiteInfo site={detailSite} />
           {launchVideoError && <Text style={{ color: theme.colors.error, fontSize: 11, marginBottom: 6 }}>Unable to play the video. Please try again.</Text>}
-          <Pressable testID="confirm-launch-site" accessibilityRole="button" accessibilityLabel="Next Stop The Moon" onPress={openTransferPreview} style={({ pressed }) => ({ minHeight: 48, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', ...theme.outlineSurface, borderWidth: .3, borderRadius: 8, opacity: pressed ? .65 : 1 })}>
+          <Pressable testID="confirm-launch-site" accessibilityRole="button" accessibilityLabel="Next Stop The Moon" disabled={!detailSite.launchAt} accessibilityState={{ disabled: !detailSite.launchAt }} onPress={openTransferPreview} style={({ pressed }) => ({ minHeight: 48, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', ...theme.outlineSurface, borderWidth: .3, borderRadius: 8, opacity: !detailSite.launchAt ? .4 : pressed ? .65 : 1 })}>
             <Ionicons name="rocket-outline" size={19} color="#fff" accessible={false} />
             <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>Next Stop The Moon</Text>
             <Ionicons name="arrow-forward-outline" size={18} color="#fff" accessible={false} />
           </Pressable>
         </View>
       </>}
-      {missionStage === 'idle' && earthStage && !launchDetail && guideVisible && chosenArrival.current && <LaunchTimeList arrivalAt={chosenArrival.current.arrivalAt} selectedId={launchSiteId} onSelect={selectLaunchSite} />}
-      {missionStage === 'idle' && exploring && !candidate && !launchDetail && guideVisible && <LunarGuide key={earthStage ? 'earth' : 'moon'} stage={earthStage ? 'earth' : 'moon'} onReady={guideReady} polePoint={lunarPoints.find(p => p.id === 'South Pole Surface')} clusterPoint={earthStage ? lunarPoints.find(p => p.id === 'earth-select-anchor') : lunarPoints.find(p => p.id === 'Site01')} onSelectCluster={() => { if (earthStage) { const point = lunarPoints.find(p => p.visible && p.id.startsWith('launch-')); if (point) selectLaunchSite(point.id); } else selectCandidate(lunarSites.find(site => site.id === 'Site01') ?? lunarSites[0]); }} />}
+      {exploring && !earthStage && guideVisible && catalogMessage !== '' && <View style={{ position: 'absolute', zIndex: 2, top: 24, right: 24, padding: 12, gap: 8, ...theme.outlineSurface, borderRadius: 8 }}>
+        <Text accessibilityLiveRegion="polite" style={{ color: theme.colors.text }}>{catalogMessage}</Text>
+        {!catalogPending && <Pressable accessibilityRole="button" onPress={() => setCatalogAttempt(value => value + 1)} style={{ paddingVertical: 8 }}>
+          <Text style={{ color: theme.colors.text }}>Retry landing sites</Text>
+        </Pressable>}
+      </View>}
+      {missionStage === 'idle' && earthStage && !launchDetail && guideVisible && launchPlan && <LaunchTimeList onChangeLanding={changeLandingSite} sites={launchSites} touchdownUtc={launchPlan.touchdownUtc} selectedId={launchSiteId} onSelect={selectLaunchSite} />}
+      {missionStage === 'idle' && exploring && !candidate && !launchDetail && guideVisible && <LunarGuide canSelect={earthStage ? launchSites.length > 0 : lunarSites.length > 0} key={earthStage ? 'earth' : 'moon'} stage={earthStage ? 'earth' : 'moon'} onReady={guideReady} polePoint={lunarPoints.find(p => p.id === 'South Pole Surface')} clusterPoint={earthStage ? lunarPoints.find(p => p.id === 'earth-select-anchor') : lunarPoints.find(p => p.id === 'Site01')} onSelectCluster={() => { if (earthStage) { const point = lunarPoints.find(p => p.visible && p.id.startsWith('launch-')); if (point) selectLaunchSite(point.id); } else if (lunarSites.length) selectCandidate(lunarSites.find(site => site.id === 'Site01') ?? lunarSites[0]); }} />}
       {(missionStage === 'fade' || missionStage === 'video') && <JourneyVideoFade active={active && missionStage === 'fade'} onComplete={fadeFinished} />}
       {(missionStage === 'countdown' || missionStage === 'fade' || missionStage === 'video') && <MoonLaunchVideo visible={missionStage === 'video'} active={active && missionStage === 'video'} onComplete={videoFinished} onError={videoFailed} />}
       {previewVisible && <Animated.View entering={FadeIn.duration(650)} testID="mission-transfer-ready" pointerEvents="box-none" style={StyleSheet.absoluteFill}>

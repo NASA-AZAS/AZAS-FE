@@ -36,7 +36,8 @@ export function PanoramaMinimap({ site, heading, horizontalFov, side = 'left', s
     </View>
     <View testID="panorama-site-conditions" style={{ width: SIZE + 1, gap: 6 }}>
       {metrics.map(metric => {
-        const value = siteConditions[site.id][metric.key];
+        const value = siteConditions[site.id]?.[metric.key];
+        if (value == null) return null;
         return <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={value} />;
       })}
     </View>

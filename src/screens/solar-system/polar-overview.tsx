@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { PixelRatio, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, useAnimatedReaction, runOnJS, withTiming, Easing, cancelAnimation, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
-import { lunarSites, mosaicPoint, NASA_RED, type LunarSite } from './lunar-sites';
+import { mosaicPoint, NASA_RED, type LunarSite } from './lunar-sites';
 
 function MapTile({ source, x, y, width, height, cx, cy, zoom }: { source: number; x: number; y: number; width: number; height: number; cx: number; cy: number; zoom: SharedValue<number> }) {
   const style = useAnimatedStyle(() => ({ left: cx + (x - cx) * zoom.get(), top: cy + (y - cy) * zoom.get(), width: width * zoom.get(), height: height * zoom.get() }));
@@ -20,7 +20,7 @@ function OverviewPin({ site, selected, zoom, x, y, cx, cy, onSelect }: { site: L
   </AnimatedPressable>;
 }
 
-export function PolarOverview({ selected, onSelect }: { selected: LunarSite; onSelect: (site: LunarSite) => void }) {
+export function PolarOverview({ lunarSites, selected, onSelect }: { lunarSites: LunarSite[]; selected: LunarSite; onSelect: (site: LunarSite) => void }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const zoom = useSharedValue(1), panX = useSharedValue(0), panY = useSharedValue(0);
   const [viewportState, setViewportState] = useState({ zoom: 1, x: 0, y: 0 });
