@@ -66,5 +66,5 @@ export const initialFlightTelemetry = (route?: TransferRoute): FlightTelemetry =
 });
 export type FlightPlayback = { speed: number; paused: boolean; skip: boolean };
 export type FlightMarkers = { earthX: number; earthY: number; earthVisible: boolean; moonX: number; moonY: number; moonVisible: boolean; sunX: number; sunY: number; sunVisible: boolean };
-
+//
 export function requestFlightSkip(playback: FlightPlayback) { playback.skip = true; }
