@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useLayoutEffect, useState, type ReactNode } from 'react';
 
 const BACKGROUND = '#191c22';
 const measure = () => {
@@ -13,25 +13,43 @@ const measure = () => {
 export function AppFrame({ children }: { children: ReactNode }) {
   const embedded = typeof window !== 'undefined' && window.self !== window.top;
   const [viewport, setViewport] = useState(() => typeof window === 'undefined' ? { width: 844, height: 390, left: 0, top: 0 } : measure());
-  useEffect(() => {
+  useLayoutEffect(() => {
     const meta = document.querySelector('meta[name="viewport"]');
     meta?.setAttribute('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
     const update = () => setViewport(measure());
+    const preventDefault = (event: Event) => event.preventDefault();
+    document.addEventListener('dragstart', preventDefault);
+    if (!embedded) {
+      window.scrollTo(0, 0);
+      document.addEventListener('touchmove', preventDefault, { passive: false });
+      document.addEventListener('wheel', preventDefault, { passive: false });
+      document.addEventListener('selectstart', preventDefault);
+    }
     update(); window.addEventListener('resize', update); window.visualViewport?.addEventListener('resize', update); window.visualViewport?.addEventListener('scroll', update);
-    return () => { window.removeEventListener('resize', update); window.visualViewport?.removeEventListener('resize', update); window.visualViewport?.removeEventListener('scroll', update); };
-  }, []);
+    const initialFrame = requestAnimationFrame(update);
+    return () => {
+      cancelAnimationFrame(initialFrame);
+      document.removeEventListener('dragstart', preventDefault);
+      document.removeEventListener('touchmove', preventDefault);
+      document.removeEventListener('wheel', preventDefault);
+      document.removeEventListener('selectstart', preventDefault);
+      window.removeEventListener('resize', update); window.visualViewport?.removeEventListener('resize', update); window.visualViewport?.removeEventListener('scroll', update);
+    };
+  }, [embedded]);
   // Explicit logical dimensions prevent WebKit from shrinking percentage sizes a second time under iframe zoom.
-  const globalStyle = <style>{`html,body,#root{margin:0;width:${embedded ? `${viewport.width}px` : '100%'};height:${embedded ? `${viewport.height}px` : '100%'};background:${BACKGROUND};}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}body{overflow:hidden;}`}</style>;
+  const globalStyle = <style>{`html,body,#root{margin:0;width:${embedded ? `${viewport.width}px` : '100%'};height:${embedded ? `${viewport.height}px` : '100%'};background:${BACKGROUND};}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}html,body{overflow:hidden;overscroll-behavior:none;}${embedded ? '' : 'html,body{position:fixed;inset:0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}'}`}</style>;
   if (embedded) return <>{globalStyle}{children}</>;
   const landscape = viewport.width >= viewport.height;
   const width = Math.max(viewport.width, landscape ? 844 : 390);
   const height = Math.max(viewport.height, landscape ? 390 : 844);
   const scale = Math.min(1, viewport.width / width, viewport.height / height);
   const shiftRight = Math.min(24, Math.max(0, (viewport.width - width * scale) / 2));
+  const left = Math.round((viewport.width - width * scale) / 2 + shiftRight);
+  const top = Math.round((viewport.height - height * scale) / 2);
   // Layout zoom avoids a transformed iframe's separate paint and touch coordinate spaces on mobile WebKit.
-  return <>{globalStyle}<div data-testid="web-app-background" style={{ position: 'fixed', left: viewport.left, top: viewport.top, width: viewport.width, height: viewport.height, display: 'flex', alignItems: 'center', justifyContent: 'center', background: BACKGROUND }}>
-    <div style={{ position: 'relative', left: shiftRight, width: width * scale, height: height * scale, flexShrink: 0 }}>
-      <iframe data-testid="web-app-frame" title="AZAS exploration" src={window.location.href} allow="autoplay; fullscreen" style={{ position: 'absolute', left: 0, top: 0, width, height, border: 0, display: 'block', zoom: scale, background: BACKGROUND }} />
+  return <>{globalStyle}<div data-testid="web-app-background" style={{ position: 'fixed', left: viewport.left, top: viewport.top, width: viewport.width, height: viewport.height, overflow: 'hidden', background: BACKGROUND }}>
+    <div style={{ position: 'absolute', left, top, width: width * scale, height: height * scale, overflow: 'hidden' }}>
+      <iframe data-testid="web-app-frame" title="AZAS exploration" src={window.location.href} allow="autoplay; fullscreen" scrolling="no" style={{ position: 'absolute', left: 0, top: 0, width, height, border: 0, display: 'block', zoom: scale, background: BACKGROUND }} />
     </div>
   </div></>;
 }
