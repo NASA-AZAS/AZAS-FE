@@ -97,7 +97,7 @@ export async function loadTouchdownDay(runId: string, touchdownUtc: string, sign
 
 type LaunchOptions = {
   touchdownUtc: string | null;
-  launchSites: { launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number; candidates: { launchUtc: string; candidateId: string }[] }[];
+  launchSites: { launchSiteId: number; launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number; candidates: { launchUtc: string; candidateId: string }[] }[];
 };
 
 export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promise<LaunchPlan | null> {
@@ -116,7 +116,8 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promis
   return {
     runId, touchdownUtc: result.touchdownUtc,
     sites: result.launchSites.map(site => ({
-      ...launchSiteLabel(site.launchSiteCode), latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
+      id: `launch-${site.launchSiteId}`, ...launchSiteLabel(site.launchSiteCode),
+      latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
       launchAt: site.candidates[0]?.launchUtc ?? null, candidateId: site.candidates[0]?.candidateId ?? null,
     })),
   };

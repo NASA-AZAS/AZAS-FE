@@ -6,8 +6,8 @@ import { launchSiteProfiles } from './launch-site-profiles';
 import type { LaunchSite } from './launch-sites';
 
 export const LaunchSiteInfo = memo(function LaunchSiteInfo({ site }: { site: LaunchSite }) {
-  const profile = launchSiteProfiles[site.id];
-  const credit = credits[site.id.replace('launch-', '') as keyof typeof credits];
+  const profile = site.profileId ? launchSiteProfiles[site.profileId] : undefined;
+  const credit = site.profileId ? credits[site.profileId.replace('launch-', '') as keyof typeof credits] : undefined;
   const launchAt = site.launchAt;
   const { height } = useWindowDimensions();
   const side = Math.min(190, Math.max(110, (height - 190) * .72));

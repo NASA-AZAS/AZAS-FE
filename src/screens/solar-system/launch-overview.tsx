@@ -16,7 +16,7 @@ function WorldImage({ size, zoom, panX, panY, wrap }: MapView & { wrap: number }
   return <Animated.Image source={require('../../../assets/textures/earth.jpg')} resizeMode="stretch" style={[{ position: 'absolute', left: -size / 2, top: 0, width: size * 2, height: size }, style]} />;
 }
 function LaunchPin({ site, selected, onSelect, size, zoom, panX, panY, wrap }: MapView & { site: LaunchSite; selected: boolean; onSelect: (id: string) => void; wrap: number }) {
-  const callout = hasLaunchCallout(site.id);
+  const callout = hasLaunchCallout(site);
   const style = useAnimatedStyle(() => ({
     transform: [
       { translateX: size / 2 + site.longitude / 180 * size * zoom.get() + panX.get() + wrap * size * 2 * zoom.get() - (callout ? 175 : 70) },
