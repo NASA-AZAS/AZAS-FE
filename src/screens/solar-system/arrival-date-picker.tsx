@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 import { theme } from '../../theme';
 import { defaultDeadline, FailedAnalysis, loadLaunchPlan, startAnalysis, type LaunchPlan } from './mission-api';
+import { TouchdownDayVisibility } from './touchdown-day-visibility';
 
 type Result =
   | { status: 'idle' | 'loading' | 'empty' }
@@ -59,6 +60,7 @@ export function ArrivalDatePicker({ siteId, onConfirm }: { siteId: number; onCon
     {result.status === 'error' && <Text accessibilityRole="alert" style={styles.label}>{result.message}</Text>}
     {result.status === 'ready' ? <>
       <Text testID="first-touchdown" style={styles.title}>{result.plan.touchdownUtc.replace('T', ' ').slice(0, 19)} UTC</Text>
+      <TouchdownDayVisibility key={result.plan.runId + result.plan.touchdownUtc} runId={result.plan.runId} touchdownUtc={result.plan.touchdownUtc} />
       {result.plan.sites.every(site => !site.launchAt) && <Text style={styles.caption}>No launch opportunities for this touchdown.</Text>}
       {result.plan.sites.length > 0 && <Pressable accessibilityRole="button" onPress={() => onConfirm(result.plan)} style={styles.button}>
         <Text style={styles.label}>View launch sites</Text>
