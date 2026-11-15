@@ -50,3 +50,7 @@ Photo/summary refinement: photos are larger (144px at 844×390, up to 190px on l
 
 Detail refinement: launch time now has a thin white vertical separator and geographic coordinates on its right, shown to three decimal places with N/S/E/W. The world map starts at 3× and allows up to 12× zoom.
 
+Florida label separation: Kennedy Space Center and Cape Canaveral Space Force Station retain their exact pin coordinates, but use opposite screen-sized bent leader lines (Kennedy upper-left, Cape lower-right). The shared callout is used on both the globe and flat map, keeps selected NASA RED styling, and provides a separate press target for each displaced name.
+
+Callout validation: typecheck passed. Browser confirmed the two displaced names have non-overlapping bounds, the Cape name selects its site, and no runtime errors occur. Native hardware was not directly tested.
+

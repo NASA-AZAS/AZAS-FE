@@ -12,6 +12,7 @@ import { SpaceHud, type BodyId } from './space-hud';
 import { launchSites } from './launch-sites';
 import { LaunchOverview } from './launch-overview';
 import { LaunchSiteInfo } from './launch-site-info';
+import { hasLaunchCallout, LaunchSiteCallout } from './launch-site-callout';
 import { LaunchTimeList } from './launch-time-list';
 import { LunarGuide } from './lunar-guide';
 import { StartupSplash } from './startup-splash';
@@ -315,11 +316,11 @@ export function SolarSystemScreen() {
         <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, candidate && { right: '46%' }]}>
           {!candidate && !launchDetail && lunarPoints.filter(p => p.visible && p.id !== 'South Pole Surface' && p.id !== 'earth-select-anchor').map(point => point.id.includes('Pole')
             ? <Text key={point.id} pointerEvents="none" style={{ position: 'absolute', left: point.x - 10, top: point.y - 7, width: 20, textAlign: 'center', color: '#fff', fontSize: 11 }}>{point.id === 'North Pole' ? 'N' : 'S'}</Text>
-            : <View key={point.id} pointerEvents="box-none" style={{ position: 'absolute', left: point.x - (earthStage ? 65 : 12), top: point.y - 12, width: earthStage ? 130 : 24, height: earthStage ? 64 : 24, zIndex: earthStage && launchSiteId === point.id ? 2 : 1 }}>
-                <Pressable accessibilityRole="button" accessibilityState={{ selected: earthStage && launchSiteId === point.id }} accessibilityLabel={`Open ${(earthStage ? launchSites : lunarSites).find(s => s.id === point.id)?.name}`} onPress={() => earthStage ? selectLaunchSite(point.id) : selectCandidate(lunarSites.find(s => s.id === point.id)!)} style={{ width: 24, height: 24, alignSelf: 'center', alignItems: 'center', justifyContent: 'center' }}>
+            : <View key={point.id} pointerEvents="box-none" style={{ position: 'absolute', left: point.x - (earthStage ? hasLaunchCallout(point.id) ? 175 : 65 : 12), top: point.y - (earthStage && hasLaunchCallout(point.id) ? 50 : 12), width: earthStage ? hasLaunchCallout(point.id) ? 350 : 130 : 24, height: earthStage ? hasLaunchCallout(point.id) ? 100 : 64 : 24, zIndex: earthStage && launchSiteId === point.id ? 2 : 1 }}>
+                <Pressable accessibilityRole="button" accessibilityState={{ selected: earthStage && launchSiteId === point.id }} accessibilityLabel={`Open ${(earthStage ? launchSites : lunarSites).find(s => s.id === point.id)?.name}`} onPress={() => earthStage ? selectLaunchSite(point.id) : selectCandidate(lunarSites.find(s => s.id === point.id)!)} style={[{ width: 24, height: 24, alignSelf: 'center', alignItems: 'center', justifyContent: 'center' }, earthStage && hasLaunchCallout(point.id) && { position: 'absolute', left: 163, top: 38 }]}>
                   <MaterialCommunityIcons name="circle-double" size={16} color={earthStage && launchSiteId === point.id ? NASA_RED : '#fff'} accessible={false} />
                 </Pressable>
-                {earthStage ? <Pressable accessibilityRole="button" accessibilityLabel={`Select ${launchSites.find(s => s.id === point.id)?.name}`} accessibilityState={{ selected: launchSiteId === point.id }} onPress={() => selectLaunchSite(point.id)} style={{ position: 'absolute', top: 23, left: 0, width: 130, minHeight: 32 }}>
+                {earthStage && hasLaunchCallout(point.id) ? <LaunchSiteCallout site={launchSites.find(site => site.id === point.id)!} selected={launchSiteId === point.id} onSelect={selectLaunchSite} /> : earthStage ? <Pressable accessibilityRole="button" accessibilityLabel={`Select ${launchSites.find(s => s.id === point.id)?.name}`} accessibilityState={{ selected: launchSiteId === point.id }} onPress={() => selectLaunchSite(point.id)} style={{ position: 'absolute', top: 23, left: 0, width: 130, minHeight: 32 }}>
                   <Text numberOfLines={1} ellipsizeMode="tail" style={{ textAlign: 'center', color: launchSiteId === point.id ? NASA_RED : '#fff', fontSize: 8 }}>{launchSites.find(s => s.id === point.id)?.name}</Text>
                 </Pressable> : <Text pointerEvents="none" style={{ position: 'absolute', top: 23, left: -28, width: 80, textAlign: 'center', color: '#fff', fontSize: 9 }}>{lunarSites.find(s => s.id === point.id)?.name}</Text>}
               </View>)}
