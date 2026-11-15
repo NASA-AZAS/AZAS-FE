@@ -42,7 +42,7 @@ function PanoramaScene({ source, heading, pitch, ready }: { source: number; head
   });
   return <mesh geometry={geometry}><meshBasicMaterial map={texture} /></mesh>;
 }
-export function LunarPanorama({ site, viewerHeight, scrollGesture }: { site: LunarSite; viewerHeight: number; scrollGesture: ReturnType<typeof Gesture.Native> }) {
+export function LunarPanorama({ site }: { site: LunarSite }) {
   const siteId = site.id;
   const [viewerSize, setViewerSize] = useState({ width: 1, height: 1 });
   const targetHeading = useSharedValue(0), targetPitch = useSharedValue(0);
@@ -52,20 +52,19 @@ export function LunarPanorama({ site, viewerHeight, scrollGesture }: { site: Lun
   }, [siteId, targetHeading, targetPitch, heading, pitch]);
   const [loading, setLoading] = useState(true);
   const ready = useMemo(() => () => setLoading(false), []);
-  const drag = useMemo(() => Gesture.Pan().maxPointers(1).minDistance(3).blocksExternalGesture(scrollGesture)
+  const drag = useMemo(() => Gesture.Pan().maxPointers(1).minDistance(3)
     .onChange(e => {
       targetHeading.set(targetHeading.get() - e.changeX * .0072);
       targetPitch.set(Math.max(-Math.PI / 2 + .02, Math.min(Math.PI / 2 - .02, targetPitch.get() + e.changeY * .0072)));
       const timing = { duration: 45, easing: Easing.out(Easing.quad) };
       heading.set(withTiming(targetHeading.get(), timing));
       pitch.set(withTiming(targetPitch.get(), timing));
-    }), [heading, pitch, targetHeading, targetPitch, scrollGesture]);
+    }), [heading, pitch, targetHeading, targetPitch]);
   const source = lunarPanoramas[siteId];
-  return <View style={{ gap: 10 }}>
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><Text style={styles.title}>DEM Panorama</Text><Text style={styles.note}>360° · {siteId}</Text></View>
+  return <View style={{ flex: 1, minHeight: 0 }}>
     <PanoramaBoundary>
       <GestureDetector gesture={drag} touchAction="none">
-        <View collapsable={false} testID="dem-panorama" accessibilityLabel={`${siteId} DEM panorama. Drag in any direction to look around.`} onLayout={e => setViewerSize(e.nativeEvent.layout)} style={[styles.viewer, { height: viewerHeight }]}>
+        <View collapsable={false} testID="dem-panorama" accessibilityLabel={`${siteId} DEM panorama. Drag in any direction to look around.`} onLayout={e => setViewerSize(e.nativeEvent.layout)} style={styles.viewer}>
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
             <Canvas camera={{ position: [0, 0, 0], rotation: [0, -Math.PI / 2, 0], fov: 65, near: .1, far: 30 }} gl={{ antialias: true }}>
               <Suspense fallback={null}><PanoramaScene source={source} heading={heading} pitch={pitch} ready={ready} /></Suspense>
@@ -80,8 +79,7 @@ export function LunarPanorama({ site, viewerHeight, scrollGesture }: { site: Lun
   </View>;
 }
 const styles = StyleSheet.create({
-  title: { color: '#fff', fontSize: 14 }, note: { color: '#98a7ba', fontSize: 10 },
-  viewer: { height: 270, overflow: 'hidden', borderRadius: 12, backgroundColor: '#000', borderWidth: .5, borderColor: '#454c57' },
+  viewer: { flex: 1, minHeight: 0, overflow: 'hidden', borderRadius: 12, backgroundColor: '#000', borderWidth: .5, borderColor: '#454c57' },
   orientation: { position: 'absolute', bottom: 10, alignSelf: 'center', color: '#c4ceda', fontSize: 10, fontVariant: ['tabular-nums'], padding: 6, backgroundColor: '#050a12bb', borderRadius: 4 },
   failure: { color: '#aab7c7', padding: 20 },
 });

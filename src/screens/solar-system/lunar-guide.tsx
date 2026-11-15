@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Svg, { Path, Circle, Text as SvgText } from 'react-native-svg';
 import { StyleSheet, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,7 +11,12 @@ const SPEECH_PAGES = [
   "See all those landing sites gathered near the Moon's south pole? That's no coincidence!",
   "Some craters may hide water ice, while nearby hills get plenty of sunlight. Both could make lunar landing and exploration easier! Let's take a closer look at where we could land!",
 ];
-export function LunarGuide({ polePoint, clusterPoint, onSelectCluster }: { polePoint?: { x: number; y: number; visible: boolean; opacity?: number }; clusterPoint?: { x: number; y: number }; onSelectCluster: () => void }) {
+const EARTH_SPEECH_PAGES = [
+  "Every journey to the Moon starts here on Earth! But where we launch from matters, too. Let's pick our starting point!",
+  "The location of a launch site influences a rocket's flight path, launch opportunities, and energy requirements. Choosing the right site is an important first step in planning a lunar mission.",
+];
+export function LunarGuide({ stage = 'moon', onReady, polePoint, clusterPoint, onSelectCluster }: { stage?: 'moon' | 'earth'; onReady: () => void; polePoint?: { x: number; y: number; visible: boolean; opacity?: number }; clusterPoint?: { x: number; y: number }; onSelectCluster: () => void }) {
+  useEffect(() => { const timer = setTimeout(onReady, 800); return () => clearTimeout(timer); }, [onReady]);
   const [readyToSelect, setReadyToSelect] = useState(false);
   const finished = useCallback(() => setReadyToSelect(true), []);
   const { width, height } = useWindowDimensions();
@@ -30,18 +35,18 @@ export function LunarGuide({ polePoint, clusterPoint, onSelectCluster }: { poleP
     <Animated.View pointerEvents="none" testID="landing-cluster-command" entering={FadeIn.duration(750)} style={[styles.command, { left, top: Math.max(24, insets.top), maxWidth: width * .48 }]}>
       <View style={styles.stepLine} />
       <View style={{ flex: 1, gap: 8 }}>
-        <Text style={styles.step}>STEP 01</Text>
-        <Text style={styles.commandTitle}>SELECT THE LANDING{'\n'}SITE CLUSTER</Text>
+        <Text style={styles.step}>{stage === 'earth' ? 'STEP 02' : 'STEP 01'}</Text>
+        <Text style={styles.commandTitle}>{stage === 'earth' ? 'SELECT A LAUNCH SITE' : 'SELECT THE LANDING\nSITE CLUSTER'}</Text>
       </View>
     </Animated.View>
-    {readyToSelect && <Animated.View pointerEvents={(polePoint?.opacity ?? 0) > .05 ? 'auto' : 'none'} entering={FadeIn.duration(500)} style={{ opacity: polePoint?.opacity ?? 0, width: 130, position: 'absolute', left: Math.max(left, Math.min(width - right - 130, (clusterPoint?.x ?? width / 2) - 65)), top: Math.min(height - 160, (clusterPoint?.y ?? height / 2) + 90) }}>
-      <Pressable testID="select-cluster-cue" accessibilityRole="button" accessibilityLabel="Select landing site cluster" onPress={onSelectCluster} style={{ minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' }}>
+    {readyToSelect && <Animated.View pointerEvents={(stage === 'earth' ? 1 : polePoint?.opacity ?? 0) > .05 ? 'auto' : 'none'} entering={FadeIn.duration(500)} style={{ opacity: stage === 'earth' ? 1 : polePoint?.opacity ?? 0, width: 130, position: 'absolute', left: Math.max(left, Math.min(width - right - 130, (clusterPoint?.x ?? width / 2) - 65)), top: Math.min(height - 160, (clusterPoint?.y ?? height / 2) + (stage === 'earth' ? 0 : 90)) }}>
+      <Pressable testID="select-cluster-cue" accessibilityRole="button" accessibilityLabel={stage === 'earth' ? 'Select launch site' : 'Select landing site cluster'} onPress={onSelectCluster} style={{ minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ color: NASA_RED, fontSize: 12, fontWeight: '600', letterSpacing: 1.5, textShadowColor: '#000', textShadowRadius: 4 }}>SELECT</Text>
       </Pressable>
     </Animated.View>}
     <Animated.View pointerEvents="box-none" entering={FadeIn.duration(600).delay(200)} style={[styles.conversation, { left, bottom: Math.max(24, insets.bottom), width: width - left - right }]}>
       <View pointerEvents="box-none" style={{ width: 90, height: 100 }}><View pointerEvents="box-none" style={{ position: 'absolute', left: -35, top: -8, transform: [{ scale: .58 }] }}><RocketCompanion narrator /></View></View>
-      <RocketDialogue pages={SPEECH_PAGES} onFinished={finished} />
+      <RocketDialogue pages={stage === 'earth' ? EARTH_SPEECH_PAGES : SPEECH_PAGES} onFinished={finished} />
     </Animated.View>
   </View>;
 }

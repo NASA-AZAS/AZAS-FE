@@ -2,6 +2,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import * as THREE from 'three';
 import { useLoader } from './render-surface';
+import { launchSites } from './launch-sites';
 import { lunarSites } from './lunar-sites';
 import { Sun } from './sun';
 import { SIMULATION_RATE } from './simulation-clock';
@@ -18,6 +19,7 @@ type Props = {
   startup: 'loading' | 'flight' | 'done';
   onStartupDone: () => void;
   exploring?: boolean;
+  earthExploring?: boolean;
   candidateSelected?: boolean;
   onExplorerArrival?: () => void;
   onLunarProjection?: (points: LunarProjection) => void;
@@ -149,7 +151,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+export function SolarScene({ startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
@@ -180,7 +182,7 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
   const desired = useMemo(() => new THREE.Vector3(), []);
   const { camera, size } = useThree();
   const explorerArrived = useRef(false);
-  useEffect(() => { explorerArrived.current = false; }, [exploring]);
+  useEffect(() => { explorerArrived.current = false; }, [exploring, earthExploring]);
   const projectionTimer = useRef(0);
   const startupFrames = useRef(0);
   const startupElapsed = useRef(0);
@@ -210,10 +212,10 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
     const ex = Math.cos(a) * scale.earthOrbit;
     const ez = Math.sin(a) * scale.earthOrbit;
     if (earthSystem.current) earthSystem.current.position.set(ex, 0, ez);
-    if (earth.current) earth.current.rotation.y = earthSpin - 1.1;
+    if (earth.current) earth.current.rotation.set(0, earthSpin - 1.1, earthExploring ? THREE.MathUtils.degToRad(23.44) : .12, earthExploring ? 'ZYX' : 'XYZ');
     if (moon.current) { moon.current.position.set(mx, 0, mz); moon.current.rotation.set(0, -(moonAngle - INITIAL_MOON_ANGLE), THREE.MathUtils.degToRad(1.542), 'ZYX'); }
     moonHit.current?.position.set(mx, 0, mz);
-    if (clouds.current) clouds.current.rotation.y = t * .145 - 1.1;
+    if (clouds.current) clouds.current.rotation.set(0, t * .145 - 1.1, earthExploring ? THREE.MathUtils.degToRad(23.44) : .12, earthExploring ? 'ZYX' : 'XYZ');
     if (selected === 'earth') target.set(ex, 0, ez);
     else if (selected === 'moon') target.set(ex + mx, 0, ez + mz);
     else target.set(0, 0, 0);
@@ -266,7 +268,7 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
     } else {
       flightDistance.current = Math.exp(THREE.MathUtils.lerp(Math.log(flight.peak), Math.log(endDistance), 1 - Math.sin(Math.PI * smooth(u))));
     }
-    const distance = flightDistance.current * controls.current.zoom * (exploring ? 1.35 : 1);
+    const distance = flightDistance.current * controls.current.zoom * (exploring && !earthExploring ? 1.35 : 1);
     const near = Math.max(distance / 1000, .000001);
     if (camera.near !== near) { camera.near = near; camera.updateProjectionMatrix(); }
     if (selected === 'sun' && !controls.current.locked) controls.current.yaw += dt * .025;
@@ -321,33 +323,41 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
       explorerArrived.current = true;
       onExplorerArrival?.();
     }
-    if (exploring && moon.current && onLunarProjection) {
+    const focusMesh = earthExploring ? earth.current : moon.current;
+    if (exploring && focusMesh && onLunarProjection) {
       projectionTimer.current += dt;
       if (projectionTimer.current > 1 / 30) {
         projectionTimer.current = 0;
         physicalSystem.current?.updateWorldMatrix(true, true);
-        const origin = moon.current.localToWorld(new THREE.Vector3());
-        const entries = lunarSites.map(site => {
+        const origin = focusMesh.localToWorld(new THREE.Vector3());
+        const radius = earthExploring ? 1.02 : .36;
+        const physicalRadius = earthExploring ? scale.earthRadius : scale.moonRadius;
+        const entries = (earthExploring ? launchSites : lunarSites).map(site => {
           const lat = THREE.MathUtils.degToRad(site.latitude), lon = THREE.MathUtils.degToRad(site.longitude);
-          return { id: site.id, point: new THREE.Vector3(.363 * Math.cos(lat) * Math.cos(lon), .363 * Math.sin(lat), -.363 * Math.cos(lat) * Math.sin(lon)) };
+          return { id: site.id, point: new THREE.Vector3((radius * 1.008) * Math.cos(lat) * Math.cos(lon), (radius * 1.008) * Math.sin(lat), -(radius * 1.008) * Math.cos(lat) * Math.sin(lon)) };
         });
-        entries.push({ id: 'North Pole', point: new THREE.Vector3(0, .58, 0) }, { id: 'South Pole', point: new THREE.Vector3(0, -.58, 0) });
-        const inverseMoonRotation = moon.current.getWorldQuaternion(new THREE.Quaternion()).invert();
+        entries.push({ id: 'North Pole', point: new THREE.Vector3(0, radius * 1.62, 0) }, { id: 'South Pole', point: new THREE.Vector3(0, -radius * 1.62, 0) });
+        const inverseMoonRotation = focusMesh.getWorldQuaternion(new THREE.Quaternion()).invert();
         const edgeDirection = new THREE.Vector3(1, 1, 0).applyQuaternion(camera.quaternion).applyQuaternion(inverseMoonRotation);
         edgeDirection.y = 0;
         edgeDirection.normalize().multiplyScalar(.365 * Math.sin(Math.PI / 18));
         edgeDirection.y = -.365 * Math.cos(Math.PI / 18);
-        entries.push({ id: 'South Pole Surface', point: edgeDirection });
+        if (!earthExploring) entries.push({ id: 'South Pole Surface', point: edgeDirection });
         camera.updateMatrixWorld();
-        onLunarProjection(entries.map(({ id, point }) => {
-          const world = moon.current!.localToWorld(point);
+        const projected = entries.map(({ id, point }) => {
+          const world = focusMesh.localToWorld(point);
           const normal = world.clone().sub(origin).normalize();
-          const surface = origin.clone().addScaledVector(normal, scale.moonRadius);
+          const surface = origin.clone().addScaledVector(normal, physicalRadius);
           const visible = normal.dot(camera.position.clone().sub(surface)) > 0;
           world.project(camera);
-          const apparentRadius = scale.moonRadius / camera.position.distanceTo(origin) / Math.tan(43 * Math.PI / 360);
-          return { id, opacity: id === 'South Pole Surface' ? THREE.MathUtils.smoothstep(apparentRadius, .8, .98) : 1, x: (world.x + 1) * size.width / 2, y: (1 - world.y) * size.height / 2, visible: (!candidateSelected || visible) && !controls.current.locked };
-        }));
+          const apparentRadius = physicalRadius / camera.position.distanceTo(origin) / Math.tan(43 * Math.PI / 360);
+          return { id, opacity: id === 'South Pole Surface' ? THREE.MathUtils.smoothstep(apparentRadius, .8, .98) : 1, x: (world.x + 1) * size.width / 2, y: (1 - world.y) * size.height / 2, visible: (earthExploring ? (id === 'North Pole' || id === 'South Pole' || visible) : (!candidateSelected || visible)) && !controls.current.locked };
+        });
+        if (earthExploring) {
+          const pixelRadius = physicalRadius / camera.position.distanceTo(origin) * size.height / (2 * Math.tan(43 * Math.PI / 360));
+          projected.push({ id: 'earth-select-anchor', opacity: 1, x: size.width / 2 + pixelRadius * 1.4, y: size.height / 2 + pixelRadius * .95, visible: !controls.current.locked });
+        }
+        onLunarProjection(projected);
       }
     }
   });
@@ -374,6 +384,10 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
           if (intro && !controls.current.locked) { event.stopPropagation(); onSystemFocus(); }
         }}>
         <mesh ref={earth} rotation={[0, -1.1, .12]}>
+          {earthExploring && <>
+            <mesh><cylinderGeometry args={[.004, .004, 3.06, 8]} /><meshBasicMaterial color="white" /></mesh>
+            <mesh rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[1.53, .003, 8, 128]} /><meshBasicMaterial color="white" /></mesh>
+          </>}
           <sphereGeometry args={[1.02, 72, 48]} />
           <meshStandardMaterial map={earthMap} normalMap={earthNormal} normalScale={new THREE.Vector2(.65, .65)} roughness={.72} metalness={.04} />
         </mesh>
@@ -387,8 +401,8 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
         <mesh ref={moon} onClick={(event) => {
           if (systemView && !controls.current.locked) { event.stopPropagation(); onMoonIntro(); }
         }}>
-          {exploring && <mesh><cylinderGeometry args={[.0015, .0015, 1.08, 8]} /><meshBasicMaterial color="white" /></mesh>}
-          {exploring && <mesh rotation={[Math.PI / 2, 0, 0]}>
+          {exploring && !earthExploring && <mesh><cylinderGeometry args={[.0015, .0015, 1.08, 8]} /><meshBasicMaterial color="white" /></mesh>}
+          {exploring && !earthExploring && <mesh rotation={[Math.PI / 2, 0, 0]}>
             <torusGeometry args={[.54, .001, 8, 128]} />
             <meshBasicMaterial color="white" side={THREE.DoubleSide} />
           </mesh>}

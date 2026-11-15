@@ -79,7 +79,7 @@ export function PolarOverview({ selected, onSelect }: { selected: LunarSite; onS
   });
   return <View style={{ flex: 1, backgroundColor: 'transparent', borderWidth: 0, borderColor: '#fff', borderRadius: 14, overflow: 'hidden' }}>
     <View style={{ height: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12 }}>
-      <Text style={{ color: '#fff', fontSize: 14 }}>Moon's South Pole</Text>
+      <Text style={{ color: '#fff', fontSize: 14 }}>Lunar South Pole</Text>
 
     </View>
     <View testID="overview-square-viewport" style={{ alignSelf: 'stretch', aspectRatio: 1, borderRadius: size.width / 2, overflow: 'hidden' }} onLayout={e => setSize(e.nativeEvent.layout)}>
