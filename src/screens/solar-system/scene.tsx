@@ -8,7 +8,7 @@ import type { LunarSite } from './lunar-sites';
 import { Sun } from './sun';
 import { TransferTrajectory } from './transfer-trajectory';
 import { FlightRocket } from './flight-rocket';
-import { FLIGHT_DURATION_SECONDS, isTransferArrival, requestFlightSkip, type TransferRoute, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
+import { FLIGHT_DURATION_SECONDS, requestFlightSkip, type TransferRoute, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
 import { SIMULATION_RATE } from './simulation-clock';
 import type { BodyId } from './space-hud';
 
@@ -396,8 +396,9 @@ export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight
       else if (flightActive && !playback?.paused) view.elapsed = Math.min(FLIGHT_DURATION_SECONDS, view.elapsed + Math.max(0, now - view.lastTick) / 1000 * (playback?.speed ?? 1));
       view.lastTick = now;
       const progress = view.elapsed / FLIGHT_DURATION_SECONDS;
+      const remainingSeconds = Math.max(0, FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1);
       flightRoute.sample(progress, view.point);
-      if (isTransferArrival(flightRoute, progress, view.point)) {
+      if (remainingSeconds <= .2) {
         if (!skipping && playback) {
           requestFlightSkip(playback);
           return;
@@ -455,7 +456,7 @@ export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight
         flightMarkers.set({ sunX: sx, sunY: sy, sunVisible, earthX: e.x, earthY: e.y, earthVisible: e.visible, moonX: m.x, moonY: m.y, moonVisible: m.visible });
       }
       flightSpriteSize.current = baseDistance * 2 * Math.tan(43 * Math.PI / 360) * 100 / size.height;
-      flightTelemetry.current = { progress, remainingSeconds: Math.max(0, FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1), ...flightRoute.metrics(progress), arrived: false };
+      flightTelemetry.current = { progress, remainingSeconds, ...flightRoute.metrics(progress), arrived: false };
     }
     if (exploring && !controls.current.locked && !explorerArrived.current) {
       explorerArrived.current = true;

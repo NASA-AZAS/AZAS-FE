@@ -16,10 +16,10 @@ test('arrival uses the trajectory endpoint in its final section, not an earlier 
   assert.equal(isTransferArrival(route, .999, endpoint.clone().add(new THREE.Vector3(101 / 2000000, 0, 0))), false);
   assert.equal(isTransferArrival(route, 1, new THREE.Vector3()), true, 'a skipped or overshot final frame must still finish');
 });
-test('endpoint transition occurs before final camera calculations', () => {
+test('automatic skip starts at 200ms remaining, before final camera calculations', () => {
   const source = readFileSync('src/screens/solar-system/scene.tsx', 'utf8');
   const start = source.indexOf('if (missionFlight && flightTelemetry && flightRoute)');
-  const branch = source.indexOf('if (isTransferArrival(', start);
+  const branch = source.indexOf('if (remainingSeconds <= .2)', start);
   const camera = source.indexOf('flightRoute.sample(progress < 1', start);
   assert.ok(branch > start && branch < camera);
   assert.match(source.slice(branch, camera), /view.completed = true;[\s\S]*onFlightArrived\?\.\(\);\s*return;/);
