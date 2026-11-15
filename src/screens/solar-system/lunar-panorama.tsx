@@ -1,7 +1,7 @@
 import { Component, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { useSharedValue, withTiming, Easing, type SharedValue } from 'react-native-reanimated';
+import { useSharedValue, withTiming, Easing, useReducedMotion, type SharedValue } from 'react-native-reanimated';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Canvas, useLoader } from './render-surface';
@@ -29,13 +29,17 @@ class PanoramaBoundary extends Component<{ children: ReactNode }, { failed: bool
   static getDerivedStateFromError() { return { failed: true }; }
   render() { return this.state.failed ? <Text style={styles.failure}>Unable to load this panorama.</Text> : this.props.children; }
 }
-function PanoramaScene({ source, heading, pitch, ready }: { source: number; heading: SharedValue<number>; pitch: SharedValue<number>; ready: () => void }) {
+function PanoramaScene({ source, heading, targetHeading, autoRotate, pitch, ready }: { source: number; heading: SharedValue<number>; targetHeading: SharedValue<number>; autoRotate: SharedValue<boolean>; pitch: SharedValue<number>; ready: () => void }) {
   const [texture] = useLoader(THREE.TextureLoader, [source as unknown as string]);
   texture.colorSpace = THREE.SRGBColorSpace;
   // Reflect the geometry so image u=0 faces +X (north), u=.25 faces +Z (east).
   const geometry = useMemo(() => new THREE.SphereGeometry(10, 64, 32).scale(-1, 1, 1), []);
   useEffect(() => { ready(); return () => { geometry.dispose(); texture.dispose(); }; }, [geometry, texture, ready]);
-  useFrame(({ camera }) => {
+  useFrame(({ camera }, delta) => {
+    if (autoRotate.get()) {
+      const next = heading.get() - Math.min(delta, .05) * .0375;
+      heading.set(next); targetHeading.set(next);
+    }
     const angle = heading.get();
     const elevation = pitch.get(), horizontal = Math.cos(elevation);
     camera.lookAt(horizontal * Math.cos(angle), Math.sin(elevation), horizontal * Math.sin(angle));
@@ -44,22 +48,25 @@ function PanoramaScene({ source, heading, pitch, ready }: { source: number; head
 }
 export function LunarPanorama({ site }: { site: LunarSite }) {
   const siteId = site.id;
+  const reducedMotion = useReducedMotion();
+  const autoRotate = useSharedValue(!reducedMotion);
   const [viewerSize, setViewerSize] = useState({ width: 1, height: 1 });
   const targetHeading = useSharedValue(0), targetPitch = useSharedValue(0);
   const heading = useSharedValue(0), pitch = useSharedValue(0);
   useEffect(() => {
-    targetHeading.set(0); targetPitch.set(0); heading.set(0); pitch.set(0);
-  }, [siteId, targetHeading, targetPitch, heading, pitch]);
+    targetHeading.set(0); targetPitch.set(0); heading.set(0); pitch.set(0); autoRotate.set(!reducedMotion);
+  }, [siteId, targetHeading, targetPitch, heading, pitch, autoRotate, reducedMotion]);
   const [loading, setLoading] = useState(true);
   const ready = useMemo(() => () => setLoading(false), []);
   const drag = useMemo(() => Gesture.Pan().maxPointers(1).minDistance(3)
+    .onTouchesDown(() => autoRotate.set(false))
     .onChange(e => {
       targetHeading.set(targetHeading.get() - e.changeX * .0072);
       targetPitch.set(Math.max(-Math.PI / 2 + .02, Math.min(Math.PI / 2 - .02, targetPitch.get() + e.changeY * .0072)));
       const timing = { duration: 45, easing: Easing.out(Easing.quad) };
       heading.set(withTiming(targetHeading.get(), timing));
       pitch.set(withTiming(targetPitch.get(), timing));
-    }), [heading, pitch, targetHeading, targetPitch]);
+    }), [heading, pitch, targetHeading, targetPitch, autoRotate]);
   const source = lunarPanoramas[siteId];
   return <View style={{ flex: 1, minHeight: 0 }}>
     <PanoramaBoundary>
@@ -67,7 +74,7 @@ export function LunarPanorama({ site }: { site: LunarSite }) {
         <View collapsable={false} testID="dem-panorama" accessibilityLabel={`${siteId} DEM panorama. Drag in any direction to look around.`} onLayout={e => setViewerSize(e.nativeEvent.layout)} style={styles.viewer}>
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
             <Canvas camera={{ position: [0, 0, 0], rotation: [0, -Math.PI / 2, 0], fov: 65, near: .1, far: 30 }} gl={{ antialias: true }}>
-              <Suspense fallback={null}><PanoramaScene source={source} heading={heading} pitch={pitch} ready={ready} /></Suspense>
+              <Suspense fallback={null}><PanoramaScene source={source} heading={heading} targetHeading={targetHeading} autoRotate={autoRotate} pitch={pitch} ready={ready} /></Suspense>
             </Canvas>
           </View>
           <PanoramaMinimap site={site} heading={heading} horizontalFov={2 * Math.atan(Math.tan(65 * Math.PI / 360) * viewerSize.width / Math.max(1, viewerSize.height))} />

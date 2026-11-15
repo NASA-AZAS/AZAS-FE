@@ -183,3 +183,11 @@ Callout starts on the upper-right peripheral south-polar surface rather than the
 `arrival-windows.ts` contains the typed mock options, shared across sites for now. These dates are demo values, not calculated mission opportunities. Replace them with the selected site's backend response when available. `arrival-date-picker.tsx` renders the selection UI using the existing transparent background and thin white outlines.
 
 Validation: TypeScript and whitespace checks passed. Browser flow verified eight options, disabled confirmation before selection, enabled confirmation after selection, back-to-panorama reset, and arrival confirmation reaching Earth / STEP 02 without runtime errors. Native iPhone / Expo Go was not directly tested for this change.
+
+## Panorama conditions and idle motion
+
+The red minimap now has three stacked progress bars directly below it, matching its width: Sunlight (yellow), Earth Communication (cyan), and Power (green). `site-conditions.ts` provides typed per-site mock percentages only; these are not calculated environmental or power predictions. Replace the mock lookup with backend conditions later.
+
+A newly opened panorama pans slowly westward at about 2.1°/second, with its minimap cone and azimuth following the same heading. The first touch stops automatic rotation permanently for that panorama visit, including taps below the drag threshold. Subsequent dragging starts from the displayed heading without a jump. Opening another site starts its own idle motion; reduced-motion settings disable the automatic pan.
+
+Validation: typecheck and whitespace checks passed. Browser verified three gauges matching minimap width, changing azimuth while idle, and a fixed azimuth after touching the viewer, with no runtime errors. Native hardware was not directly tested.
