@@ -50,8 +50,10 @@ export async function startAnalysis(siteId: number, deadline: string, signal: Ab
 }
 
 export class FailedAnalysis extends Error {}
+type TouchdownWindow = { startUtc: string; endUtc: string };
 type SurfaceOpportunities = {
   analysisRunId: string; earliestTouchdownUtc: string | null;
+  windows: (TouchdownWindow & { surfaceStatus: string })[];
   candidates: { candidateId: string; proposedLandingUtc: string; surfaceFinishUtc: string; surfaceStatus: string }[];
 };
 
@@ -76,7 +78,9 @@ export async function loadSurfaceSky(runId: string, siteCode: string, touchdownU
     conditions: siteConditionsFromMean(report.meanDailyVisibility),
   };
 }
-export type LaunchPlan = { runId: string; touchdownUtc: string; sites: LaunchSite[] };
+export type LaunchPlan = {
+  runId: string; touchdownUtc: string; firstTouchdownWindow: TouchdownWindow | null; sites: LaunchSite[];
+};
 
 type VisibilityWindow = { celestialBody: string; windowStartAt: string; windowEndAt: string };
 export type TouchdownDay = {
@@ -96,7 +100,7 @@ export async function loadTouchdownDay(runId: string, touchdownUtc: string, sign
 }
 
 type LaunchOptions = {
-  touchdownUtc: string | null;
+  analysisRunId: string; touchdownUtc: string | null;
   launchSites: {
     launchSiteId: number; launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number;
     candidates: { candidateId: string; launchUtc: string; tliUtc: string; lunarArrivalUtc: string; proposedLandingUtc: string }[];
@@ -113,11 +117,23 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promis
     }
     await new Promise(resolve => setTimeout(resolve, 1500));
   }
-  // launch-options returns the first SATISFIED touchdown and its matching launch candidates together.
+  // Launch options and trajectory selection stay anchored to this single touchdown.
   const result = await request<LaunchOptions>(path + '/launch-options', signal);
+  if (result.analysisRunId !== runId) throw new Error('The launch options do not match the selected analysis.');
   if (!result.touchdownUtc) return null;
+  const opportunities = await request<SurfaceOpportunities>(path + '/date-opportunities', signal).catch(error => {
+    if (signal.aborted) throw error;
+    return null; // The launch candidates can still be used when window data is unavailable.
+  });
+  const touchdownMs = Date.parse(result.touchdownUtc);
+  const window = opportunities?.analysisRunId === runId && opportunities.earliestTouchdownUtc &&
+    Date.parse(opportunities.earliestTouchdownUtc) === touchdownMs && Array.isArray(opportunities.windows)
+    ? opportunities.windows.find(w => w?.surfaceStatus === 'SATISFIED' &&
+        Date.parse(w.startUtc) === touchdownMs && Date.parse(w.endUtc) >= touchdownMs)
+    : undefined;
   return {
     runId, touchdownUtc: result.touchdownUtc,
+    firstTouchdownWindow: window ? { startUtc: window.startUtc, endUtc: window.endUtc } : null,
     sites: result.launchSites.map(site => {
       const [candidate] = site.candidates;
       return {
