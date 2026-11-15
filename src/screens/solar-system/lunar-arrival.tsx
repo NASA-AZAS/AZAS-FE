@@ -11,13 +11,14 @@ import { RocketDialogue } from './rocket-dialogue';
 import type { LunarSite } from './lunar-sites';
 import { loadSurfaceSky } from './mission-api';
 import type { SurfaceTrack } from './surface-sky-data';
+import type { SiteConditions } from './site-conditions';
 
 const arrivalPages = [
   "Touchdown! We've made it to the Moon!",
   "Move the timeline to see where the Sun and Earth are from this landing site.",
 ];
 
-type SkyState = { status: 'ready'; track: SurfaceTrack } | { status: 'loading' | 'empty' } | { status: 'error'; message: string };
+type SkyState = { status: 'loaded'; track: SurfaceTrack | null; conditions?: SiteConditions } | { status: 'loading' } | { status: 'error'; message: string };
 
 export function LunarArrival({ site, runId, touchdownUtc, active, onReady }: {
   site: LunarSite; runId: string; touchdownUtc: string; active: boolean; onReady: () => void;
@@ -30,8 +31,8 @@ export function LunarArrival({ site, runId, touchdownUtc, active, onReady }: {
     const timeout = setTimeout(() => controller.abort(), 45000);
     setSky({ status: 'loading' });
     loadSurfaceSky(runId, site.id, touchdownUtc, controller.signal)
-      .then(track => {
-        if (current) setSky(track ? { status: 'ready', track } : { status: 'empty' });
+      .then(result => {
+        if (current) setSky({ status: 'loaded', ...result });
       })
       .catch((error: unknown) => {
         if (current) setSky({ status: 'error', message: controller.signal.aborted ? 'Sky request timed out.' :
@@ -55,6 +56,7 @@ export function LunarArrival({ site, runId, touchdownUtc, active, onReady }: {
     return () => cancelAnimation(opacity);
   }, [stage, loaded, active, opacity, onReady]);
   const fade = useAnimatedStyle(() => ({ opacity: opacity.get() }));
+  const surface = sky.status === 'loaded' ? sky : undefined;
   return <>
     {!(stage === 'panorama' && loaded) && <JourneyVideoFade active={active && stage === 'fade'} onComplete={play} />}
     <MoonLaunchVideo source={require('../../../KakaoTalk_Video_2026-11-15-15-26-33.mp4')} visible={stage === 'video' || (stage === 'panorama' && !loaded)} active={active && stage === 'video'} onComplete={finish} onError={finish} />
@@ -64,10 +66,10 @@ export function LunarArrival({ site, runId, touchdownUtc, active, onReady }: {
     {stage === 'panorama' && <Animated.View testID="arrival-panorama-modal" style={[{ position: 'absolute', left: '7%', right: '7%', top: 20, bottom: 20, zIndex: 910, ...theme.outlineSurface, borderRadius: 14, padding: 12, gap: 12 }, fade]}>
       <Text style={{ color: '#fff', fontSize: 16 }}>Welcome to Lunar 「{site.name.replace(/^Site(?=\d)/, 'Site ')}」 !</Text>
       <View style={{ flex: 1, minHeight: 0 }}>
-        <LunarPanorama site={site} onReady={panoramaReady} landed surfaceActive={active && loaded} track={sky.status === 'ready' ? sky.track : undefined} />
-        {loaded && sky.status !== 'ready' && <View style={{ position: 'absolute', bottom: 12, left: 16, right: 16, alignItems: 'center' }}>
+        <LunarPanorama site={site} onReady={panoramaReady} landed surfaceActive={active && loaded} track={surface?.track ?? undefined} conditions={surface?.conditions} />
+        {loaded && !surface?.track && <View style={{ position: 'absolute', bottom: 12, left: 16, right: 16, alignItems: 'center' }}>
           <Text accessibilityLiveRegion="polite" style={{ color: '#fff', fontSize: 11 }}>
-            {sky.status === 'error' ? sky.message : sky.status === 'empty' ? 'No sky observations for this touchdown.' : 'Loading sky observations…'}
+            {sky.status === 'error' ? sky.message : surface ? 'No sky observations for this touchdown.' : 'Loading sky observations…'}
           </Text>
           {sky.status === 'error' && <Pressable accessibilityRole="button" onPress={() => setAttempt(n => n + 1)} hitSlop={8}>
             <Text style={{ color: '#fff', textDecorationLine: 'underline', padding: 4, fontSize: 12 }}>Retry</Text>

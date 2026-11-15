@@ -62,7 +62,11 @@ export async function loadSurfaceSky(runId: string, siteCode: string, touchdownU
       Date.parse(report.surfaceEndUtc) !== Date.parse(candidate.surfaceFinishUtc)) {
     throw new Error('The sky observations do not match the selected landing site and time.');
   }
-  return createSurfaceTrack(report);
+  const mean = report.meanDailyVisibility;
+  return {
+    track: createSurfaceTrack(report),
+    conditions: mean ? { sunlight: mean.sunMeanDailyVisiblePct, earthCommunication: mean.earthMeanDailyVisiblePct } : undefined,
+  };
 }
 export type LaunchPlan = { runId: string; touchdownUtc: string; sites: LaunchSite[] };
 type LaunchOptions = {

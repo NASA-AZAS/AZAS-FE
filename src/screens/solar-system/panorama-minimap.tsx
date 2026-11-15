@@ -6,14 +6,14 @@ import { localMinimaps } from './local-minimap-assets';
 import { NASA_RED, type LunarSite } from './lunar-sites';
 import { SurfaceSkyReadout } from './surface-sky-readout';
 import type { SkyMarkers } from './surface-sky';
-import { siteConditions } from './site-conditions';
+import type { SiteConditions } from './site-conditions';
 
 const SIZE = 88, CENTER = SIZE / 2;
 const metrics = [
   { key: 'sunlight', label: 'Sunlight', color: '#FFD166' },
   { key: 'earthCommunication', label: 'Earth Communication', color: '#74D9F5' },
 ] as const;
-export function PanoramaMinimap({ site, heading, horizontalFov, side = 'left', skyMarkers }: { skyMarkers?: SharedValue<SkyMarkers>; side?: 'left' | 'right'; site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
+export function PanoramaMinimap({ site, conditions, heading, horizontalFov, side = 'left', skyMarkers }: { conditions?: SiteConditions; skyMarkers?: SharedValue<SkyMarkers>; side?: 'left' | 'right'; site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
   // Rotate imagery into local north-up; the overlay heading is then geographic azimuth.
   const cone = useAnimatedStyle(() => ({ transform: [{ rotate: `${heading.get()}rad` }] }));
   const half = horizontalFov / 2, r = SIZE * Math.SQRT2;
@@ -36,8 +36,8 @@ export function PanoramaMinimap({ site, heading, horizontalFov, side = 'left', s
     </View>
     <View testID="panorama-site-conditions" style={{ width: SIZE + 1, gap: 6 }}>
       {metrics.map(metric => {
-        const value = siteConditions[site.id]?.[metric.key];
-        if (value == null) return null;
+        const value = conditions?.[metric.key];
+        if (value == null || !Number.isFinite(value) || value < 0 || value > 100) return null;
         return <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={value} />;
       })}
     </View>

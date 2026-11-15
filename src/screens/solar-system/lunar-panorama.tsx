@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { Canvas, useLoader } from './render-surface';
 import { SurfaceSky, SurfaceSkyLabels, emptySkyMarkers } from './surface-sky';
 import type { SurfaceTrack } from './surface-sky-data';
+import type { SiteConditions } from './site-conditions';
 import { SurfaceTimeline } from './surface-timeline';
 import { LunarBase } from './lunar-base';
 import { PanoramaMinimap } from './panorama-minimap';
@@ -50,7 +51,7 @@ function PanoramaScene({ source, heading, targetHeading, autoRotate, pitch, read
   });
   return <mesh geometry={geometry} renderOrder={-10}><meshBasicMaterial map={texture} depthWrite={false} /></mesh>;
 }
-export function LunarPanorama({ site, onReady, landed = false, surfaceActive = true, track }: { site: LunarSite; onReady?: () => void; landed?: boolean; surfaceActive?: boolean; track?: SurfaceTrack }) {
+export function LunarPanorama({ site, conditions, onReady, landed = false, surfaceActive = true, track }: { site: LunarSite; conditions?: SiteConditions; onReady?: () => void; landed?: boolean; surfaceActive?: boolean; track?: SurfaceTrack }) {
   const elapsed = useSharedValue(0);
   const scrubbing = useSharedValue(false);
   const skyMarkers = useSharedValue(emptySkyMarkers());
@@ -104,7 +105,7 @@ export function LunarPanorama({ site, onReady, landed = false, surfaceActive = t
             targetHeading.set(next); targetPitch.set(el);
             heading.set(withTiming(next, { duration: 600 })); pitch.set(withTiming(el, { duration: 600 }));
           }} />}
-          <PanoramaMinimap skyMarkers={landed && track ? skyMarkers : undefined} side={landed ? 'right' : 'left'} site={site} heading={heading} horizontalFov={2 * Math.atan(Math.tan(65 * Math.PI / 360) * viewerSize.width / Math.max(1, viewerSize.height))} />
+          <PanoramaMinimap conditions={conditions} skyMarkers={landed && track ? skyMarkers : undefined} side={landed ? 'right' : 'left'} site={site} heading={heading} horizontalFov={2 * Math.atan(Math.tan(65 * Math.PI / 360) * viewerSize.width / Math.max(1, viewerSize.height))} />
           {loading && <ActivityIndicator color="#fff" style={StyleSheet.absoluteFill} />}
           <ViewAngles heading={heading} pitch={pitch} landed={landed} />
         </View>
