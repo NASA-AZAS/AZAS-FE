@@ -1,10 +1,12 @@
 import { useFrame, useThree } from '@react-three/fiber';
+import { useReducedMotion } from 'react-native-reanimated';
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import * as THREE from 'three';
 import { useLoader } from './render-surface';
 import { launchSites } from './launch-sites';
 import { lunarSites } from './lunar-sites';
 import { Sun } from './sun';
+import { TransferTrajectory } from './transfer-trajectory';
 import { SIMULATION_RATE } from './simulation-clock';
 import type { BodyId } from './space-hud';
 
@@ -22,6 +24,8 @@ type Props = {
   onStartupDone: () => void;
   exploring?: boolean;
   earthExploring?: boolean;
+  missionTransfer?: boolean;
+  onTransferReady?: () => void;
   candidateSelected?: boolean;
   onExplorerArrival?: () => void;
   onLunarProjection?: (points: LunarProjection) => void;
@@ -153,7 +157,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+export function SolarScene({ missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
@@ -183,6 +187,15 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
   const movingStart = useMemo(() => new THREE.Vector3(), []);
   const desired = useMemo(() => new THREE.Vector3(), []);
   const { camera, size } = useThree();
+  const transferMoon = useMemo(() => {
+    const angle = INITIAL_MOON_ANGLE + simulationSeconds.current / 86400 * Math.PI * 2 / 27.3217;
+    return new THREE.Vector3(Math.cos(angle) * scale.moonOrbit, 0, Math.sin(angle) * scale.moonOrbit);
+  }, [missionTransfer, simulationSeconds]);
+  const reducedMotion = useReducedMotion();
+  const transferView = useRef({ elapsed: 0, startDistance: 1, startCenter: new THREE.Vector3(), startRotation: new THREE.Quaternion() });
+  useEffect(() => {
+    if (missionTransfer) transferView.current = { elapsed: 0, startDistance: camera.position.length(), startCenter: center.clone(), startRotation: camera.quaternion.clone() };
+  }, [missionTransfer, camera, center]);
   const explorerArrived = useRef(false);
   useEffect(() => { explorerArrived.current = false; }, [exploring, earthExploring]);
   const projectionTimer = useRef(0);
@@ -336,6 +349,23 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
         onStartupDone();
       }
     }
+    if (missionTransfer) {
+      const view = transferView.current;
+      view.elapsed += dt;
+      const t = reducedMotion ? 1 : Math.min(1, view.elapsed / 1.8), p = t*t*t*(t*(t*6-15)+10);
+      const up = new THREE.Vector3(transferMoon.z, 0, -transferMoon.x).normalize();
+      const rotation = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(new THREE.Vector3(0, 1, 0), new THREE.Vector3(), up));
+      const fitDistance = scale.moonOrbit * 1.45 / (2 * Math.tan(43 * Math.PI / 360) * (size.width / size.height) * .8);
+      const midpoint = new THREE.Vector3(ex, 0, ez).addScaledVector(transferMoon, .5);
+      // Leave the lower band clear for the standard rocket dialogue.
+      midpoint.addScaledVector(up, 2 * Math.tan(43 * Math.PI / 360) * fitDistance * -.08);
+      center.lerpVectors(view.startCenter, midpoint, p);
+      physicalSystem.current?.position.copy(center).negate();
+      const d = Math.exp(THREE.MathUtils.lerp(Math.log(view.startDistance), Math.log(fitDistance), p));
+      camera.quaternion.slerpQuaternions(view.startRotation, rotation, p);
+      camera.position.set(0, 0, d).applyQuaternion(camera.quaternion);
+      camera.near = Math.max(d / 1000, .000001); camera.updateProjectionMatrix();
+    }
     if (exploring && !controls.current.locked && !explorerArrived.current) {
       explorerArrived.current = true;
       onExplorerArrival?.();
@@ -368,11 +398,17 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
           const visible = normal.dot(camera.position.clone().sub(surface)) > 0;
           world.project(camera);
           const apparentRadius = physicalRadius / camera.position.distanceTo(origin) / Math.tan(43 * Math.PI / 360);
-          return { id, opacity: id === 'South Pole Surface' ? THREE.MathUtils.smoothstep(apparentRadius, .8, .98) : 1, x: (world.x + 1) * size.width / 2, y: (1 - world.y) * size.height / 2, visible: (earthExploring ? (id === 'North Pole' || id === 'South Pole' || visible) : (!candidateSelected || visible)) && !controls.current.locked };
+          return { id, opacity: id === 'South Pole Surface' ? THREE.MathUtils.smoothstep(apparentRadius, .8, .98) : 1, x: (world.x + 1) * size.width / 2, y: (1 - world.y) * size.height / 2, visible: (earthExploring ? (missionTransfer || id === 'North Pole' || id === 'South Pole' || visible) : (!candidateSelected || visible)) && !controls.current.locked };
         });
         if (earthExploring) {
           const pixelRadius = physicalRadius / camera.position.distanceTo(origin) * size.height / (2 * Math.tan(43 * Math.PI / 360));
           projected.push({ id: 'earth-select-anchor', opacity: 1, x: size.width / 2 + pixelRadius * 1.4, y: size.height / 2 + pixelRadius * .95, visible: !controls.current.locked });
+        }
+        if (missionTransfer && moon.current) {
+          const earthPoint = origin.clone().project(camera);
+          projected.push({ id: 'transfer-earth', opacity: 1, x: (earthPoint.x + 1) * size.width / 2, y: (1 - earthPoint.y) * size.height / 2, visible: true });
+          const point = moon.current.getWorldPosition(new THREE.Vector3()).project(camera);
+          projected.push({ id: 'transfer-moon', opacity: 1, x: (point.x + 1) * size.width / 2, y: (1 - point.y) * size.height / 2, visible: true });
         }
         onLunarProjection(projected);
       }
@@ -392,6 +428,7 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
       <group ref={earthSystem} onClick={(event) => {
         if (!selected && !intro && !controls.current.locked) { event.stopPropagation(); onSystemFocus(); }
       }}>
+        {missionTransfer && onTransferReady && <TransferTrajectory moon={transferMoon} onComplete={onTransferReady} />}
         {!selected && !intro && <>
           <mesh><sphereGeometry args={[6, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
           <mesh ref={moonHit}><sphereGeometry args={[3, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>

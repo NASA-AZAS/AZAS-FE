@@ -63,3 +63,57 @@ The real `playToEnd` event starts a 1.6-second Earth zoom from 3× view distance
 `expo-video` is included in Expo Go; a custom native runtime needs rebuilding after adding this dependency. Playback uses the original video in the repository root.
 
 Validation: typecheck passed. Browser played the actual MP4, verified hidden playback controls and input lock, waited for its real end event and Earth arrival, confirmed exactly one stationary launch-site pin, and verified camera input unlocks afterward. No page runtime errors. Native iPhone / Expo Go playback was not directly tested.
+
+## Earth–Moon transfer preview
+
+The post-video destination is now a top-down Earth–Moon preview rather than a close Earth view. The existing physical Earth/Moon sizes and half-scale mean separation (`scale.moonOrbit`, 384,400 km × 0.5 in scene units) remain unchanged. The camera fits both bodies horizontally, and rotation/orbital simulation remains paused.
+
+`transfer-trajectory.tsx` draws a presentation-only mock route: two expanding parking loops near Earth, a curved transfer segment, then a shrinking lunar approach spiral. A white dashed line reveals progressively after the 1.8-second camera move. This is not a gravity integration, computed mission trajectory, or Lambert solution. Reduced motion shows the final route without progressive drawing.
+
+The selected launch-site marker remains red and Moon has a label. All orbit/zoom input stays blocked in this preview. Once drawing finishes, a transparent white-outline `Let's go!` button appears at bottom right; it is UI only, with no next action yet.
+
+Validation: typecheck passed. Browser played the actual video through to the preview, confirmed the selected pin/Moon label/next button, and verified orbit drag and wheel zoom leave the view unchanged. The dashed route and top-down composition were visually checked; native hardware was not tested.
+
+## Transfer-preview guide
+
+The lunar destination uses the previously selected lunar site's name in NASA RED, with a mock red marker over the Moon. EARTH and MOON labels sit above their bodies/trajectory loops. The upper-right button is now `Start the Journey` with a rocket icon, still UI only. Beneath it, the existing floating narrator and italic typewriter dialogue present the two user-supplied lunar-orbit explanation pages with the standard next-page cue.
+
+The camera framing reserves the upper band for this UI without changing Earth/Moon size or distance ratios. Preview orbit/zoom remains locked; only narrator/dialogue and button UI accept touches.
+
+Validation: typecheck passed. Browser verified the selected Site01 label, top-right journey button, both dialogue pages, locked camera, and no Moon-label/dialogue overlap at 844×390. Layout was visually checked; native hardware was not tested.
+
+Placement correction: transfer narration now uses the standard bottom-of-screen mascot and full-width dialogue layout, matching STEP 01/02. The journey button remains top right. Earth/Moon framing shifts upward to leave the bottom conversation area clear. Typecheck passed; this placement correction was not rechecked on native hardware.
+
+## Preview/video order and back navigation
+
+`Next Stop The Moon` now opens the locked Earth–Moon route preview directly, without playing video. `Start the Journey` in the top-right corner starts the supplied MP4. Playback remains input-locked and returns to the same paused route preview when finished; a playback error stays on the preview and allows retry. The top-left outlined back arrow returns to the selected launch-site detail, restoring the prior simulation pause state. Re-entering redraws the preview route.
+
+EARTH and MOON text move down by 10px; lunar destination marker/name positions are retained. The mascot and dialogue remain in their standard bottom-of-screen layout.
+
+Header alignment: the back button's left edge and journey button's right edge use `max(24, safeAreaInset)`, matching the bottom mascot/dialogue section. Video playback waits for the player's ready state before starting, avoiding the first play request being lost before the view attaches.
+
+Validation: typecheck passed. Browser confirmed Next Stop opens the preview with no video, Journey starts real playback, playback returns to the preview, and back/re-enter/close restores the site detail and list without runtime errors. Header/button margins share the same safe-area calculation as the bottom guide. Native safe-area rendering was not directly tested.
+
+## Three-page transfer narration and fade-in
+
+Transfer narration now uses the three supplied English messages in order: why a curved route is used, why spacecraft first circle Earth, and why lunar orbit precedes descent. The existing bottom-positioned italic typewriter bubble and next-page cue are reused; the last page has no next cue.
+
+The dashed route fades in over its first 600ms of drawing. Moving transfer labels/markers stay hidden until the route completes, then their stable keyed overlay fades in over 650ms. Header buttons fade in for 650ms, and the bottom narrator/dialogue fade in for 700ms with a short delay. Projection updates retain component identity, so they do not restart the fade on every frame.
+
+Validation: typecheck passed. Browser verified all three exact English messages, both page advances, no next cue on the final page, and the standard bottom layout at 844×390 without runtime errors. Native animation feel was not directly tested.
+
+## Journey countdown
+
+The journey arrow periodically nudges forward twice, stopping when inactive or reduced motion is enabled. Pressing `Start the Journey` immediately locks input and shows a large centered countdown: dots build to `3...`, then `2..`, then `1.` over about three seconds. The video mounts only after the countdown finishes; input remains locked across countdown and playback. Backgrounding pauses countdown progress. Existing preview return and back navigation are unchanged.
+
+Validation: typecheck passed. Browser verified the exact `3...` → `2..` → `1.` sequence, input lock at each step, no video before countdown completion, real playback afterward, and preview/back navigation without runtime errors. Native hardware was not tested.
+
+## Countdown-to-video handoff refinement
+
+The countdown no longer dims the screen. Preview labels, header and the bottom guide remain visible beneath the input lock, and the centered digit is about 25% smaller. After the countdown, a 480ms camera dive recenters on Earth and rapidly closes the distance before playback begins. Reduced motion skips that camera motion. The video preloads invisibly while counting down, stays paused until the dive finishes, then fades in over 180ms when ready. The Earth close view stays behind the fade to avoid flashing the wide preview during the handoff.
+
+## Speech countdown and fade transition (supersedes Earth dive)
+
+The countdown now replaces the narration inside the existing bottom rocket speech bubble; no centered numeral or full-screen countdown dimmer is used. On completion, a 350ms black fade covers the unchanged route preview, then the preloaded video fades in over 350ms. The Earth camera dive has been removed. Input remains locked continuously from button press through countdown, transition, and playback. The arrow cue and subsequent preview/back behavior are retained.
+
+Validation: typecheck passed. Browser confirmed the countdown stays inside the bottom speech bubble, the preloaded video stays paused while counting, the fade leads to real playback, and preview/back navigation work without runtime errors. The countdown layout was visually checked; native hardware was not tested.
