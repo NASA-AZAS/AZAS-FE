@@ -23,7 +23,7 @@ export function SurfaceTimeline({ touchdownMs, durationSeconds, terrainOccultati
     .onFinalize(() => scrubbing.set(false)), [elapsed, width, autoRotate, scrubbing, durationSeconds]);
   const fill = useAnimatedStyle(() => ({ width: `${elapsed.get() / durationSeconds * 100}%` }));
   const thumb = useAnimatedStyle(() => ({ left: `${elapsed.get() / durationSeconds * 100}%` }));
-  return <View testID="surface-timeline" style={{ position: 'absolute', bottom: 0, left: 16, right: 16, minHeight: 58, paddingHorizontal: 8, paddingBottom: 8, borderRadius: 6, backgroundColor: '#050a12cc' }}>
+  return <View testID="surface-timeline" style={{ position: 'absolute', bottom: 0, left: 16, right: 16, minHeight: 58, paddingHorizontal: 8, paddingBottom: 8, borderRadius: 6 }}>
     {terrainOccultations.length > 0 && <View pointerEvents="none" style={{ paddingTop: 5, paddingBottom: 5 }}>
       <Text style={{ color: '#c4ceda', fontSize: 9, lineHeight: 12 }}>First terrain occultation · within 48 h</Text>
       {terrainOccultations.map(event => <Text key={event.body} testID={`terrain-occultation-${event.body}-label`} selectable accessibilityLabel={`${bodyLabels[event.body]} first terrain occultation, ${event.utc}`} style={{ color: bodyColors[event.body], fontSize: 10, lineHeight: 16, fontVariant: ['tabular-nums'] }}>
