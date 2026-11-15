@@ -35,25 +35,22 @@ export function PanoramaMinimap({ site, conditions, heading, horizontalFov, side
     </View>
     </View>
     <View testID="panorama-site-conditions" style={{ width: SIZE + 1, gap: 6 }}>
-      {metrics.map(metric => {
-        const value = conditions?.[metric.key];
-        if (value == null || !Number.isFinite(value) || value < 0 || value > 100) return null;
-        return <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={value} />;
-      })}
+      {metrics.map(metric => <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={conditions?.[metric.key]} />)}
     </View>
     {skyMarkers && <SurfaceSkyReadout markers={skyMarkers} />}
   </View>;
 }
-function ConditionBar({ label, color, value }: { label: string; color: string; value: number }) {
+function ConditionBar({ label, color, value }: { label: string; color: string; value?: number }) {
   const fill = useSharedValue(0);
   useEffect(() => {
     fill.set(0);
+    if (value == null) return;
     fill.set(withTiming(value, { duration: 650, easing: Easing.bezier(.23, 1, .32, 1), reduceMotion: ReduceMotion.System }));
   }, [fill, value]);
   const fillStyle = useAnimatedStyle(() => ({ width: `${fill.get()}%` }));
   return <View style={{ gap: 3 }}>
     <Text numberOfLines={1} style={{ color: '#fff', fontSize: 8, textShadowColor: '#000', textShadowRadius: 3 }}>{label}</Text>
-    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: value, text: `${value}%` }} style={{ height: 5, width: '100%', borderWidth: .5, borderColor: color, backgroundColor: '#050a12aa', overflow: 'hidden' }}>
+    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: value, text: value == null ? 'Unavailable' : `${value}%` }} style={{ height: 5, width: '100%', borderWidth: .5, borderColor: color, backgroundColor: '#050a12aa', overflow: 'hidden' }}>
       <Animated.View style={[{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: color }, fillStyle]} />
     </View>
   </View>;

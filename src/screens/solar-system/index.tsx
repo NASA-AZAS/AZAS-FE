@@ -28,8 +28,7 @@ import { overviewTiles } from './local-overview-tiles';
 import { localLunarAssets } from './local-lunar-assets';
 import { localMinimaps } from './local-minimap-assets';
 import { lunarPanoramas } from './lunar-panorama-assets';
-import { LunarPanorama } from './lunar-panorama';
-import { siteConditions } from './site-conditions';
+import { LandingSitePreview } from './lunar-panorama';
 import { ArrivalDatePicker } from './arrival-date-picker';
 import { PolarOverview } from './polar-overview';
 import { NASA_RED, type LunarSite } from './lunar-sites';
@@ -485,7 +484,7 @@ export function SolarSystemScreen() {
         {candidate && <View style={{ position: 'absolute', right: 16, top: 20, bottom: 20, width: '50%', padding: 12, gap: 12, ...theme.outlineSurface, borderRadius: 14 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>{choosingArrival && <Pressable accessibilityRole="button" accessibilityLabel="Back to panorama" onPress={() => setChoosingArrival(false)} style={{ padding: 8 }}><Ionicons name="arrow-back-outline" size={18} color="#fff" /></Pressable>}<Text style={{ color: '#fff', fontSize: 16 }}>{candidate.name} | {choosingArrival ? 'Touchdown' : 'DEM 360° Panorama'}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Close candidate map" onPress={closeCandidate} style={{ padding: 10 }}><Text style={{ color: '#fff' }}>✕</Text></Pressable></View>
           {choosingArrival ? <ArrivalDatePicker siteId={candidate.landingSiteId} key={candidate.landingSiteId} onConfirm={chooseLanding} /> : <>
-          <LunarPanorama key={candidate.id} site={candidate} conditions={siteConditions[candidate.id]} />
+          <LandingSitePreview key={candidate.landingSiteId} site={candidate} />
           <Pressable testID="choose-landing-site" accessibilityRole="button" accessibilityLabel="Confirm Landing Site" onPress={() => setChoosingArrival(true)} style={({ pressed }) => ({ minHeight: 48, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', ...theme.outlineSurface, borderWidth: .3, borderRadius: 8, opacity: pressed ? .65 : 1 })}>
             <MaterialCommunityIcons name="bullseye" size={19} color="#fff" accessible={false} />
             <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>Confirm Landing Site</Text>

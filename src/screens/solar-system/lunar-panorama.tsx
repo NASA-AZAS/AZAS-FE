@@ -8,6 +8,7 @@ import { Canvas, useLoader } from './render-surface';
 import { SurfaceSky, SurfaceSkyLabels, emptySkyMarkers } from './surface-sky';
 import type { SurfaceTrack } from './surface-sky-data';
 import type { SiteConditions } from './site-conditions';
+import { loadLandingSiteConditions } from './mission-api';
 import { SurfaceTimeline } from './surface-timeline';
 import { LunarBase } from './lunar-base';
 import { PanoramaMinimap } from './panorama-minimap';
@@ -51,6 +52,20 @@ function PanoramaScene({ source, heading, targetHeading, autoRotate, pitch, read
   });
   return <mesh geometry={geometry} renderOrder={-10}><meshBasicMaterial map={texture} depthWrite={false} /></mesh>;
 }
+export function LandingSitePreview({ site }: { site: LunarSite }) {
+  const [conditions, setConditions] = useState<SiteConditions>();
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    loadLandingSiteConditions(site, controller.signal)
+      .then(value => { if (!controller.signal.aborted) setConditions(value); })
+      .catch(() => { if (!controller.signal.aborted) setConditions(undefined); })
+      .finally(() => clearTimeout(timeout));
+    return () => { clearTimeout(timeout); controller.abort(); };
+  }, [site]);
+  return <LunarPanorama site={site} conditions={conditions} />;
+}
+
 export function LunarPanorama({ site, conditions, onReady, landed = false, surfaceActive = true, track }: { site: LunarSite; conditions?: SiteConditions; onReady?: () => void; landed?: boolean; surfaceActive?: boolean; track?: SurfaceTrack }) {
   const elapsed = useSharedValue(0);
   const scrubbing = useSharedValue(false);

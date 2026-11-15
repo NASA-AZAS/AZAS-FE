@@ -1,9 +1,11 @@
+import type { MeanDailyVisibility } from './site-conditions';
+
 export type SkyBody = 'sun' | 'earth';
 type BodyObservation = { azimuthDeg: number; elevationDeg: number; visible: boolean };
 type Observation = { utc: string; elapsedSeconds: number; sun: BodyObservation; earth: BodyObservation };
 export type SurfaceReport = {
   siteId: string; touchdownUtc: string; surfaceEndUtc: string; sampleStepSeconds: number; samples: Observation[];
-  meanDailyVisibility?: { sunMeanDailyVisiblePct: number; earthMeanDailyVisiblePct: number };
+  meanDailyVisibility?: MeanDailyVisibility;
 };
 type Position = { azimuth: number; elevation: number; visible: boolean | null };
 export type SurfaceTrack = {

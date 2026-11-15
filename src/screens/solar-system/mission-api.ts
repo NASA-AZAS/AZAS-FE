@@ -1,6 +1,7 @@
 import { launchSiteLabel, type LaunchSite } from './launch-sites';
 import type { LunarSite } from './lunar-sites';
 import { createSurfaceTrack, type SurfaceReport } from './surface-sky-data';
+import { siteConditionsFromMean, type MeanDailyVisibility } from './site-conditions';
 
 const baseUrl = (process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://api.azas.n-e.kr/api/v1').replace(/\/+$/, '');
 export const defaultDeadline = '2027-01-31';
@@ -28,6 +29,14 @@ export async function loadLandingSites(signal: AbortSignal): Promise<LunarSite[]
     groundElevationM: row.surfaceElevationMeters, observerHeightM: row.observerHeightAboveSurfaceMeters,
     squareSideM: row.lowSlopeSquareSideMeters, screeningStatus: row.terrainScreeningStatus,
   }));
+}
+
+export async function loadLandingSiteConditions(site: LunarSite, signal: AbortSignal) {
+  const detail = await request<LandingSiteRow & { meanDailyVisibility?: MeanDailyVisibility | null }>(
+    `/landing-sites/${site.landingSiteId}`, signal,
+  );
+  if (detail.landingSiteId !== site.landingSiteId || detail.siteCode !== site.id) throw new Error('Landing site mismatch.');
+  return siteConditionsFromMean(detail.meanDailyVisibility);
 }
 
 export async function startAnalysis(siteId: number, deadline: string, signal: AbortSignal) {
@@ -62,10 +71,9 @@ export async function loadSurfaceSky(runId: string, siteCode: string, touchdownU
       Date.parse(report.surfaceEndUtc) !== Date.parse(candidate.surfaceFinishUtc)) {
     throw new Error('The sky observations do not match the selected landing site and time.');
   }
-  const mean = report.meanDailyVisibility;
   return {
     track: createSurfaceTrack(report),
-    conditions: mean ? { sunlight: mean.sunMeanDailyVisiblePct, earthCommunication: mean.earthMeanDailyVisiblePct } : undefined,
+    conditions: siteConditionsFromMean(report.meanDailyVisibility),
   };
 }
 export type LaunchPlan = { runId: string; touchdownUtc: string; sites: LaunchSite[] };
