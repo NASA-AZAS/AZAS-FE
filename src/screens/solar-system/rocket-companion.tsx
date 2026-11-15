@@ -1,11 +1,22 @@
 import { avatarFrame, type AvatarDefinition } from 'open-bot-avatar';
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { AccessibilityInfo, AppState, Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, useDerivedValue, withDelay, withRepeat, withSequence, withSpring, withTiming, runOnJS } from 'react-native-reanimated';
 import { theme } from '../../theme';
 import Svg, { G, Path, Rect } from 'react-native-svg';
 
 const SIZE = 160;
+// Two visible stretches of the same slender tilted ellipse; the right-hand turn is offscreen.
+function orbitPose(width: number, height: number, theta: number) {
+  'worklet';
+  const c = Math.cos(theta), s = Math.sin(theta);
+  return {
+    x: width * (.86 + .65 * c + .065 * s),
+    y: height * (.72 - .90 * c + .11 * s),
+    angle: Math.atan2(height * (-.90 * s - .11 * c), width * (.65 * s - .065 * c)) * 180 / Math.PI,
+  };
+}
+
 const definition: AvatarDefinition = {
   version: 1, id: 'azas-rocket', name: 'AZAS rocket',
   body: { path: 'M10 10 H90 V90 H10 Z' },
@@ -34,7 +45,17 @@ function Eyes({ mood }: { mood: keyof typeof frames }) {
   </Svg>;
 }
 
-export function RocketCompanion() {
+export function RocketPortrait() {
+  return <View style={styles.visual} pointerEvents="none">
+    <Image source={require('../../../assets/rocket-neon-dark.png')} style={styles.body} resizeMode="contain" />
+    <View style={styles.eyes}><Eyes mood="idle" /></View>
+  </View>;
+}
+
+export function RocketCompanion({ onDeparture, onLaunchStart, departed = false }: { onDeparture: () => void; onLaunchStart: () => void; departed?: boolean }) {
+  const { width, height } = useWindowDimensions();
+  const [launched, setLaunched] = useState(false);
+  const flight = useSharedValue(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [active, setActive] = useState(AppState.currentState !== 'background');
   const float = useSharedValue(0);
@@ -58,11 +79,14 @@ export function RocketCompanion() {
       float.set(withRepeat(withTiming(1, { duration: 2200, easing: Easing.inOut(Easing.sin) }), -1, true));
       gaze.set(withRepeat(withSequence(withDelay(1800, withTiming(2.5, { duration: 550 })), withDelay(1400, withTiming(-2, { duration: 650 })), withTiming(0, { duration: 400 })), -1, false));
       blink.set(withRepeat(withSequence(withDelay(3200, withTiming(.08, { duration: 85 })), withTiming(1, { duration: 110 })), -1, false));
-    } else { float.set(0); gaze.set(0); blink.set(1); joy.set(0); shake.set(0); emphasis.set(0); }
-    return () => { [float, gaze, blink, joy, shake, pressed, emphasis].forEach(cancelAnimation); };
+    } else { float.set(0); gaze.set(0); blink.set(1);  }
+    return () => { [float, gaze, blink, pressed].forEach(cancelAnimation); };
   }, [active, reducedMotion, float, gaze, blink, joy, shake, pressed, emphasis]);
 
   const smile = () => {
+    if (launched || departed) return;
+    setLaunched(true);
+    onLaunchStart();
     emphasis.set(0);
     emphasis.set(withSequence(
       withTiming(1, { duration: 85 }), withTiming(0, { duration: 130 }),
@@ -72,7 +96,12 @@ export function RocketCompanion() {
       withRepeat(withTiming(1, { duration: 110, easing: Easing.inOut(Easing.sin) }), 6, true),
       withTiming(0, { duration: 120 })));
     joy.set(withSequence(withSpring(1, { duration: 220, dampingRatio: .8 }),
-      withDelay(1100, withSpring(0, { duration: 400, dampingRatio: .8 }))));
+      withDelay(1100, withSpring(0, { duration: 400, dampingRatio: .8 }, finished => {
+        if (!finished) return;
+        flight.set(withTiming(1, { duration: reducedMotion ? 120 : 140, easing: Easing.in(Easing.cubic) }, done => {
+          if (done) runOnJS(onDeparture)();
+        }));
+      }))));
   };
   const bodyStyle = useAnimatedStyle(() => ({ transform: [
     { translateY: reducedMotion ? 0 : -joy.get() * 8 },
@@ -84,35 +113,71 @@ export function RocketCompanion() {
   const idleStyle = useAnimatedStyle(() => ({ opacity: 1 - Math.min(1, joy.get()), transform: [{ translateX: gaze.get() }, { scaleY: blink.get() }] }));
   const happyStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, joy.get()), transform: [{ translateX: gaze.get() }] }));
 
+  useEffect(() => () => { [joy, shake, emphasis, flight].forEach(cancelAnimation); }, [joy, shake, emphasis, flight]);
+  const flightStyle = useAnimatedStyle(() => {
+    const start = orbitPose(width, height, Math.PI / 2);
+    const current = orbitPose(width, height, Math.PI / 2 - flight.get() * .8);
+    return {
+      opacity: departed ? 0 : reducedMotion ? 1 - flight.get() : flight.get() < 1 ? 1 : 0,
+      transform: [{ translateX: reducedMotion ? 0 : current.x - start.x }, { translateY: reducedMotion ? 0 : current.y - start.y }],
+    };
+  });
   const questionStyle = useAnimatedStyle(() => ({
-    opacity: joy.get() > .15 ? 0 : 1,
+    opacity: launched || departed ? 0 : 1,
     transform: [{ translateX: reducedMotion ? 0 : Math.sin(float.get() * Math.PI * 2) * 1.5 }, { rotate: `${reducedMotion ? 0 : Math.sin(float.get() * Math.PI * 2) * 9}deg` }],
   }));
   const exclamationStyle = useAnimatedStyle(() => ({
-    opacity: joy.get() > .15 ? 1 : 0,
+    opacity: launched || departed ? 1 : 0,
     transform: [{ translateY: reducedMotion ? 0 : -emphasis.get() * 4 }, { scale: reducedMotion ? 1 : 1 + emphasis.get() * .08 }],
   }));
 
   return <Pressable accessibilityRole="button" accessibilityLabel="Make the rocket smile"
-    accessibilityHint="Tap to make your rocket companion happy" style={styles.rocket}
+    accessibilityHint="Tap to make your rocket companion happy and launch it" accessibilityState={{ disabled: launched || departed }} disabled={launched || departed} style={styles.rocket}
     onPress={smile} onPressIn={() => pressed.set(withTiming(.97, { duration: 100 }))}
     onPressOut={() => pressed.set(withSpring(1, { duration: 300, dampingRatio: 1 }))}>
     <Animated.View style={floatStyle} pointerEvents="none">
+    <Animated.View testID="rocket-launch-flight" style={flightStyle}>
     <Animated.View testID="rocket-visual" style={[styles.visual, bodyStyle]}>
       <Image source={require('../../../assets/rocket-neon-dark.png')} style={styles.body} resizeMode="contain" accessible={false} />
       <Animated.View testID="rocket-idle-eyes" style={[styles.eyes, idleStyle]}><Eyes mood="idle" /></Animated.View>
       <Animated.View testID="rocket-happy-eyes" style={[styles.eyes, happyStyle]}><Eyes mood="happy" /></Animated.View>
     </Animated.View>
-    <View pointerEvents="none" style={styles.launchRow}>
+    </Animated.View>
+    <Animated.View pointerEvents="none" style={styles.launchRow}>
       <Text style={styles.launchText}>LAUNCH</Text>
       <View style={styles.mark}>
         <Animated.Text testID="launch-question" style={[styles.launchText, styles.markText, questionStyle]}>?</Animated.Text>
         <Animated.Text testID="launch-exclamation" style={[styles.launchText, styles.markText, exclamationStyle]}>!</Animated.Text>
       </View>
-    </View>
+    </Animated.View>
     </Animated.View>
   </Pressable>;
 }
+export function RocketFlyby({ onComplete }: { onComplete: () => void }) {
+  const { width, height } = useWindowDimensions();
+  const progress = useSharedValue(0);
+  const [reducedMotion, setReducedMotion] = useState<boolean | null>(null);
+  useEffect(() => { let alive = true; AccessibilityInfo.isReduceMotionEnabled().then(value => { if (alive) setReducedMotion(value); }); return () => { alive = false; }; }, []);
+  useEffect(() => {
+    if (reducedMotion === true) { onComplete(); return; }
+    if (reducedMotion === false) progress.set(withDelay(1000, withTiming(1, { duration: 180, easing: Easing.linear }, finished => { if (finished) runOnJS(onComplete)(); })));
+    return () => cancelAnimation(progress);
+  }, [progress, reducedMotion]);
+  const pose = useDerivedValue(() => orbitPose(width, height, -1.18 - progress.get() * .86));
+  const style = useAnimatedStyle(() => ({
+    opacity: progress.get() > 0 && progress.get() < 1 ? 1 : 0,
+    transform: [{ translateX: pose.get().x }, { translateY: pose.get().y }],
+  }));
+  const trailStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${pose.get().angle}deg` }] }));
+  const rocketStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${pose.get().angle - 135}deg` }, { scaleX: -1 }, { scaleY: -1 }] }));
+  return <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 20 }]}>
+    <Animated.View testID="rocket-distant-flyby" style={[{ position: 'absolute', left: 0, top: 0, width: 16, height: 16 }, style]}>
+      <Animated.View style={[{ position: 'absolute', right: 8, top: 8, width: 35, height: .8, backgroundColor: '#fff', opacity: .55, transformOrigin: 'right center' }, trailStyle]} />
+      <Animated.Image source={require('../../../assets/rocket-neon-dark.png')} style={[{ width: 16, height: 16 }, rocketStyle]} resizeMode="contain" />
+    </Animated.View>
+  </View>;
+}
+
 const styles = StyleSheet.create({
   rocket: { width: SIZE, height: SIZE + 16, marginBottom: -10, marginRight: -8 },
   launchRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 34, marginTop: -18 },

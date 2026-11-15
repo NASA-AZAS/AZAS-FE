@@ -1,12 +1,19 @@
+import { Asset } from 'expo-asset';
+import * as SplashScreen from 'expo-splash-screen';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppState, PanResponder, Platform, StyleSheet, ScrollView, Pressable, Text, View, useWindowDimensions, type ViewStyle } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { Canvas } from './render-surface';
 import { SolarScene, type LunarProjection, type ViewControls } from './scene';
 import { SpaceHud, type BodyId } from './space-hud';
+import { StartupSplash } from './startup-splash';
+import { overviewTiles } from './local-overview-tiles';
+import { localLunarAssets } from './local-lunar-assets';
+import { localMinimaps } from './local-minimap-assets';
+import { lunarPanoramas } from './lunar-panorama-assets';
 import { LunarPanorama } from './lunar-panorama';
 import { PolarOverview } from './polar-overview';
 import { NASA_RED, lunarSites, type LunarSite } from './lunar-sites';
@@ -24,7 +31,23 @@ class SceneBoundary extends Component<{ children: ReactNode; onError: (message: 
 }
 
 export function SolarSystemScreen() {
+  const [startup, setStartup] = useState<'loading' | 'flight' | 'done'>('loading');
+  const startupBlocked = useRef(true);
+  const [brandHeld, setBrandHeld] = useState(false);
+  const [brandReady, setBrandReady] = useState(false);
+  const brandLoaded = useCallback(() => { setBrandReady(true); SplashScreen.hideAsync().catch(() => {}); }, []);
+  useEffect(() => {
+    if (!brandReady) return;
+    const timer = setTimeout(() => setBrandHeld(true), 1500);
+    return () => clearTimeout(timer);
+  }, [brandReady]);
+  const [assetsReady, setAssetsReady] = useState(false);
+  const [splashShown, setSplashShown] = useState(false);
+  const startupDone = useCallback(() => { startupBlocked.current = false; setStartup('done'); }, []);
   const detailScrollGesture = useMemo(() => Gesture.Native(), []);
+  const launchLocked = useRef(false);
+  const [launchBusy, setLaunchBusy] = useState(false);
+  const [rocketGone, setRocketGone] = useState(false);
   const [exploring, setExploring] = useState(false);
   const [candidate, setCandidate] = useState<LunarSite | null>(null);
   const [lunarPoints, setLunarPoints] = useState<LunarProjection>([]);
@@ -40,6 +63,30 @@ export function SolarSystemScreen() {
   const [active, setActive] = useState(AppState.currentState === 'active');
   const { width, height } = useWindowDimensions();
   const controls = useRef({ ...initialView(), yaw: Math.atan2(-Math.cos(INITIAL_MOON_ANGLE), -Math.sin(INITIAL_MOON_ANGLE)), pitch: 0 });
+  const tourTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tourFrame = useRef(0);
+  const cancelTour = () => { if (tourTimer.current) clearTimeout(tourTimer.current); tourTimer.current = null; cancelAnimationFrame(tourFrame.current); };
+  useEffect(() => () => { if (tourTimer.current) clearTimeout(tourTimer.current); cancelAnimationFrame(tourFrame.current); }, []);
+  const explorerArrival = useCallback(() => {
+    setLaunchBusy(false);
+    if (tourTimer.current) clearTimeout(tourTimer.current);
+    tourTimer.current = setTimeout(() => {
+      launchLocked.current = true;
+      setLaunchBusy(true);
+      const pitch = controls.current.pitch, zoom = controls.current.zoom;
+      const delta = Math.atan2(Math.sin(-Math.PI / 2 - pitch), Math.cos(-Math.PI / 2 - pitch));
+      let start: number | null = null;
+      const advance = (now: number) => {
+        if (start === null) start = now;
+        const t = Math.min(1, (now - start) / 1200), eased = t*t*(3-2*t);
+        controls.current.pitch = pitch + delta * eased;
+        controls.current.zoom = zoom + (.36 - zoom) * eased;
+        if (t < 1) tourFrame.current = requestAnimationFrame(advance);
+        else { launchLocked.current = false; setLaunchBusy(false); }
+      };
+      tourFrame.current = requestAnimationFrame(advance);
+    }, 1000);
+  }, []);
   const selectionMoving = useRef(false);
   const selectionFrame = useRef(0);
   useEffect(() => () => cancelAnimationFrame(selectionFrame.current), []);
@@ -48,6 +95,15 @@ export function SolarSystemScreen() {
     const [a, b] = event.nativeEvent.touches;
     return a && b ? Math.hypot(a.pageX - b.pageX, a.pageY - b.pageY) : 0;
   };
+  useEffect(() => {
+    let alive = true;
+    Promise.all([Ionicons.loadFont(), MaterialCommunityIcons.loadFont(), Asset.loadAsync([
+      require('../../../assets/rocket-neon-dark.png'), ...overviewTiles.map(t => t.source),
+      ...Object.values(localLunarAssets).map(a => a.image), ...Object.values(localMinimaps), ...Object.values(lunarPanoramas),
+    ])]).then(() => { if (alive) setAssetsReady(true); }).catch(() => { if (alive) setError('Unable to prepare local assets. Please reopen the app.'); });
+    return () => { alive = false; };
+  }, []);
+  useEffect(() => { if (startup === 'loading' && assetsReady && brandReady && brandHeld && splashShown && !loading && !error) setStartup('flight'); }, [startup, assetsReady, brandReady, brandHeld, splashShown, loading, error]);
   const ready = useCallback(() => setLoading(false), []);
   const fail = useCallback((message: string) => { setLoading(false); setError(message); }, []);
 
@@ -62,14 +118,15 @@ export function SolarSystemScreen() {
   }, []);
 
   const responder = useMemo(() => PanResponder.create({
-      onStartShouldSetPanResponder: () => !controls.current.locked && !selectionMoving.current,
-      onMoveShouldSetPanResponder: () => !controls.current.locked && !selectionMoving.current,
+      onStartShouldSetPanResponder: () => !controls.current.locked && !selectionMoving.current && !launchLocked.current && !startupBlocked.current,
+      onMoveShouldSetPanResponder: () => !controls.current.locked && !selectionMoving.current && !launchLocked.current && !startupBlocked.current,
       onPanResponderGrant: (event) => {
+        cancelTour();
         const touch = event.nativeEvent.touches[0];
         gesture.current = { x: touch?.pageX ?? 0, y: touch?.pageY ?? 0, count: event.nativeEvent.touches.length, pinch: pinch(event) };
       },
       onPanResponderMove: (event) => {
-        if (controls.current.locked || selectionMoving.current) { gesture.current.count = 0; return; }
+        if (controls.current.locked || selectionMoving.current || launchLocked.current || startupBlocked.current) { gesture.current.count = 0; return; }
         const touch = event.nativeEvent.touches[0];
         if (!touch) return;
         const count = event.nativeEvent.touches.length;
@@ -88,6 +145,7 @@ export function SolarSystemScreen() {
     }), []);
 
   const moveTo = (body: BodyId | null, orbitView = false, introView = false) => {
+    if (launchLocked.current) return;
     if (selected === body && body !== null && intro === introView && systemView === orbitView) return;
     setIntro(introView);
     setSystemView(orbitView);
@@ -105,8 +163,9 @@ export function SolarSystemScreen() {
     if (!systemView || controls.current.locked) return;
     moveTo('moon', false, true);
   };
-  const openExplorer = () => { setExploring(true); setCandidate(null); moveTo('moon'); controls.current.revision += 1; controls.current.locked = true; };
+  const openExplorer = () => { if (launchLocked.current) return; setExploring(true); setCandidate(null); moveTo('moon'); controls.current.revision += 1; controls.current.locked = true; };
   const selectCandidate = (site: LunarSite) => {
+    cancelTour();
     if (selectionMoving.current || controls.current.locked) return;
     if (candidate) { setCandidate(site); return; }
     selectionMoving.current = true;
@@ -152,25 +211,26 @@ export function SolarSystemScreen() {
 
   const wheelProps = Platform.OS === 'web' ? {
     onWheel: (event: { deltaY: number }) => {
-      if (controls.current.locked || selectionMoving.current) return;
+      if (controls.current.locked || selectionMoving.current || launchLocked.current || startupBlocked.current) return;
+      cancelTour();
       controls.current.zoom = clamp(controls.current.zoom * Math.exp(event.deltaY * .001), .3, 5);
     },
   } : {};
   return (
-    <View style={styles.screen}>
+    <View style={styles.screen} onLayout={() => setSplashShown(true)}>
       <View style={[StyleSheet.absoluteFill, sceneTouchStyle, candidate && { right: '46%' }]} {...responder.panHandlers} {...wheelProps} accessibilityLabel="Interactive solar system. Drag to orbit. Select a body to zoom in; reset to return to the Sun-centered overview.">
         <SceneBoundary onError={fail}>
-          <Canvas camera={{ position: [-Math.cos(INITIAL_MOON_ANGLE) * introMoonDistance, 0, -Math.sin(INITIAL_MOON_ANGLE) * introMoonDistance], fov: 43, near: .000001, far: 4000 }}
+          <Canvas camera={{ position: [0, viewDistance.overview * 2, viewDistance.overview * 5], fov: 43, near: .000001, far: 4000 }}
             frameloop={active && !candidate ? 'always' : 'never'}
             gl={{ antialias: true, alpha: false }}
             >
             <Suspense fallback={null}>
-              <SolarScene candidateSelected={candidate !== null} exploring={exploring} onLunarProjection={setLunarPoints} speed={speed} simulationSeconds={simulationSeconds} onMoonIntro={openMoonIntro} systemView={systemView} onSystemFocus={openEarthSystem} intro={intro} controls={controls} selected={selected} paused={paused || !active} onReady={ready} />
+              <SolarScene startup={startup} onStartupDone={startupDone} onExplorerArrival={explorerArrival} candidateSelected={candidate !== null} exploring={exploring} onLunarProjection={setLunarPoints} speed={speed} simulationSeconds={simulationSeconds} onMoonIntro={openMoonIntro} systemView={systemView} onSystemFocus={openEarthSystem} intro={intro} controls={controls} selected={selected} paused={paused || !active || startup !== 'done'} onReady={ready} />
             </Suspense>
           </Canvas>
         </SceneBoundary>
       </View>
-      {!exploring && <SpaceHud onExplore={openExplorer} speed={speed} onSpeedChange={setSpeed} simulationSeconds={simulationSeconds} selected={requestedBody} onSelect={focus} paused={paused} onTogglePause={() => setPaused(value => !value)}
+      {startup === 'done' && !exploring && <SpaceHud launchLocked={launchBusy} onRocketLaunchStart={() => { launchLocked.current = true; setLaunchBusy(true); }} onRocketFlightComplete={() => { launchLocked.current = false; openExplorer(); }} rocketGone={rocketGone} onRocketDeparture={() => setRocketGone(true)} onExplore={openExplorer} speed={speed} onSpeedChange={setSpeed} simulationSeconds={simulationSeconds} selected={requestedBody} onSelect={focus} paused={paused} onTogglePause={() => setPaused(value => !value)}
         onReset={reset} loading={loading} error={error} />}
       {exploring && <>
         {candidate && <Animated.View entering={FadeIn.duration(350)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '54%', backgroundColor: '#03070d' }} pointerEvents="none">{Array.from({ length: 85 }, (_, i) => <View key={i} style={{ position: 'absolute', left: `${(i * 73.71) % 100}%`, top: `${(i * 41.13) % 100}%`, width: i % 5 === 0 ? 2 : 1, height: i % 5 === 0 ? 2 : 1, borderRadius: 1, backgroundColor: '#fff', opacity: .2 + (i % 4) * .15 }} />)}</Animated.View>}
@@ -181,12 +241,14 @@ export function SolarSystemScreen() {
             : <Pressable key={point.id} accessibilityRole="button" accessibilityLabel={`Open ${lunarSites.find(s => s.id === point.id)?.name}`} onPress={() => selectCandidate(lunarSites.find(s => s.id === point.id)!)} style={{ position: 'absolute', left: point.x - 12, top: point.y - 12, width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}><MaterialCommunityIcons name="circle-double" size={16} color={'#fff'} accessible={false} /><Text pointerEvents="none" style={{ position: 'absolute', top: 23, width: 80, textAlign: 'center', color: '#fff', fontSize: 9 }}>{lunarSites.find(s => s.id === point.id)?.name}</Text></Pressable>)}
         </View>
         {candidate && <View style={{ position: 'absolute', right: 16, top: 20, bottom: 20, width: '50%', padding: 12, gap: 12, backgroundColor: '#080e18ee', borderWidth: .5, borderColor: '#777', borderRadius: 14 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><Text style={{ color: '#fff', fontSize: 16 }}>South pole · {candidate.name}</Text><Pressable accessibilityRole="button" accessibilityLabel="Close candidate map" onPress={closeCandidate} style={{ padding: 10 }}><Text style={{ color: '#fff' }}>✕</Text></Pressable></View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><Text style={{ color: '#fff', fontSize: 16 }}>{candidate.name}</Text><Pressable accessibilityRole="button" accessibilityLabel="Close candidate map" onPress={closeCandidate} style={{ padding: 10 }}><Text style={{ color: '#fff' }}>✕</Text></Pressable></View>
           <GestureDetector gesture={detailScrollGesture} touchAction="pan-y"><ScrollView key={candidate.id} testID="candidate-detail-scroll" nestedScrollEnabled directionalLockEnabled showsVerticalScrollIndicator contentContainerStyle={{ gap: 20, paddingBottom: 12 }}>
             <LunarPanorama site={candidate} viewerHeight={Math.max(270, height - 150)} scrollGesture={detailScrollGesture} />
           </ScrollView></GestureDetector>
         </View>}
       </>}
+      {launchBusy && <View testID="launch-input-lock" style={[StyleSheet.absoluteFill, { zIndex: 1000 }]} onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true} accessibilityLabel="Launch sequence in progress" accessibilityViewIsModal />}
+      {startup !== 'done' && <StartupSplash onBrandReady={brandLoaded} leaving={startup === 'flight'} error={error} />}
       {width < height && (
         <View style={styles.rotate}>
           <Text style={styles.rotateTitle}>A wider view of the universe</Text>

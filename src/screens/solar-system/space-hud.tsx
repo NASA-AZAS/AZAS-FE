@@ -6,12 +6,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
-import { RocketCompanion } from './rocket-companion';
+import { RocketCompanion, RocketFlyby } from './rocket-companion';
 
 
 export type BodyId = 'sun' | 'earth' | 'moon';
 
 export type SpaceHudProps = {
+  launchLocked: boolean;
+  onRocketLaunchStart: () => void;
+  onRocketFlightComplete: () => void;
+  rocketGone: boolean;
+  onRocketDeparture: () => void;
   onExplore: () => void;
   speed: number;
   onSpeedChange: (speed: number) => void;
@@ -31,21 +36,23 @@ const bodies: { id: BodyId; label: string; category: string; description: string
   { id: 'sun', label: 'Sun', category: 'OUR HOME STAR', description: 'The light at the center\nof our solar system.' },
 ];
 
-export function SpaceHud({ onExplore, speed, onSpeedChange, simulationSeconds, selected, onSelect, paused, onTogglePause, onReset, loading, error }: SpaceHudProps) {
+export function SpaceHud({ launchLocked, onRocketLaunchStart, onRocketFlightComplete, rocketGone, onRocketDeparture, onExplore, speed, onSpeedChange, simulationSeconds, selected, onSelect, paused, onTogglePause, onReset, loading, error }: SpaceHudProps) {
+  const [flyby, setFlyby] = useState(false);
   const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const compact = width < 760;
   const body = bodies.find((item) => item.id === selected);
-  const disabled = loading || !!error;
+  const disabled = loading || !!error || launchLocked;
 
   return (
-    <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, {
+    <View pointerEvents={launchLocked ? 'none' : 'box-none'} style={[StyleSheet.absoluteFill, {
       paddingTop: Math.max(insets.top, 24),
       paddingBottom: Math.max(insets.bottom, 24),
       paddingLeft: Math.max(insets.left, compact ? 24 : 32),
       paddingRight: Math.max(insets.right, compact ? 24 : 32),
     }]}>
+      {flyby && <RocketFlyby onComplete={onRocketFlightComplete} />}
       {speedMenuOpen && <Pressable accessibilityRole="button" accessibilityLabel="Dismiss playback speed menu"
         onPress={() => setSpeedMenuOpen(false)} style={[StyleSheet.absoluteFill, { zIndex: 5 }]} />}
       <View pointerEvents="box-none" style={[styles.header, { zIndex: 10 }]}>
@@ -88,7 +95,7 @@ export function SpaceHud({ onExplore, speed, onSpeedChange, simulationSeconds, s
             </View>}
           </View>
 
-          <Pressable accessibilityRole="button" accessibilityLabel="Menu"
+          <Pressable accessibilityRole="button" accessibilityLabel="Menu" disabled={disabled}
             onPress={() => { setSpeedMenuOpen(false); onExplore(); }} style={[styles.playButton, { width: 60 }]}>
             <Ionicons name="menu-outline" size={23} color={theme.colors.text} />
           </Pressable>
@@ -146,7 +153,7 @@ export function SpaceHud({ onExplore, speed, onSpeedChange, simulationSeconds, s
           </View>
         </View>
 
-        <RocketCompanion />
+        <RocketCompanion onLaunchStart={onRocketLaunchStart} departed={rocketGone} onDeparture={() => { setFlyby(true); onRocketDeparture(); }} />
 
 
       </View>

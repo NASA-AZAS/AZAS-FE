@@ -15,8 +15,11 @@ export type ViewControls = {
 };
 export type LunarProjection = { id: string; x: number; y: number; visible: boolean }[];
 type Props = {
+  startup: 'loading' | 'flight' | 'done';
+  onStartupDone: () => void;
   exploring?: boolean;
   candidateSelected?: boolean;
+  onExplorerArrival?: () => void;
   onLunarProjection?: (points: LunarProjection) => void;
   speed: number;
   simulationSeconds: MutableRefObject<number>;
@@ -146,7 +149,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ exploring, candidateSelected, onLunarProjection, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+export function SolarScene({ startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
@@ -176,8 +179,12 @@ export function SolarScene({ exploring, candidateSelected, onLunarProjection, sp
   const movingStart = useMemo(() => new THREE.Vector3(), []);
   const desired = useMemo(() => new THREE.Vector3(), []);
   const { camera, size } = useThree();
+  const explorerArrived = useRef(false);
+  useEffect(() => { explorerArrived.current = false; }, [exploring]);
   const projectionTimer = useRef(0);
-  useEffect(onReady, [onReady]);
+  const startupFrames = useRef(0);
+  const startupElapsed = useRef(0);
+  const startupFinished = useRef(false);
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, .05);
@@ -288,6 +295,31 @@ export function SolarScene({ exploring, candidateSelected, onLunarProjection, sp
     camera.lookAt(0, 0, 0);
     if (controls.current.locked) {
       controls.current.locked = u < 1 || camera.position.distanceTo(desired) > Math.max(distance * .02, .000001);
+    }
+    if (startup !== 'done') {
+      const far = viewDistance.overview * 5;
+      if (startup === 'flight') startupElapsed.current += Math.min(delta, .05);
+      const v = Math.min(1, startupElapsed.current / 2.8);
+      const p = v*v*v*(v*(v*6-15)+10);
+      center.copy(target).multiplyScalar(p);
+      physicalSystem.current?.position.copy(center).negate();
+      const endYaw = Math.atan2(-Math.cos(INITIAL_MOON_ANGLE), -Math.sin(INITIAL_MOON_ANGLE));
+      const dy = Math.atan2(Math.sin(endYaw - .18), Math.cos(endYaw - .18));
+      const yaw = .18 + dy * p, pitch = .48 * (1-p);
+      const d = Math.exp(THREE.MathUtils.lerp(Math.log(far), Math.log(introMoonDistance), p));
+      camera.position.set(Math.sin(yaw)*Math.cos(pitch)*d, Math.sin(pitch)*d, Math.cos(yaw)*Math.cos(pitch)*d);
+      camera.up.set(0,1,0); camera.lookAt(0,0,0);
+      camera.near = Math.max(d/1000,.000001); camera.updateProjectionMatrix();
+      if (++startupFrames.current === 3) onReady();
+      if (v === 1 && !startupFinished.current) {
+        startupFinished.current = true;
+        controls.current.yaw = endYaw; controls.current.pitch = 0; controls.current.zoom = 1;
+        onStartupDone();
+      }
+    }
+    if (exploring && !controls.current.locked && !explorerArrived.current) {
+      explorerArrived.current = true;
+      onExplorerArrival?.();
     }
     if (exploring && moon.current && onLunarProjection) {
       projectionTimer.current += dt;
