@@ -3,7 +3,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { cancelAnimation, useAnimatedStyle, useReducedMotion, useSharedValue, withDecay, withTiming, type SharedValue } from 'react-native-reanimated';
-import { launchSites, type LaunchSite } from './launch-sites';
+import type { LaunchSite } from './launch-sites';
 import { NASA_RED } from './lunar-sites';
 import { hasLaunchCallout, LaunchSiteCallout } from './launch-site-callout';
 
@@ -16,7 +16,7 @@ function WorldImage({ size, zoom, panX, panY, wrap }: MapView & { wrap: number }
   return <Animated.Image source={require('../../../assets/textures/earth.jpg')} resizeMode="stretch" style={[{ position: 'absolute', left: -size / 2, top: 0, width: size * 2, height: size }, style]} />;
 }
 function LaunchPin({ site, selected, onSelect, size, zoom, panX, panY, wrap }: MapView & { site: LaunchSite; selected: boolean; onSelect: (id: string) => void; wrap: number }) {
-  const callout = hasLaunchCallout(site.id);
+  const callout = hasLaunchCallout(site);
   const style = useAnimatedStyle(() => ({
     transform: [
       { translateX: size / 2 + site.longitude / 180 * size * zoom.get() + panX.get() + wrap * size * 2 * zoom.get() - (callout ? 175 : 70) },
@@ -36,7 +36,7 @@ function LaunchPin({ site, selected, onSelect, size, zoom, panX, panY, wrap }: M
   </AnimatedPressable>;
 }
 
-export function LaunchOverview({ selected, onSelect }: { selected: LaunchSite; onSelect: (id: string) => void }) {
+export function LaunchOverview({ launchSites, selected, onSelect }: { launchSites: LaunchSite[]; selected: LaunchSite; onSelect: (id: string) => void }) {
   const [size, setSize] = useState(0);
   const zoom = useSharedValue(3), panX = useSharedValue(0), panY = useSharedValue(0);
   const focalX = useSharedValue(0), focalY = useSharedValue(0);

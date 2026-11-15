@@ -3,11 +3,11 @@ import Svg, { Path } from 'react-native-svg';
 import { type LaunchSite } from './launch-sites';
 import { NASA_RED } from './lunar-sites';
 
-export const hasLaunchCallout = (id: string) => id === 'launch-1' || id === 'launch-2';
+export const hasLaunchCallout = (site: LaunchSite) => site.profileId === 'launch-1' || site.profileId === 'launch-2';
 
 // Both globe and flat map use the same screen-sized labels around an unchanged pin.
 export function LaunchSiteCallout({ site, selected, onSelect }: { site: LaunchSite; selected: boolean; onSelect: (id: string) => void }) {
-  const left = site.id === 'launch-1';
+  const left = site.profileId === 'launch-1';
   const color = selected ? NASA_RED : '#fff';
   return <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, top: 0, width: 350, height: 100 }}>
     <Svg pointerEvents="none" width={350} height={100}>

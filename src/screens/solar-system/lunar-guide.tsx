@@ -15,7 +15,7 @@ const EARTH_SPEECH_PAGES = [
   "Every journey to the Moon starts here on Earth! But where we launch from matters, too. Let's pick our starting point!",
   "The location of a launch site influences a rocket's flight path, launch opportunities, and energy requirements. Choosing the right site is an important first step in planning a lunar mission.",
 ];
-export function LunarGuide({ stage = 'moon', onReady, polePoint, clusterPoint, onSelectCluster }: { stage?: 'moon' | 'earth'; onReady: () => void; polePoint?: { x: number; y: number; visible: boolean; opacity?: number }; clusterPoint?: { x: number; y: number }; onSelectCluster: () => void }) {
+export function LunarGuide({ stage = 'moon', canSelect, onReady, polePoint, clusterPoint, onSelectCluster }: { stage?: 'moon' | 'earth'; canSelect: boolean; onReady: () => void; polePoint?: { x: number; y: number; visible: boolean; opacity?: number }; clusterPoint?: { x: number; y: number }; onSelectCluster: () => void }) {
   useEffect(() => { const timer = setTimeout(onReady, 800); return () => clearTimeout(timer); }, [onReady]);
   const [readyToSelect, setReadyToSelect] = useState(false);
   const finished = useCallback(() => setReadyToSelect(true), []);
@@ -39,7 +39,7 @@ export function LunarGuide({ stage = 'moon', onReady, polePoint, clusterPoint, o
         <Text style={styles.commandTitle}>{stage === 'earth' ? 'SELECT A LAUNCH SITE' : 'SELECT THE LANDING\nSITE CLUSTER'}</Text>
       </View>
     </Animated.View>
-    {readyToSelect && <Animated.View pointerEvents={(stage === 'earth' ? 1 : polePoint?.opacity ?? 0) > .05 ? 'auto' : 'none'} entering={FadeIn.duration(500)} style={{ opacity: stage === 'earth' ? 1 : polePoint?.opacity ?? 0, width: 130, position: 'absolute', left: Math.max(left, Math.min(width - right - 130, (clusterPoint?.x ?? width / 2) - 65)), top: Math.min(height - 160, (clusterPoint?.y ?? height / 2) + (stage === 'earth' ? 0 : 90)) }}>
+    {readyToSelect && canSelect && <Animated.View pointerEvents={(stage === 'earth' ? 1 : polePoint?.opacity ?? 0) > .05 ? 'auto' : 'none'} entering={FadeIn.duration(500)} style={{ opacity: stage === 'earth' ? 1 : polePoint?.opacity ?? 0, width: 130, position: 'absolute', left: Math.max(left, Math.min(width - right - 130, (clusterPoint?.x ?? width / 2) - 65)), top: Math.min(height - 160, (clusterPoint?.y ?? height / 2) + (stage === 'earth' ? 0 : 90)) }}>
       <Pressable testID="select-cluster-cue" accessibilityRole="button" accessibilityLabel={stage === 'earth' ? 'Select launch site' : 'Select landing site cluster'} onPress={onSelectCluster} style={{ minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ color: NASA_RED, fontSize: 12, fontWeight: '600', letterSpacing: 1.5, textShadowColor: '#000', textShadowRadius: 4 }}>SELECT</Text>
       </Pressable>

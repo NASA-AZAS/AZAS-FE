@@ -1,4 +1,3 @@
-import candidates from '../../../assets/lunar-candidates.json';
 export const NASA_RED = '#FC3D21';
 // Candidate coordinates: MOON_ME (DE421), planetocentric latitude and east-positive longitude.
 export const lunarReference = {
@@ -6,13 +5,9 @@ export const lunarReference = {
   profileSamples: 3600, azimuthStepDeg: .1,
 } as const;
 export type LunarSite = {
-  id: string; name: string; latitude: number; longitude: number; description: string;
-  source: 'metadata' | 'mock' | 'csv'; groundElevationM?: number; squareSideM?: number; screeningStatus?: string;
-  profileStatus: 'METADATA_INCOMPLETE';
+  landingSiteId: number; id: string; name: string; latitude: number; longitude: number;
+  groundElevationM: number; observerHeightM: number; squareSideM: number; screeningStatus: string;
 };
-// Local CSV snapshot; horizon profiles are not imported.
-
-export const lunarSites = candidates as LunarSite[];
 export const mosaic = { width: 6082, height: 6082, center: 3041, metersPerPixel: 100 } as const;
 // TIFF has no GeoTIFF tags. Calibrated from its printed 100m/px label,
 // centered south-pole stereographic graticule and 6082px diameter.
@@ -27,5 +22,5 @@ export const coordinates = (site: LunarSite) => `${Math.abs(site.latitude).toFix
 // Horizons custom observer input: longitude, latitude, height above reference sphere (km).
 export const observerLocation = (site: LunarSite) => site.groundElevationM === undefined ? null : {
   longitudeDeg: site.longitude, latitudeDeg: site.latitude,
-  heightKm: (site.groundElevationM + lunarReference.observerHeightM) / 1000,
+  heightKm: (site.groundElevationM + site.observerHeightM) / 1000,
 };

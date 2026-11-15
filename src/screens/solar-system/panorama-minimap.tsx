@@ -7,14 +7,14 @@ import { NASA_RED, type LunarSite } from './lunar-sites';
 import { SurfaceSkyReadout } from './surface-sky-readout';
 import type { SkyMarkers } from './surface-sky';
 import type { SkyBody } from './surface-sky-data';
-import { siteConditions } from './site-conditions';
+import type { SiteConditions } from './site-conditions';
 
 const SIZE = 88, CENTER = SIZE / 2;
 const metrics = [
   { key: 'sunlight', label: 'Sunlight', color: '#FFD166' },
   { key: 'earthCommunication', label: 'Earth Communication', color: '#74D9F5' },
 ] as const;
-export function PanoramaMinimap({ site, heading, horizontalFov, side = 'left', skyMarkers, onFindBody }: { onFindBody?: (body: SkyBody) => void; skyMarkers?: SharedValue<SkyMarkers>; side?: 'left' | 'right'; site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
+export function PanoramaMinimap({ site, conditions, heading, horizontalFov, side = 'left', skyMarkers, onFindBody }: { onFindBody?: (body: SkyBody) => void; conditions?: SiteConditions; skyMarkers?: SharedValue<SkyMarkers>; side?: 'left' | 'right'; site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
   // Rotate imagery into local north-up; the overlay heading is then geographic azimuth.
   const cone = useAnimatedStyle(() => ({ transform: [{ rotate: `${heading.get()}rad` }] }));
   const half = horizontalFov / 2, r = SIZE * Math.SQRT2;
@@ -37,35 +37,34 @@ export function PanoramaMinimap({ site, heading, horizontalFov, side = 'left', s
     </View>
     </View>
     <View testID="panorama-site-conditions" style={{ width: SIZE + 1, gap: 6 }}>
-      {metrics.map(metric => {
-        const value = siteConditions[site.id][metric.key];
-        return <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={value} />;
-      })}
+      {metrics.map(metric => <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={conditions?.[metric.key]} />)}
     </View>
     {skyMarkers && <SurfaceSkyReadout markers={skyMarkers} />}
   </View>;
 }
 function MinimapSkyDot({ body, markers, onFind }: { body: SkyBody; markers: SharedValue<SkyMarkers>; onFind?: (body: SkyBody) => void }) {
   const position = useAnimatedStyle(() => {
-    const az = markers.get()[body].azimuth * Math.PI / 180;
+    const azimuth = markers.get()[body].azimuth;
+    const az = (azimuth ?? 0) * Math.PI / 180;
     const x = Math.sin(az), y = -Math.cos(az);
     const edge = (CENTER - 3) / Math.max(Math.abs(x), Math.abs(y), .001);
-    return { transform: [{ translateX: CENTER + x * edge - 2.5 }, { translateY: CENTER + y * edge - 2.5 }] };
+    return { opacity: azimuth == null ? 0 : 1, transform: [{ translateX: CENTER + x * edge - 2.5 }, { translateY: CENTER + y * edge - 2.5 }] };
   });
   return <Animated.View style={[{ position: 'absolute', left: 0, top: 0, width: 5, height: 5 }, position]}>
     <Pressable testID={`minimap-${body}-direction`} accessibilityRole="button" accessibilityLabel={`Find ${body} from minimap`} onPress={() => onFind?.(body)} hitSlop={8} style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: body === 'sun' ? '#FFD166' : '#74B9FF', borderWidth: .5, borderColor: '#111' }} />
   </Animated.View>;
 }
-function ConditionBar({ label, color, value }: { label: string; color: string; value: number }) {
+function ConditionBar({ label, color, value }: { label: string; color: string; value?: number }) {
   const fill = useSharedValue(0);
   useEffect(() => {
     fill.set(0);
+    if (value == null) return;
     fill.set(withTiming(value, { duration: 650, easing: Easing.bezier(.23, 1, .32, 1), reduceMotion: ReduceMotion.System }));
   }, [fill, value]);
   const fillStyle = useAnimatedStyle(() => ({ width: `${fill.get()}%` }));
   return <View style={{ gap: 3 }}>
     <Text numberOfLines={1} style={{ color: '#fff', fontSize: 8, textShadowColor: '#000', textShadowRadius: 3 }}>{label}</Text>
-    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: value, text: `${value}%` }} style={{ height: 5, width: '100%', borderWidth: .5, borderColor: color, backgroundColor: '#050a12aa', overflow: 'hidden' }}>
+    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: value, text: value == null ? 'Unavailable' : `${value}%` }} style={{ height: 5, width: '100%', borderWidth: .5, borderColor: color, backgroundColor: '#050a12aa', overflow: 'hidden' }}>
       <Animated.View style={[{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: color }, fillStyle]} />
     </View>
   </View>;

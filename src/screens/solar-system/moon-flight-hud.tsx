@@ -8,22 +8,30 @@ import * as THREE from 'three';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { NASA_RED } from './lunar-sites';
-import { scale } from './scale';
-import { createTransferRoute, MISSION_DURATION_DAYS, type FlightPlayback, type FlightTelemetry, type FlightMarkers } from './transfer-route';
+import { type TransferRoute, type FlightPlayback, type FlightTelemetry, type FlightMarkers } from './transfer-route';
 
 const shadow = { textShadowColor: '#000', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } };
 
-export function MoonFlightHud({ telemetry, playback }: { telemetry: MutableRefObject<FlightTelemetry>; playback: MutableRefObject<FlightPlayback> }) {
+export function MoonFlightHud({ telemetry, playback, route }: { telemetry: MutableRefObject<FlightTelemetry>; playback: MutableRefObject<FlightPlayback>; route: TransferRoute }) {
   const [flight, setFlight] = useState(telemetry.current);
   const [settings, setSettings] = useState({ ...playback.current });
   const insets = useSafeAreaInsets();
   useEffect(() => { const timer = setInterval(() => setFlight({ ...telemetry.current }), 150); return () => clearInterval(timer); }, [telemetry]);
   const seconds = Math.ceil(flight.remainingSeconds);
   const time = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-  const missionTime = `${(flight.progress * MISSION_DURATION_DAYS).toFixed(1).replace(/\.0$/, '')}d`;
-  const route = useMemo(() => createTransferRoute(new THREE.Vector3(scale.moonOrbit, 0, 0)), []);
-  const project = (p: THREE.Vector3) => ({ x: 20 + p.x / scale.moonOrbit * 116, y: 32 + p.z / scale.moonOrbit * 100 });
+  const missionTime = `${(flight.progress * route.durationSeconds / 86400).toFixed(1).replace(/\.0$/, '')}d`;
+  const bounds = useMemo(() => {
+    const all = [...route.points, new THREE.Vector3(0, 0, 0), route.moonPosition];
+    return { minX: Math.min(...all.map(p => p.x)), maxX: Math.max(...all.map(p => p.x)), minZ: Math.min(...all.map(p => p.z)), maxZ: Math.max(...all.map(p => p.z)) };
+  }, [route]);
+  const project = (p: THREE.Vector3) => {
+    const spanX = Math.max(bounds.maxX - bounds.minX, 1e-9), spanZ = Math.max(bounds.maxZ - bounds.minZ, 1e-9);
+    const fit = Math.min(132 / spanX, 54 / spanZ);
+    const ox = (156 - spanX * fit) / 2, oy = (78 - spanZ * fit) / 2;
+    return { x: ox + (p.x - bounds.minX) * fit, y: oy + (p.z - bounds.minZ) * fit };
+  };
   const path = useMemo(() => route.points.map(p => { const v = project(p); return `${v.x},${v.y}`; }).join(' '), [route]);
+  const earth = project(new THREE.Vector3(0, 0, 0)), moon = project(route.moonPosition);
   const marker = project(route.sample(flight.progress, new THREE.Vector3()));
   const update = (action: 'speed' | 'pause' | 'skip') => {
     if (flight.arrived) return;
@@ -37,8 +45,8 @@ export function MoonFlightHud({ telemetry, playback }: { telemetry: MutableRefOb
       <Text style={{ ...shadow, color: theme.colors.muted, fontSize: 8, letterSpacing: 1.3 }}>TRANSFER MAP</Text>
       <Svg width="100%" height={64} viewBox="0 0 156 78">
         <Polyline points={path} fill="none" stroke="#fff" strokeWidth={.8} strokeDasharray="3 3" />
-        <Circle cx={20} cy={32} r={3} fill={theme.colors.earth} /><SvgText x={20} y={48} fill="#fff" fontSize={8} textAnchor="middle">Earth</SvgText>
-        <Circle cx={136} cy={32} r={3} fill={theme.colors.moon} /><SvgText x={136} y={48} fill={theme.colors.moon} fontSize={8} textAnchor="middle">Moon</SvgText>
+        <Circle cx={earth.x} cy={earth.y} r={3} fill={theme.colors.earth} /><SvgText x={earth.x} y={Math.min(75, earth.y + 13)} fill="#fff" fontSize={8} textAnchor="middle">Earth</SvgText>
+        <Circle cx={moon.x} cy={moon.y} r={3} fill={theme.colors.moon} /><SvgText x={moon.x} y={Math.min(75, moon.y + 13)} fill={theme.colors.moon} fontSize={8} textAnchor="middle">Moon</SvgText>
         <Circle testID="flight-map-position" cx={marker.x} cy={marker.y} r={3.5} fill="#FFD166" stroke="#fff" strokeWidth={1} />
       </Svg>
       <Text testID="flight-time" style={{ ...shadow, color: theme.colors.muted, fontSize: 8, alignSelf: 'flex-end' }}>Time remaining {time}</Text>
@@ -53,7 +61,7 @@ export function MoonFlightHud({ telemetry, playback }: { telemetry: MutableRefOb
           <Text style={{ ...shadow, color: theme.colors.muted, fontSize: 10 }}>Distance remaining</Text><Text testID="flight-distance" style={{ ...shadow, color: '#fff', fontSize: 13, fontVariant: ['tabular-nums'] }}>{Math.ceil(flight.remainingKm).toLocaleString('en-US')} km</Text>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
-          <Text style={{ ...shadow, color: theme.colors.muted, fontSize: 10 }}>Avg. speed</Text>
+          <Text style={{ ...shadow, color: theme.colors.muted, fontSize: 10 }}>Instant speed</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
             <Text testID="flight-velocity" style={{ ...shadow, color: '#fff', fontSize: 12, fontVariant: ['tabular-nums'] }}>{Math.round(flight.speedKmh).toLocaleString('en-US')} km/h</Text>
             {settings.speed !== 1 && <Text testID="flight-speed-tag" style={{ ...shadow, color: '#fff', fontSize: 9, paddingHorizontal: 4, paddingVertical: 2, borderWidth: .3, borderColor: '#fff', borderRadius: 3 }}>{settings.speed}x</Text>}

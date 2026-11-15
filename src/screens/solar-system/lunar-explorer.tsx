@@ -5,7 +5,7 @@ import { useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Canvas } from './render-surface';
 import { LunarMap } from './lunar-map';
-import { coordinates, lunarReference, lunarSites, observerLocation, type LunarSite } from './lunar-sites';
+import { coordinates, observerLocation, type LunarSite } from './lunar-sites';
 
 function Moon({ yaw, pitch }: { yaw: number; pitch: number }) {
   const textures = useLoader(THREE.TextureLoader, [
@@ -21,11 +21,11 @@ function Moon({ yaw, pitch }: { yaw: number; pitch: number }) {
     })}
   </group></group>;
 }
-export function LunarExplorer({ onClose }: { onClose: () => void }) {
+export function LunarExplorer({ lunarSites, onClose }: { lunarSites: LunarSite[]; onClose: () => void }) {
   const insets = useSafeAreaInsets();
   const [site, setSite] = useState<LunarSite | null>(null);
   const [flatMap, setFlatMap] = useState(false);
-  const [angle, setAngle] = useState({ yaw: -THREE.MathUtils.degToRad(lunarSites[0].longitude), pitch: -Math.PI / 2 });
+  const [angle, setAngle] = useState({ yaw: -THREE.MathUtils.degToRad(lunarSites[0]?.longitude ?? 0), pitch: -Math.PI / 2 });
   const [size, setSize] = useState({ width: 1, height: 1 });
   const start = useRef(angle);
   const latest = useRef(angle);
@@ -58,10 +58,10 @@ export function LunarExplorer({ onClose }: { onClose: () => void }) {
       </View>
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <Pressable accessibilityRole="button" accessibilityLabel="Show globe" accessibilityState={{ selected: !flatMap }} onPress={() => setFlatMap(false)} style={[styles.button, !flatMap && { borderColor: '#fff' }]}><Text style={styles.text}>Globe</Text></Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel="Show flat map" accessibilityState={{ selected: flatMap }} onPress={() => { if (!site) selectSite(lunarSites[0]); setFlatMap(true); }} style={[styles.button, flatMap && { borderColor: '#fff' }]}><Text style={styles.text}>Flat map</Text></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Show flat map" accessibilityState={{ selected: flatMap }} onPress={() => { if (!lunarSites.length) return; if (!site) selectSite(lunarSites[0]); setFlatMap(true); }} style={[styles.button, flatMap && { borderColor: '#fff' }]}><Text style={styles.text}>Flat map</Text></Pressable>
       </View>
       <View style={styles.content}>
-        {flatMap && site ? <LunarMap key={site.id} site={site} onSelect={selectSite} /> : <View style={styles.globe} onLayout={e => setSize(e.nativeEvent.layout)} {...gesture.panHandlers}>
+        {flatMap && site ? <LunarMap lunarSites={lunarSites} key={site.id} site={site} onSelect={selectSite} /> : <View style={styles.globe} onLayout={e => setSize(e.nativeEvent.layout)} {...gesture.panHandlers}>
           <Canvas camera={{ position: [0, 0, 4], fov: 43 }} gl={{ antialias: true }}>
             <ambientLight intensity={1.2} /><directionalLight position={[3, 4, 5]} intensity={2} />
             <Suspense fallback={null}><Moon yaw={angle.yaw} pitch={angle.pitch} /></Suspense>
@@ -72,18 +72,17 @@ export function LunarExplorer({ onClose }: { onClose: () => void }) {
         <View style={styles.sidebar}>
           <Text style={styles.eyebrow}>LUNAR LOCATIONS</Text>
           <Text style={styles.subtitle}>{site ? site.name : 'South-pole candidates'}</Text>
-          <Text style={styles.muted}>{site ? site.description : 'Site01 is a reference point. The full 27-site dataset is awaiting import.'}</Text>
+          <Text style={styles.muted}>{site ? site.screeningStatus : 'Select a landing site to see its terrain.'}</Text>
           <ScrollView contentContainerStyle={{ gap: 8, paddingVertical: 12 }}>
             {lunarSites.length === 0 && <Text style={styles.muted}>No lunar locations yet.</Text>}
-            {lunarSites.map(pin => <Pressable key={pin.id} accessibilityRole="button" accessibilityLabel={`Explore ${pin.name}`} accessibilityState={{ selected: site?.id === pin.id }} onPress={() => selectSite(pin)} style={[styles.site, site?.id === pin.id && { borderColor: '#fff' }]}><Text style={styles.text}>{pin.name}</Text><Text style={styles.muted}>{coordinates(pin)}</Text><Text style={styles.source}>{pin.source === 'metadata' ? 'REFERENCE POINT · PROFILE PENDING' : 'DEMO LOCATION'}</Text></Pressable>)}
+            {lunarSites.map(pin => <Pressable key={pin.id} accessibilityRole="button" accessibilityLabel={`Explore ${pin.name}`} accessibilityState={{ selected: site?.id === pin.id }} onPress={() => selectSite(pin)} style={[styles.site, site?.id === pin.id && { borderColor: '#fff' }]}><Text style={styles.text}>{pin.name}</Text><Text style={styles.muted}>{coordinates(pin)}</Text><Text style={styles.source}>{pin.screeningStatus}</Text></Pressable>)}
           </ScrollView>
-          {site?.source === 'metadata' && <View style={{ gap: 4, paddingVertical: 8 }}>
+          {site && <View style={{ gap: 4, paddingVertical: 8 }}>
             <Text selectable style={styles.muted}>Ground elevation: {site.groundElevationM} m</Text>
-            <Text selectable style={styles.muted}>Observer: +{lunarReference.observerHeightM.toFixed(1)} m above ground</Text>
+            <Text selectable style={styles.muted}>Observer: +{site.observerHeightM.toFixed(1)} m above ground</Text>
             <Text selectable style={styles.muted}>Reference height: {observerLocation(site)?.heightKm.toFixed(6)} km</Text>
-            <Text style={styles.source}>Horizon profile pending</Text>
           </View>}
-          <Text style={styles.source}>Imagery: NASA · Reference + demo sites</Text>
+          <Text style={styles.source}>Imagery: NASA</Text>
         </View>
       </View>
     </View>

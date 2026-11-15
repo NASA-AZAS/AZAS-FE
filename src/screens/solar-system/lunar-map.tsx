@@ -1,10 +1,10 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMemo, useRef, useState } from 'react';
 import { Image, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
-import { coordinates, lunarSites, mosaicPoint, NASA_RED, type LunarSite } from './lunar-sites';
+import { coordinates, mosaicPoint, NASA_RED, type LunarSite } from './lunar-sites';
 import { localLunarAssets } from './local-lunar-assets';
 
-export function LunarMap({ site, onSelect }: { site: LunarSite; onSelect: (site: LunarSite) => void }) {
+export function LunarMap({ lunarSites, site, onSelect }: { lunarSites: LunarSite[]; site: LunarSite; onSelect: (site: LunarSite) => void }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [view, setView] = useState({ zoom: 8, x: 0, y: 0 });
   const current = useRef(view); current.current = view;
@@ -23,6 +23,7 @@ export function LunarMap({ site, onSelect }: { site: LunarSite; onSelect: (site:
     },
   }), []);
   const asset = localLunarAssets[site.id];
+  if (!asset) return <Text style={{ color: '#fff' }}>Local imagery unavailable.</Text>;
   const center = mosaicPoint(site.latitude, site.longitude);
   const factor = Math.max(size.width, size.height) / asset.size * view.zoom;
   const left = size.width / 2 - center.x * factor + view.x;

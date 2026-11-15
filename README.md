@@ -9,6 +9,14 @@ npm start
 
 Open the project in Expo Go on a physical iOS or Android device. For a browser preview, run `npm run web` or open the running server at http://localhost:8081.
 
+The lunar explorer loads landing sites from `https://api.azas.n-e.kr/api/v1`. Copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_API_BASE_URL` to the full API base URL (including `/api/v1`) before starting Expo or building the web app. The address must be reachable from the device. Do not use the Swagger UI URL as the API base URL. Local env files are ignored; configure the same public variable in Vercel before rebuilding. The backend must allow the web app's origin in CORS (`https://azas-app.vercel.app` for production).
+
+Select a landing site and enter a UTC mission deadline (default `2027-01-31`). The search finds the first touchdown that supports 48 hours of sunlight and Earth visibility. The Earth map and launch list show the launch options calculated for that touchdown.
+
+Choose a launch option and press **Next Stop The Moon** to calculate its preliminary transfer from Earth orbit to lunar arrival. **Start the Journey** plays the launch sequence, then follows the returned trajectory samples. The preview, flight map, distance and speed all use the selected candidate's trajectory.
+
+After landing, drag the panorama to look around or move the timeline to a UTC time. The Sun and Earth positions and terrain visibility come from the selected site's first valid touchdown and cover its surface activity period.
+
 - Drag to orbit around the Sun. The overview is Sun-centered. Pinch or use the mouse wheel to zoom.
 - Select Sun, Earth, or Moon to highlight it immediately and fly to it along a continuous curved path with a single camera interpolation and no final catch-up adjustment. The object buttons are ordered Moon, Earth, Sun. Earth ↔ Moon flights widen only to a local Earth–Moon orbit view; other body-to-body flights use a system-wide range. Reset widens from the current body and finishes at the Sun-centered overview. All automatic flights use the fixed Reset View angle, use a low arc, and zoom directly from overview to Sun. They keep drag / pinch / wheel locked until the camera settles. The Sun view gently orbits the camera while its surface does not rotate. Camera tracking follows orbital position independently of body rotation.
 - In the system overview, tap the enlarged Earth or Moon to open an Earth-centered view that keeps both enlarged bodies and the Moon’s orbit visible. Tap the Moon in this orbit view to return to the enlarged, phase-changing Moon introduction. Tap Earth from that Moon view to return to the enlarged Earth-centered orbit. Object buttons still open individual close-ups.
