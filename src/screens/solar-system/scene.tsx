@@ -8,7 +8,7 @@ import type { LunarSite } from './lunar-sites';
 import { Sun } from './sun';
 import { TransferTrajectory } from './transfer-trajectory';
 import { FlightRocket } from './flight-rocket';
-import { createTransferRoute, FLIGHT_DURATION_SECONDS, AVERAGE_SPEED_KMH, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
+import { FLIGHT_DURATION_SECONDS, type TransferRoute, type FlightTelemetry, type FlightPlayback, type FlightMarkers } from './transfer-route';
 import { SIMULATION_RATE } from './simulation-clock';
 import type { BodyId } from './space-hud';
 
@@ -22,6 +22,7 @@ export type ViewControls = {
 };
 export type LunarProjection = { id: string; x: number; y: number; visible: boolean; opacity?: number }[];
 type Props = {
+  flightRoute: TransferRoute | null;
   lunarSites: LunarSite[];
   launchSites: LaunchSite[];
   startup: 'loading' | 'flight' | 'done';
@@ -169,7 +170,7 @@ function DeepSpace() {
   </mesh>;
 }
 
-export function SolarScene({ lunarSites, launchSites, missionFlight, flightActive, flightTelemetry, flightPlayback, flightMarkers, flightLaunchId, flightLandingId, onFlightArrived, missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
+export function SolarScene({ lunarSites, launchSites, flightRoute, missionFlight, flightActive, flightTelemetry, flightPlayback, flightMarkers, flightLaunchId, flightLandingId, onFlightArrived, missionTransfer, onTransferReady, startup, onStartupDone, exploring, candidateSelected, onExplorerArrival, onLunarProjection, earthExploring, speed, simulationSeconds, onMoonIntro, systemView, onSystemFocus, intro, controls, paused, selected, onReady }: Props) {
   const [earthMap, moonMap, earthNormal, cloudsMap, rocketMap] = useLoader(THREE.TextureLoader, [
     require('../../../assets/textures/earth.jpg'),
     require('../../../assets/textures/moon.jpg'),
@@ -200,13 +201,8 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
   const movingStart = useMemo(() => new THREE.Vector3(), []);
   const desired = useMemo(() => new THREE.Vector3(), []);
   const { camera, size } = useThree();
-  const transferMoon = useMemo(() => {
-    const angle = INITIAL_MOON_ANGLE + simulationSeconds.current / 86400 * Math.PI * 2 / 27.3217;
-    return new THREE.Vector3(Math.cos(angle) * scale.moonOrbit, 0, Math.sin(angle) * scale.moonOrbit);
-  }, [missionTransfer, simulationSeconds]);
   const reducedMotion = useReducedMotion();
   const transferView = useRef({ elapsed: 0, startDistance: 1, startCenter: new THREE.Vector3(), startRotation: new THREE.Quaternion() });
-  const flightRoute = useMemo(() => createTransferRoute(transferMoon), [transferMoon]);
   const flightSpriteSize = useRef(.001);
   const rocketView = useMemo(() => ({ elapsed: 0, lastTick: 0, completed: false, initialized: false, yaw: 0, pitch: .35, bearing: 0, distance: .001, point: new THREE.Vector3(), ahead: new THREE.Vector3(), tangent: new THREE.Vector3(), up: new THREE.Vector3() }), []);
   useLayoutEffect(() => {
@@ -243,8 +239,9 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
     const earthSpin = t * .13;
     const a = .35 + days * Math.PI * 2 / 365.256;
     const moonAngle = INITIAL_MOON_ANGLE + days * Math.PI * 2 / 27.3217;
-    const mx = Math.cos(moonAngle) * scale.moonOrbit * (1 + overview * 39);
-    const mz = Math.sin(moonAngle) * scale.moonOrbit * (1 + overview * 39);
+    const transferMoon = missionTransfer ? flightRoute?.moonPosition : undefined;
+    const mx = transferMoon?.x ?? Math.cos(moonAngle) * scale.moonOrbit * (1 + overview * 39);
+    const mz = transferMoon?.z ?? Math.sin(moonAngle) * scale.moonOrbit * (1 + overview * 39);
     const ex = Math.cos(a) * scale.earthOrbit;
     const ez = Math.sin(a) * scale.earthOrbit;
     if (earthSystem.current) earthSystem.current.position.set(ex, 0, ez);
@@ -370,14 +367,15 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
         onStartupDone();
       }
     }
-    if (missionTransfer && !missionFlight) {
+    if (missionTransfer && flightRoute && !missionFlight) {
       const view = transferView.current;
       view.elapsed += dt;
       const t = reducedMotion ? 1 : Math.min(1, view.elapsed / 1.8), p = t*t*t*(t*(t*6-15)+10);
-      const up = new THREE.Vector3(transferMoon.z, 0, -transferMoon.x).normalize();
+      const up = new THREE.Vector3(0, 0, -1);
       const rotation = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(new THREE.Vector3(0, 1, 0), new THREE.Vector3(), up));
-      const fitDistance = scale.moonOrbit * 1.45 / (2 * Math.tan(43 * Math.PI / 360) * (size.width / size.height) * .8);
-      const midpoint = new THREE.Vector3(ex, 0, ez).addScaledVector(transferMoon, .5);
+      const span = flightRoute.bounds.getSize(new THREE.Vector3());
+      const fitDistance = Math.max(span.z / .6, span.x / (.8 * size.width / size.height)) / (2 * Math.tan(43 * Math.PI / 360));
+      const midpoint = flightRoute.bounds.getCenter(new THREE.Vector3()).add(new THREE.Vector3(ex, 0, ez));
       // Leave the lower band clear for the standard rocket dialogue.
       midpoint.addScaledVector(up, 2 * Math.tan(43 * Math.PI / 360) * fitDistance * -.08);
       center.lerpVectors(view.startCenter, midpoint, p);
@@ -387,22 +385,16 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
       camera.position.set(0, 0, d).applyQuaternion(camera.quaternion);
       camera.near = Math.max(d / 1000, .000001); camera.updateProjectionMatrix();
     }
-    if (missionFlight && flightTelemetry) {
+    if (missionFlight && flightTelemetry && flightRoute) {
       const view = rocketView;
       if (view.completed) return;
       const now = performance.now();
       const playback = flightPlayback?.current;
-      if (playback?.skip) { playback.skip = false; view.completed = true; onFlightArrived?.(); return; }
+      if (playback?.skip) { playback.skip = false; view.elapsed = FLIGHT_DURATION_SECONDS; }
       else if (flightActive && !playback?.paused) view.elapsed = Math.min(FLIGHT_DURATION_SECONDS, view.elapsed + Math.max(0, now - view.lastTick) / 1000 * (playback?.speed ?? 1));
       view.lastTick = now;
       const progress = view.elapsed / FLIGHT_DURATION_SECONDS;
       flightRoute.sample(progress, view.point);
-      // Cut just before the path ends; Moon-center distance does not trigger arrival.
-      if (flightRoute.totalLength * (1 - progress) <= scale.moonRadius * .25) {
-        view.completed = true;
-        onFlightArrived?.();
-        return;
-      }
       flightRoute.sample(progress < 1 ? Math.min(1, progress + .0002) : .9998, view.ahead);
       if (progress < 1) view.tangent.subVectors(view.ahead, view.point).normalize();
       else view.tangent.subVectors(view.point, view.ahead).normalize();
@@ -411,7 +403,7 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
       const earthBearing = Math.atan2(view.point.x, view.point.z);
       const departureBlend = THREE.MathUtils.smoothstep(progress, .24, .38);
       let bearing = earthBearing + angleDelta(behind, earthBearing) * departureBlend;
-      const lunarOffset = view.ahead.subVectors(view.point, transferMoon);
+      const lunarOffset = view.ahead.subVectors(view.point, flightRoute.moonPosition);
       const lunarBlend = 1 - THREE.MathUtils.smoothstep(lunarOffset.length(), .006, .035);
       bearing += angleDelta(Math.atan2(lunarOffset.x, lunarOffset.z), bearing) * lunarBlend;
       if (!view.initialized) { view.bearing = bearing; view.yaw = controls.current.yaw; view.pitch = controls.current.pitch; view.initialized = true; }
@@ -420,7 +412,7 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
       view.pitch += angleDelta(controls.current.pitch, view.pitch) * (1 - Math.exp(-dt * 12));
       const cameraYaw = view.bearing + view.yaw, cameraPitch = view.pitch;
       // A camera sphere smaller than surface clearance cannot pass through Earth or the Moon.
-      const clearance = Math.min(view.point.length() - scale.earthRadius, view.point.distanceTo(transferMoon) - scale.moonRadius);
+      const clearance = Math.min(view.point.length() - scale.earthRadius, view.point.distanceTo(flightRoute.moonPosition) - scale.moonRadius);
       const baseDistance = Math.min(.008, Math.max(.00015, clearance * .6));
       const followDistance = Math.max(.00005, Math.min(baseDistance * controls.current.zoom, clearance * .85));
       view.distance = followDistance;
@@ -451,7 +443,8 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
         flightMarkers.set({ sunX: sx, sunY: sy, sunVisible, earthX: e.x, earthY: e.y, earthVisible: e.visible, moonX: m.x, moonY: m.y, moonVisible: m.visible });
       }
       flightSpriteSize.current = baseDistance * 2 * Math.tan(43 * Math.PI / 360) * 100 / size.height;
-      flightTelemetry.current = { progress, remainingSeconds: Math.max(0, FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1), remainingKm: Math.max(0, (1 - progress) * flightRoute.totalLength * 2_000_000), speedKmh: AVERAGE_SPEED_KMH, arrived: progress === 1 };
+      flightTelemetry.current = { progress, remainingSeconds: Math.max(0, FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1), ...flightRoute.metrics(progress), arrived: progress === 1 };
+      if (progress === 1) { view.completed = true; onFlightArrived?.(); }
     }
     if (exploring && !controls.current.locked && !explorerArrived.current) {
       explorerArrived.current = true;
@@ -515,8 +508,8 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
       <group ref={earthSystem} onClick={(event) => {
         if (!selected && !intro && !controls.current.locked) { event.stopPropagation(); onSystemFocus(); }
       }}>
-        {missionTransfer && onTransferReady && <TransferTrajectory moon={transferMoon} flight={missionFlight} onComplete={onTransferReady} />}
-        {missionFlight && flightTelemetry && <FlightRocket map={rocketMap} route={flightRoute} telemetry={flightTelemetry} size={flightSpriteSize} />}
+        {missionTransfer && flightRoute && onTransferReady && <TransferTrajectory points={flightRoute.points} flight={missionFlight} onComplete={onTransferReady} />}
+        {missionFlight && flightRoute && flightTelemetry && <FlightRocket map={rocketMap} route={flightRoute} telemetry={flightTelemetry} size={flightSpriteSize} />}
         {!selected && !intro && <>
           <mesh><sphereGeometry args={[6, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
           <mesh ref={moonHit}><sphereGeometry args={[3, 16, 12]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
@@ -539,7 +532,7 @@ export function SolarScene({ lunarSites, launchSites, missionFlight, flightActiv
         </mesh>
         <Glow radius={1.075} color="#5bbdff" strength={.38} />
         </group>
-        <group ref={moonOrbitVisual}><Orbit radius={scale.moonOrbit} opacity={.25} /></group>
+        <group ref={moonOrbitVisual} visible={!missionTransfer}><Orbit radius={scale.moonOrbit} opacity={.25} /></group>
         <mesh ref={moon} onClick={(event) => {
           if (systemView && !controls.current.locked) { event.stopPropagation(); onMoonIntro(); }
         }}>

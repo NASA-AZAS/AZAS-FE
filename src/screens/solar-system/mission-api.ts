@@ -4,10 +4,8 @@ import type { LunarSite } from './lunar-sites';
 const baseUrl = (process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://api.azas.n-e.kr/api/v1').replace(/\/+$/, '');
 export const defaultDeadline = '2027-01-31';
 
-async function request<T>(path: string, signal: AbortSignal, body?: object): Promise<T> {
-  const response = await fetch(baseUrl + path, body ? {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal,
-  } : { signal });
+async function request<T>(path: string, signal: AbortSignal, options: RequestInit = {}): Promise<T> {
+  const response = await fetch(baseUrl + path, { ...options, signal });
   if (response.status === 429) throw new Error('The analysis queue is full. Try again shortly.');
   if (!response.ok) throw new Error(`The mission service could not complete the request (HTTP ${response.status}).`);
   const payload = await response.json();
@@ -33,16 +31,19 @@ export async function loadLandingSites(signal: AbortSignal): Promise<LunarSite[]
 
 export async function startAnalysis(siteId: number, deadline: string, signal: AbortSignal) {
   const { analysisRunId } = await request<{ analysisRunId: string }>(
-    `/landing-sites/${siteId}/date-opportunities`, signal, { missionDeadlineUtc: deadline, surfaceDurationHours: 48 },
+    `/landing-sites/${siteId}/date-opportunities`, signal, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ missionDeadlineUtc: deadline, surfaceDurationHours: 48 }),
+    },
   );
   return analysisRunId;
 }
 
 export class FailedAnalysis extends Error {}
-export type LaunchPlan = { touchdownUtc: string; sites: LaunchSite[] };
+export type LaunchPlan = { runId: string; touchdownUtc: string; sites: LaunchSite[] };
 type LaunchOptions = {
   touchdownUtc: string | null;
-  launchSites: { launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number; candidates: { launchUtc: string }[] }[];
+  launchSites: { launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number; candidates: { launchUtc: string; candidateId: string }[] }[];
 };
 
 export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promise<LaunchPlan | null> {
@@ -59,10 +60,31 @@ export async function loadLaunchPlan(runId: string, signal: AbortSignal): Promis
   const result = await request<LaunchOptions>(path + '/launch-options', signal);
   if (!result.touchdownUtc) return null;
   return {
-    touchdownUtc: result.touchdownUtc,
+    runId, touchdownUtc: result.touchdownUtc,
     sites: result.launchSites.map(site => ({
       ...launchSiteLabel(site.launchSiteCode), latitude: site.latitudeDeg, longitude: site.longitudeDegEast,
-      launchAt: site.candidates[0]?.launchUtc ?? null,
+      launchAt: site.candidates[0]?.launchUtc ?? null, candidateId: site.candidates[0]?.candidateId ?? null,
     })),
   };
+}
+
+export type TrajectorySample = { elapsedSeconds: number; positionKm: number[]; velocityKmS: number[] };
+type TrajectoryResult = {
+  analysisRunId: string; candidateId: string; status: string; reason: string | null;
+  frame: string; origin: string; segment: string; arrivalTarget: string; samples: TrajectorySample[];
+};
+
+export async function loadTrajectory(runId: string, candidateId: string, signal: AbortSignal) {
+  const result = await request<TrajectoryResult>(
+    `/analyses/${encodeURIComponent(runId)}/launch-options/${encodeURIComponent(candidateId)}/trajectory`,
+    signal, { method: 'POST' },
+  );
+  if (result.analysisRunId !== runId || result.candidateId !== candidateId) throw new Error('The trajectory does not match this launch.');
+  if (result.status === 'NO_PRELIMINARY_SOLUTION') throw new Error('No transfer trajectory was found. Choose another launch site.');
+  if (result.status !== 'PRELIMINARY') throw new Error(`Trajectory calculation failed (${result.reason ?? 'unknown reason'}).`);
+  if (result.frame !== 'ICRF' || result.origin !== 'EARTH' || result.segment !== 'TLI_TO_LUNAR_ARRIVAL'
+      || result.arrivalTarget !== 'MOON_EARTH_FACING_OFFSET_2000_KM_FROM_CENTER') {
+    throw new Error('This trajectory uses an unsupported coordinate frame or arrival target.');
+  }
+  return result.samples;
 }

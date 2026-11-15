@@ -2,13 +2,11 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useReducedMotion } from 'react-native-reanimated';
 import * as THREE from 'three';
-import { makeTransferPoints } from './transfer-route';
 
-export function TransferTrajectory({ moon, flight = false, onComplete }: { moon: THREE.Vector3; flight?: boolean; onComplete: () => void }) {
+export function TransferTrajectory({ points, flight = false, onComplete }: { points: THREE.Vector3[]; flight?: boolean; onComplete: () => void }) {
   const reducedMotion = useReducedMotion();
   const elapsed = useRef(0), completed = useRef(false);
   const state = useMemo(() => {
-    const points = makeTransferPoints(moon);
     const positions = new Float32Array((points.length - 1) * 6);
     const distances = new Float32Array((points.length - 1) * 2);
     const geometry = new THREE.BufferGeometry();
@@ -22,7 +20,7 @@ export function TransferTrajectory({ moon, flight = false, onComplete }: { moon:
     const line = new THREE.LineSegments(geometry, material);
     line.frustumCulled = false;
     return { points, positions, distances, geometry, material, line, matrix: new THREE.Matrix4(), a: new THREE.Vector3(), b: new THREE.Vector3() };
-  }, [moon]);
+  }, [points]);
   useEffect(() => () => { state.geometry.dispose(); state.material.dispose(); }, [state]);
   useFrame(({ camera, size }, delta) => {
     elapsed.current += Math.min(delta, .05);
