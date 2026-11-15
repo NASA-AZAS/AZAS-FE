@@ -155,3 +155,23 @@ The rotated sector previously clipped to its own88px SVG viewport before the out
 ## Live camera angles
 
 Replaced the fixed cardinal-direction legend with Azimuth / Elevation values sampled from the displayed panorama camera shared values at10Hz. Sampling is isolated in a small readout component and does not rerender the Canvas. Azimuth is north0°, clockwise east90° through360° wrapping to0; elevation is horizon0°, positive upward. Decimal display uses0.1° precision without implying source calibration accuracy. Initial north/horizon and touch movement to28.9° /11.6° passed in browser; typecheck passed.
+
+## South-pole guide overlay
+
+After the automatic south-pole camera tour completes and unlocks, show the user's English command at upper left and WHY THE LUNAR SOUTH POLE? explanation at upper right with staggered fades. A narrator rocket portrait sits at bottom left with a thin white speech bubble. `RocketDialogue` centralizes italic rocket-speech typography, reserves full message height to avoid typing reflow, and reveals one character every18ms after a450ms lead-in. Reduced-motion mode displays the whole line. Pointer-transparent overlay leaves the scene selectable; choosing a candidate hides the guide.
+
+Browser verified delayed appearance after tour, growing text length, computed italic typography and final placement; no runtime errors. Typecheck passed. Actual iPhone layout/animation unverified. Screenshot evidence/lunar-guide.png.
+
+## Interactive narrator and wide dialogue
+
+Guide narrator now reuses RocketCompanion in narrator mode: shared floating, eye motion and happy/body response on tap, without launch/caption. Narrator reaction can repeat; ordinary home mascot launch behavior is unchanged. Overlay is box-none and only narrator receives pointer input; speech and other guide copy pass touches through. Dialogue fills the remaining safe width to the right screen edge. Browser checked floating position change, happy-eye visibility after actual click, no launch/lock after reaction, and bubble right edge at1076px in1100px viewport (24px safe margin); no runtime errors. Typecheck passed; native feel unverified.
+
+## Paged rocket speech
+
+Guide callout text is Lunar South Pole. RocketDialogue accepts a page array with reusable italic typewriter styling. Page1 explains the noncoincidental cluster; page2 contains the user's water-ice/sunlit-hills explanation. After a page finishes, a lower-right > nudges periodically only if another page exists. Tapping the bubble/arrow advances and restarts typing. The final page has no next hint. Longest-page layout reserves stable bubble height; reduced motion shows full text without nudge. Browser first-page text, hidden cue during typing, completed-page tap advance and final-page stopping passed; typecheck passed. Native unverified.
+
+## Selection cue and pole callout
+
+Guide title now uses STEP01, NASA RED divider and23px bold brand-style type. Dialogue has two user-specified pages; > moves horizontally only once typing finishes. The final page reveals a small NASA RED SELECT button below the candidate cluster; it opens the Site01 overview/detail flow. It shares the Lunar South Pole callout's early zoom-out fade and does not intercept taps when invisible.
+
+Callout starts on the upper-right peripheral south-polar surface rather than the axis. Its local surface direction follows the screen upper-right tangent; label/leader follow projected coordinates. Opacity uses apparent lunar radius so a small zoom-out fades it away. Guide narrator is smaller/lower, floating and clickable for repeat smiles without flight. Bubble spans remaining safe width and all speech remains italic. Typecheck passed. Prior screenshot evidence is historical and predates the final page/callout layout.
