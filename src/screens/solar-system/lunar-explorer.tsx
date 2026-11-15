@@ -53,7 +53,7 @@ export function LunarExplorer({ lunarSites, onClose }: { lunarSites: LunarSite[]
     <View style={[styles.screen, { paddingLeft: Math.max(24, insets.left), paddingRight: Math.max(24, insets.right), paddingTop: Math.max(24, insets.top), paddingBottom: Math.max(24, insets.bottom) }]}>
       <View style={styles.header}>
         <Pressable accessibilityRole="button" accessibilityLabel={site ? 'Back to lunar globe' : 'Back to solar system'} onPress={goBack} style={styles.button}><Text style={styles.text}>← {site ? 'Lunar globe' : 'Solar system'}</Text></Pressable>
-        <View><Text style={styles.eyebrow}>AZAS / LUNAR EXPLORER</Text><Text style={styles.title}>{site ? 'Surface atlas' : 'Explore the lunar south pole'}</Text></View>
+        <View><Text style={styles.eyebrow}>LAMP / LUNAR EXPLORER</Text><Text style={styles.title}>{site ? 'Surface atlas' : 'Explore the lunar south pole'}</Text></View>
         <Text style={styles.badge}>SOUTH POLE / PREVIEW</Text>
       </View>
       <View style={{ flexDirection: 'row', gap: 8 }}>

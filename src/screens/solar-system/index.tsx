@@ -556,13 +556,13 @@ export function SolarSystemScreen() {
           <Text style={{ color: theme.colors.text }}>Retry landing sites</Text>
         </Pressable>}
       </View>}
-      {exploring && !earthStage && !candidate && guideVisible && lunarSites.length > 0 && <View style={{ position: 'absolute', zIndex: 2, right: 24, top: 24, width: Math.min(230, width * .29), padding: 10, ...theme.outlineSurface, backgroundColor: theme.colors.surface, borderRadius: 10 }}>
-        <Pressable accessibilityRole="button" accessibilityState={{ expanded: showSiteList }} onPress={() => setShowSiteList(value => !value)} style={{ paddingVertical: 8 }}>
-          <Text style={{ color: theme.colors.text }}>Choose landing site ({lunarSites.length})</Text>
+      {exploring && !earthStage && !candidate && guideVisible && lunarSites.length > 0 && <View style={{ position: 'absolute', zIndex: 2, right: 24, top: 24, width: Math.min(190, width * .25), paddingHorizontal: 10, paddingVertical: 4, ...theme.outlineSurface, backgroundColor: 'transparent', borderWidth: .5, borderRadius: 6 }}>
+        <Pressable accessibilityRole="button" accessibilityState={{ expanded: showSiteList }} onPress={() => setShowSiteList(value => !value)} style={{ paddingVertical: 6 }}>
+          <Text style={{ color: theme.colors.text, fontSize: 11 }}>Choose landing site ({lunarSites.length})</Text>
         </Pressable>
         {showSiteList && <ScrollView style={{ maxHeight: height * .46 }}>
-          {lunarSites.map(site => <Pressable key={site.landingSiteId} accessibilityRole="button" accessibilityLabel={`Choose ${site.name}`} onPress={() => selectCandidate(site)} style={{ paddingVertical: 9, borderTopWidth: .5, borderColor: theme.colors.border }}>
-            <Text style={{ color: theme.colors.text }}>{site.name}</Text>
+          {lunarSites.map(site => <Pressable key={site.landingSiteId} accessibilityRole="button" accessibilityLabel={`Choose ${site.name}`} onPress={() => selectCandidate(site)} style={{ paddingVertical: 6, borderTopWidth: .3, borderColor: '#ffffff55' }}>
+            <Text style={{ color: theme.colors.text, fontSize: 11 }}>{site.name}</Text>
           </Pressable>)}
         </ScrollView>}
       </View>}

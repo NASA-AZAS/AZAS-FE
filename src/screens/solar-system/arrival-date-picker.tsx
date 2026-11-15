@@ -1,82 +1,66 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme';
-import { defaultDeadline, FailedAnalysis, loadLaunchPlan, startAnalysis, type LaunchPlan } from './mission-api';
-import { TouchdownDayVisibility } from './touchdown-day-visibility';
+import { defaultDeadline, loadArrivalOptions, startAnalysis, type LaunchPlan } from './mission-api';
 
-type Result =
-  | { status: 'idle' | 'loading' | 'empty' }
-  | { status: 'error'; message: string }
-  | { status: 'ready'; plan: LaunchPlan };
-
-function validDeadline(date: string) {
-  if (!/^202[7-9]-\d\d-\d\d$/.test(date)) return false;
-  const utc = Date.parse(date + 'T00:00:00Z');
-  return Number.isFinite(utc) && new Date(utc).toISOString().slice(0, 10) === date;
-}
-
+type Options = Awaited<ReturnType<typeof loadArrivalOptions>>;
 export function ArrivalDatePicker({ siteId, onConfirm }: { siteId: number; onConfirm: (plan: LaunchPlan) => void }) {
-  const [deadline, setDeadline] = useState(defaultDeadline);
-  const [result, setResult] = useState<Result>({ status: 'idle' });
-  const runId = useRef<string | null>(null);
+  const [options, setOptions] = useState<Options | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [attempt, setAttempt] = useState(0);
   const active = useRef<AbortController | null>(null);
-  useEffect(() => () => { active.current?.abort(); active.current = null; }, []);
-
-  const search = async () => {
-    if (active.current || !validDeadline(deadline)) return;
-    const controller = new AbortController();
-    active.current = controller;
+  useEffect(() => {
+    const controller = new AbortController(); active.current = controller;
+    let current = true;
+    setLoading(true); setOptions(null); setSelected(null); setError('');
     const timer = setTimeout(() => controller.abort(), 150_000);
-    setResult({ status: 'loading' });
-    try {
-      // Retrying a failed read can reuse the accepted analysis. A new deadline starts a new run.
-      const id = runId.current ?? await startAnalysis(siteId, deadline, controller.signal);
-      if (active.current !== controller) return;
-      runId.current = id;
-      const plan = await loadLaunchPlan(id, controller.signal);
-      if (active.current === controller) setResult(plan ? { status: 'ready', plan } : { status: 'empty' });
-    } catch (error) {
-      if (active.current !== controller) return;
-      if (error instanceof FailedAnalysis) runId.current = null;
-      const message = controller.signal.aborted ? 'The search timed out. Try again.' :
-        error instanceof Error ? error.message : 'Unable to reach the mission service.';
-      setResult({ status: 'error', message });
-    } finally {
-      clearTimeout(timer);
-      if (active.current === controller) active.current = null;
-    }
+    (async () => {
+      try {
+        const runId = await startAnalysis(siteId, defaultDeadline, controller.signal);
+        const result = await loadArrivalOptions(runId, controller.signal);
+        if (current) { setOptions(result); setSelected(result.firstPlan?.touchdownUtc ?? null); }
+      } catch (e) {
+        if (current) setError(controller.signal.aborted ? 'The search timed out. Please retry.' : e instanceof Error ? e.message : 'Unable to load arrival dates.');
+      } finally { clearTimeout(timer); if (current) { setLoading(false); active.current = null; } }
+    })();
+    return () => { current = false; clearTimeout(timer); controller.abort(); active.current?.abort(); active.current = null; };
+  }, [siteId, attempt]);
+  const confirm = async () => {
+    if (!selected || !options || active.current) return;
+    const plan = options.firstPlan;
+    if (!plan || Date.parse(plan.touchdownUtc) !== Date.parse(selected)) return;
+    onConfirm(plan);
   };
-  const busy = result.status === 'loading';
-  const valid = validDeadline(deadline);
-  return <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 10, paddingBottom: 4 }}>
-    <Text style={styles.title}>First available touchdown</Text>
-    <Text style={styles.caption}>Search from 2027-01-01 for 48 hours of sunlight and Earth visibility.</Text>
-    <Text style={styles.label}>Mission deadline (UTC)</Text>
-    <TextInput accessibilityLabel="Mission deadline in UTC" value={deadline} editable={!busy} maxLength={10}
-      autoCapitalize="none" autoCorrect={false} placeholder="YYYY-MM-DD" placeholderTextColor={theme.colors.muted}
-      onChangeText={text => { setDeadline(text); runId.current = null; setResult({ status: 'idle' }); }} style={styles.input} />
-    {!valid && <Text style={styles.caption}>Enter a date from 2027 to 2029 as YYYY-MM-DD.</Text>}
-    {result.status === 'empty' && <Text accessibilityLiveRegion="polite" style={styles.label}>No valid touchdown by this deadline. Try a later date or another landing site.</Text>}
-    {result.status === 'error' && <Text accessibilityRole="alert" style={styles.label}>{result.message}</Text>}
-    {result.status === 'ready' ? <>
-      <Text testID="first-touchdown" style={styles.title}>{result.plan.touchdownUtc.replace('T', ' ').slice(0, 19)} UTC</Text>
-      <TouchdownDayVisibility key={result.plan.runId + result.plan.touchdownUtc} runId={result.plan.runId} touchdownUtc={result.plan.touchdownUtc} />
-      {result.plan.sites.every(site => !site.launchAt) && <Text style={styles.caption}>No launch opportunities for this touchdown.</Text>}
-      {result.plan.sites.length > 0 && <Pressable accessibilityRole="button" onPress={() => onConfirm(result.plan)} style={styles.button}>
-        <Text style={styles.label}>View launch sites</Text>
-      </Pressable>}
-    </> : <Pressable accessibilityRole="button" disabled={busy || !valid}
-      accessibilityState={{ disabled: busy || !valid, busy }} onPress={search}
-      style={[styles.button, (busy || !valid) && { opacity: .6 }]}>
-      <Text accessibilityLiveRegion="polite" style={styles.label}>{busy ? 'Finding first touchdown…' : result.status === 'error' ? 'Retry search' : 'Find first touchdown'}</Text>
-    </Pressable>}
-  </ScrollView>;
-}
+  const unsupportedDate = selected !== null && Date.parse(selected) !== Date.parse(options?.firstPlan?.touchdownUtc ?? '');
 
+  return <View style={{ flex: 1, minHeight: 0, gap: 10 }}>
+    <Text style={styles.title}>Select an Arrival Date</Text>
+    <Text style={styles.caption}>48h of simultaneous sunlight & Earth visibility · Through {defaultDeadline} · UTC</Text>
+    {loading && <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 }}><ActivityIndicator color="#fff" /><Text style={styles.caption}>Finding available arrival dates…</Text></View>}
+    {error !== '' && <Text accessibilityRole="alert" style={styles.caption}>{error}</Text>}
+    {!loading && !options && <Pressable accessibilityRole="button" onPress={() => setAttempt(n => n + 1)} style={styles.button}><Text style={styles.label}>Retry search</Text></Pressable>}
+    {!loading && options && <>
+      {options.dates.length === 0 && <Text style={styles.caption}>No arrival dates meet the 48-hour conditions for this site.</Text>}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 }}>
+        {options.dates.map(date => <Pressable key={date} accessibilityRole="radio" accessibilityLabel={date} accessibilityState={{ checked: selected === date }} onPress={() => { setSelected(date); setError(''); }} style={[styles.row, selected === date && { borderColor: '#fff' }]}>
+          <Ionicons name={selected === date ? 'radio-button-on-outline' : 'radio-button-off-outline'} size={17} color={selected === date ? '#fff' : theme.colors.muted} />
+          <Text style={styles.label}>{date.replace('T', ' ').slice(0, 16)} UTC</Text>
+        </Pressable>)}
+      </ScrollView>
+      {unsupportedDate && <Text accessibilityLiveRegion="polite" style={styles.caption}>Launch options are currently available only for the first arrival date.</Text>}
+      <Pressable accessibilityRole="button" accessibilityLabel="Confirm Arrival Date" accessibilityState={{ disabled: !selected || unsupportedDate }} disabled={!selected || unsupportedDate} onPress={confirm} style={[styles.button, (!selected || unsupportedDate) && { opacity: .4 }]}>
+        <Ionicons name="time-outline" size={18} color="#fff" /><Text style={styles.label}>Confirm Arrival Date</Text><Ionicons name="arrow-forward-outline" size={17} color="#fff" />
+      </Pressable>
+    </>}
+  </View>;
+}
 const styles = StyleSheet.create({
   title: { color: theme.colors.text, fontSize: 17, fontWeight: '600' },
-  label: { color: theme.colors.text, fontSize: 13 },
+  label: { color: theme.colors.text, fontSize: 12 },
   caption: { color: theme.colors.muted, fontSize: 11 },
-  input: { ...theme.outlineSurface, color: theme.colors.text, paddingHorizontal: 12, minHeight: 40, borderRadius: 7 },
-  button: { ...theme.outlineSurface, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 8 },
+  row: { width: '49%', ...theme.outlineSurface, borderWidth: .4, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 9, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  button: { ...theme.outlineSurface, borderWidth: .3, minHeight: 40, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 8 },
 });

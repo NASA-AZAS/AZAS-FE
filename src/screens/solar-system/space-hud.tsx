@@ -39,6 +39,7 @@ const bodies: { id: BodyId; label: string; category: string; description: string
 export function SpaceHud({ launchLocked, onRocketLaunchStart, onRocketFlightComplete, rocketGone, onRocketDeparture, onExplore, speed, onSpeedChange, simulationSeconds, selected, onSelect, paused, onTogglePause, onReset, loading, error }: SpaceHudProps) {
   const [flyby, setFlyby] = useState(false);
   const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const compact = width < 760;
@@ -53,14 +54,14 @@ export function SpaceHud({ launchLocked, onRocketLaunchStart, onRocketFlightComp
       paddingRight: Math.max(insets.right, compact ? 24 : 32),
     }]}>
       {flyby && <RocketFlyby onComplete={onRocketFlightComplete} />}
-      {speedMenuOpen && <Pressable accessibilityRole="button" accessibilityLabel="Dismiss playback speed menu"
-        onPress={() => setSpeedMenuOpen(false)} style={[StyleSheet.absoluteFill, { zIndex: 5 }]} />}
+      {(speedMenuOpen || settingsOpen) && <Pressable accessibilityRole="button" accessibilityLabel={settingsOpen ? "Dismiss mission settings" : "Dismiss playback speed menu"}
+        onPress={() => { setSpeedMenuOpen(false); setSettingsOpen(false); }} style={[StyleSheet.absoluteFill, { zIndex: 5 }]} />}
       <View pointerEvents="box-none" style={[styles.header, { zIndex: 10 }]}>
         <View pointerEvents="none" style={styles.brand}>
           <View style={styles.brandMark}>
             <SvgXml xml={spaceAppsLogo} width={52} height={52} />
           </View>
-          <Text style={styles.wordmark}>AZAS</Text>
+          <View><Text style={styles.wordmark}>LAMP</Text><Text style={{ color: theme.colors.muted, fontSize: 7, marginTop: 3 }}>Lunar Access &amp; Mission Planning</Text></View>
           <View style={styles.brandDivider} />
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <SimulationClock elapsed={simulationSeconds} compact={compact} style={styles.eyebrow} />
@@ -81,7 +82,7 @@ export function SpaceHud({ launchLocked, onRocketLaunchStart, onRocketFlightComp
           <View>
             <Pressable accessibilityRole="button" accessibilityLabel="Playback speed"
               accessibilityValue={{ text: `${speed} times` }} accessibilityState={{ expanded: speedMenuOpen, disabled }}
-              disabled={disabled} onPress={() => setSpeedMenuOpen(value => !value)} style={styles.playButton}>
+              disabled={disabled} onPress={() => { setSettingsOpen(false); setSpeedMenuOpen(value => !value); }} style={styles.playButton}>
               <Ionicons name="play-forward-outline" size={18} color={theme.colors.text} />
             </Pressable>
             {speedMenuOpen && <View style={styles.speedMenu}>
@@ -95,9 +96,18 @@ export function SpaceHud({ launchLocked, onRocketLaunchStart, onRocketFlightComp
             </View>}
           </View>
 
-          <Pressable accessibilityRole="button" accessibilityLabel="Menu" accessibilityState={{ disabled: true }} disabled style={[styles.playButton, { width: 60 }]}>
-            <Ionicons name="menu-outline" size={23} color={theme.colors.text} />
-          </Pressable>
+          <View>
+            <Pressable accessibilityRole="button" accessibilityLabel="Menu" accessibilityState={{ expanded: settingsOpen, disabled }} disabled={disabled} onPress={() => { setSpeedMenuOpen(false); setSettingsOpen(value => !value); }} style={[styles.playButton, { width: 60 }]}>
+              <Ionicons name="menu-outline" size={23} color={theme.colors.text} />
+            </Pressable>
+            {settingsOpen && <View testID="mission-settings" style={{ position: 'absolute', right: 0, top: 56, width: 235, padding: 12, gap: 12, ...theme.outlineSurface, borderRadius: 8 }}>
+              <Text style={{ color: theme.colors.muted, fontSize: 10, letterSpacing: 1 }}>FIXED MISSION SETTINGS</Text>
+              {[['Mission deadline (UTC)', '2029-12-31'], ['Sun & Earth visibility', '48h minimum · Simultaneous']].map(([label, value]) => <View key={label} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ flex: 1, gap: 4 }}><Text style={{ color: theme.colors.muted, fontSize: 10 }}>{label}</Text><Text style={{ color: theme.colors.text, fontSize: 12 }}>{value}</Text></View>
+                <Ionicons name="lock-closed-outline" size={15} color={theme.colors.muted} accessibilityLabel="Locked" />
+              </View>)}
+            </View>}
+          </View>
         </View>
       </View>
 

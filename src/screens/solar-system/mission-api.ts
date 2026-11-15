@@ -4,7 +4,7 @@ import { createSurfaceTrack, type SurfaceReport } from './surface-sky-data';
 import { siteConditionsFromMean, type MeanDailyVisibility } from './site-conditions';
 
 const baseUrl = (process.env.EXPO_PUBLIC_API_BASE_URL ?? 'https://api.azas.n-e.kr/api/v1').replace(/\/+$/, '');
-export const defaultDeadline = '2027-01-31';
+export const defaultDeadline = '2029-12-31';
 
 async function request<T>(path: string, signal: AbortSignal, options: RequestInit = {}): Promise<T> {
   const response = await fetch(baseUrl + path, { ...options, signal });
@@ -43,7 +43,7 @@ export async function startAnalysis(siteId: number, deadline: string, signal: Ab
   const { analysisRunId } = await request<{ analysisRunId: string }>(
     `/landing-sites/${siteId}/date-opportunities`, signal, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ missionDeadlineUtc: deadline, surfaceDurationHours: 48 }),
+      body: JSON.stringify({ missionDeadlineUtc: deadline }),
     },
   );
   return analysisRunId;
@@ -205,4 +205,14 @@ export async function loadTrajectory(runId: string, candidateId: string, signal:
     throw new Error('This trajectory uses an unsupported coordinate frame or arrival target.');
   }
   return { trajectoryId, samples: result.samples };
+}
+
+export async function loadArrivalOptions(runId: string, signal: AbortSignal) {
+  const firstPlan = await loadLaunchPlan(runId, signal);
+  if (!firstPlan) return { dates: [] as string[], firstPlan };
+  const result = await loadTouchdownOpportunities(runId, Date.parse(firstPlan.touchdownUtc), signal);
+  const dates = [...new Set(result.windows.filter(w => w.surfaceStatus === 'SATISFIED' &&
+    Date.parse(w.startUtc) === Date.parse(firstPlan.touchdownUtc)).map(w => w.startUtc))]
+    .sort((a, b) => Date.parse(a) - Date.parse(b));
+  return { dates, firstPlan };
 }

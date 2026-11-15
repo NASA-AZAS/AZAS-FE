@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "AZAS",
+    "name": "LAMP",
     "slug": "azas-app",
     "version": "1.0.0",
     "orientation": "landscape",
@@ -26,7 +26,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#03070d",
-          "image": "./assets/startup-brand.png",
+          "image": "./assets/rocket-neon-dark.png",
           "imageWidth": 360,
           "resizeMode": "contain"
         }
@@ -35,7 +35,7 @@
     ],
     "web": {
       "bundler": "metro",
-      "name": "AZAS \u00b7 Orbital Explorer",
+      "name": "LAMP · Lunar Access & Mission Planning",
       "output": "single"
     },
     "scheme": "azas"

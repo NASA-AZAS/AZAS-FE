@@ -15,9 +15,20 @@ export function AppFrame({ children }: { children: ReactNode }) {
   const [viewport, setViewport] = useState(() => typeof window === 'undefined' ? { width: 844, height: 390, left: 0, top: 0 } : measure());
   useLayoutEffect(() => {
     const meta = document.querySelector('meta[name="viewport"]');
-    meta?.setAttribute('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
+    meta?.setAttribute('content', 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover');
     const update = () => setViewport(measure());
     const preventDefault = (event: Event) => event.preventDefault();
+    const preventZoomWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) { event.preventDefault(); event.stopPropagation(); }
+    };
+    const preventZoomKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && ['+', '-', '=', '0'].includes(event.key)) {
+        event.preventDefault(); event.stopPropagation();
+      }
+    };
+    document.addEventListener('wheel', preventZoomWheel, { capture: true, passive: false });
+    document.addEventListener('keydown', preventZoomKey, true);
+    for (const type of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(type, preventDefault, { passive: false });
     document.addEventListener('dragstart', preventDefault);
     if (!embedded) {
       window.scrollTo(0, 0);
@@ -29,6 +40,9 @@ export function AppFrame({ children }: { children: ReactNode }) {
     const initialFrame = requestAnimationFrame(update);
     return () => {
       cancelAnimationFrame(initialFrame);
+      document.removeEventListener('wheel', preventZoomWheel, true);
+      document.removeEventListener('keydown', preventZoomKey, true);
+      for (const type of ['gesturestart', 'gesturechange', 'gestureend']) document.removeEventListener(type, preventDefault);
       document.removeEventListener('dragstart', preventDefault);
       document.removeEventListener('touchmove', preventDefault);
       document.removeEventListener('wheel', preventDefault);
@@ -49,7 +63,7 @@ export function AppFrame({ children }: { children: ReactNode }) {
   // Layout zoom avoids a transformed iframe's separate paint and touch coordinate spaces on mobile WebKit.
   return <>{globalStyle}<div data-testid="web-app-background" style={{ position: 'fixed', left: viewport.left, top: viewport.top, width: viewport.width, height: viewport.height, overflow: 'hidden', background: BACKGROUND }}>
     <div style={{ position: 'absolute', left, top, width: width * scale, height: height * scale, overflow: 'hidden' }}>
-      <iframe data-testid="web-app-frame" title="AZAS exploration" src={window.location.href} allow="autoplay; fullscreen" scrolling="no" style={{ position: 'absolute', left: 0, top: 0, width, height, border: 0, display: 'block', zoom: scale, background: BACKGROUND }} />
+      <iframe data-testid="web-app-frame" title="LAMP exploration" src={window.location.href} allow="autoplay; fullscreen" scrolling="no" style={{ position: 'absolute', left: 0, top: 0, width, height, border: 0, display: 'block', zoom: scale, background: BACKGROUND }} />
     </div>
   </div></>;
 }

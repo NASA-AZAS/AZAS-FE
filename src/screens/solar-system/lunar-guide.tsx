@@ -36,7 +36,7 @@ export function LunarGuide({ stage = 'moon', canSelect, onReady, polePoint, clus
       <View style={styles.stepLine} />
       <View style={{ flex: 1, gap: 8 }}>
         <Text style={styles.step}>{stage === 'earth' ? 'STEP 02' : 'STEP 01'}</Text>
-        <Text style={styles.commandTitle}>{stage === 'earth' ? 'SELECT A LAUNCH SITE' : 'SELECT THE LANDING\nSITE CLUSTER'}</Text>
+        <Text style={styles.commandTitle}>{stage === 'earth' ? 'SELECT A LAUNCH SITE' : 'Choose landing site'}</Text>
       </View>
     </Animated.View>
     {readyToSelect && canSelect && <Animated.View pointerEvents={(stage === 'earth' ? 1 : polePoint?.opacity ?? 0) > .05 ? 'auto' : 'none'} entering={FadeIn.duration(500)} style={{ opacity: stage === 'earth' ? 1 : polePoint?.opacity ?? 0, width: 130, position: 'absolute', left: Math.max(left, Math.min(width - right - 130, (clusterPoint?.x ?? width / 2) - 65)), top: Math.min(height - 160, (clusterPoint?.y ?? height / 2) + (stage === 'earth' ? 0 : 90)) }}>
