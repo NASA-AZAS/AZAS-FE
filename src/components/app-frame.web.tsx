@@ -30,11 +30,11 @@ export function AppFrame({ children }: { children: ReactNode }) {
     document.addEventListener('keydown', preventZoomKey, true);
     for (const type of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(type, preventDefault, { passive: false });
     document.addEventListener('dragstart', preventDefault);
+    for (const type of ['copy', 'cut', 'contextmenu', 'selectstart']) document.addEventListener(type, preventDefault, true);
     if (!embedded) {
       window.scrollTo(0, 0);
       document.addEventListener('touchmove', preventDefault, { passive: false });
       document.addEventListener('wheel', preventDefault, { passive: false });
-      document.addEventListener('selectstart', preventDefault);
     }
     update(); window.addEventListener('resize', update); window.visualViewport?.addEventListener('resize', update); window.visualViewport?.addEventListener('scroll', update);
     const initialFrame = requestAnimationFrame(update);
@@ -44,14 +44,14 @@ export function AppFrame({ children }: { children: ReactNode }) {
       document.removeEventListener('keydown', preventZoomKey, true);
       for (const type of ['gesturestart', 'gesturechange', 'gestureend']) document.removeEventListener(type, preventDefault);
       document.removeEventListener('dragstart', preventDefault);
+      for (const type of ['copy', 'cut', 'contextmenu', 'selectstart']) document.removeEventListener(type, preventDefault, true);
       document.removeEventListener('touchmove', preventDefault);
       document.removeEventListener('wheel', preventDefault);
-      document.removeEventListener('selectstart', preventDefault);
       window.removeEventListener('resize', update); window.visualViewport?.removeEventListener('resize', update); window.visualViewport?.removeEventListener('scroll', update);
     };
   }, [embedded]);
   // Explicit logical dimensions prevent WebKit from shrinking percentage sizes a second time under iframe zoom.
-  const globalStyle = <style>{`html,body,#root{margin:0;width:${embedded ? `${viewport.width}px` : '100%'};height:${embedded ? `${viewport.height}px` : '100%'};background:${BACKGROUND};}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}html,body{overflow:hidden;overscroll-behavior:none;}${embedded ? '' : 'html,body{position:fixed;inset:0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}'}`}</style>;
+  const globalStyle = <style>{`html,body,#root{margin:0;width:${embedded ? `${viewport.width}px` : '100%'};height:${embedded ? `${viewport.height}px` : '100%'};background:${BACKGROUND};}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}html,body{overflow:hidden;overscroll-behavior:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}${embedded ? '' : 'html,body{position:fixed;inset:0;touch-action:none;}'}`}</style>;
   if (embedded) return <>{globalStyle}{children}</>;
   const landscape = viewport.width >= viewport.height;
   const width = Math.max(viewport.width, landscape ? 844 : 390);

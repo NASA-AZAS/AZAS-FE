@@ -481,7 +481,7 @@ export function SolarSystemScreen() {
       <View style={[StyleSheet.absoluteFill, sceneTouchStyle, candidate && { right: '46%' }]} {...responder.panHandlers} {...wheelProps} accessibilityLabel="Interactive solar system. Drag to orbit. Select a body to zoom in; reset to return to the Sun-centered overview.">
         <SceneBoundary onError={fail}>
           <Canvas camera={{ position: [0, viewDistance.overview * 2, viewDistance.overview * 5], fov: 43, near: .000001, far: 4000 }}
-            frameloop={active && !candidate && !launchDetail ? 'always' : 'never'}
+            frameloop={active && missionStage !== 'arrived' && !candidate && !launchDetail ? 'always' : 'never'}
             gl={{ antialias: true, alpha: false }}
             >
             <Suspense fallback={null}>
@@ -574,7 +574,7 @@ export function SolarSystemScreen() {
         <Pressable accessibilityRole="button" accessibilityLabel="Back to launch site" onPress={backToLaunchSite} style={({ pressed }) => ({ position: 'absolute', left: Math.max(24, insets.left), top: 24, width: 48, height: 48, alignItems: 'center', justifyContent: 'center', ...theme.outlineSurface, borderWidth: .3, borderRadius: 8, opacity: pressed ? .65 : 1 })}>
           <Ionicons name="arrow-back-outline" size={21} color="#fff" accessible={false} />
         </Pressable>
-        <Text pointerEvents="none" style={{ position: 'absolute', left: Math.max(80, insets.left + 56), top: 40, color: '#fff', fontSize: 12 }}>Preliminary transfer · Earth orbit to lunar arrival</Text>
+        <Text pointerEvents="none" style={{ position: 'absolute', left: Math.max(80, insets.left + 56), top: 40, color: '#fff', fontSize: 12 }}>Earth-to-Moon Transfer Trajectory</Text>
         {launchVideoError && <Text style={{ position: 'absolute', right: 24, top: 80, color: theme.colors.error, fontSize: 11 }}>Unable to play the video. Please try again.</Text>}
         <Pressable testID="transfer-next" accessibilityRole="button" accessibilityLabel="Start the Journey" onPress={startJourney} style={({ pressed }) => ({ position: 'absolute', right: Math.max(24, insets.right), top: 24, minHeight: 48, paddingHorizontal: 24, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', ...theme.outlineSurface, borderWidth: .3, borderRadius: 8, opacity: pressed ? .65 : 1 })}>
           <Ionicons name="rocket-outline" size={19} color="#fff" accessible={false} />

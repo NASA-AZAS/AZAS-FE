@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme';
+import { NASA_RED } from './lunar-sites';
 import { defaultDeadline, loadArrivalOptions, startAnalysis, type LaunchPlan } from './mission-api';
 
 type Options = Awaited<ReturnType<typeof loadArrivalOptions>>;
@@ -45,9 +46,9 @@ export function ArrivalDatePicker({ siteId, onConfirm }: { siteId: number; onCon
     {!loading && options && <>
       {options.dates.length === 0 && <Text style={styles.caption}>No arrival dates meet the 48-hour conditions for this site.</Text>}
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 }}>
-        {options.dates.map(date => <Pressable key={date} accessibilityRole="radio" accessibilityLabel={date} accessibilityState={{ checked: selected === date }} onPress={() => { setSelected(date); setError(''); }} style={[styles.row, selected === date && { borderColor: '#fff' }]}>
-          <Ionicons name={selected === date ? 'radio-button-on-outline' : 'radio-button-off-outline'} size={17} color={selected === date ? '#fff' : theme.colors.muted} />
-          <Text style={styles.label}>{date.replace('T', ' ').slice(0, 16)} UTC</Text>
+        {options.dates.map(date => <Pressable key={date} accessibilityRole="radio" accessibilityLabel={date} accessibilityState={{ checked: selected === date }} onPress={() => { setSelected(date); setError(''); }} style={[styles.row, selected === date && { borderColor: NASA_RED }]}>
+          <Ionicons name={selected === date ? 'radio-button-on-outline' : 'radio-button-off-outline'} size={17} color={selected === date ? NASA_RED : theme.colors.muted} />
+          <Text style={[styles.label, selected === date && { color: NASA_RED }]}>{date.replace('T', ' ').slice(0, 16)} UTC</Text>
         </Pressable>)}
       </ScrollView>
       {unsupportedDate && <Text accessibilityLiveRegion="polite" style={styles.caption}>Launch options are currently available only for the first arrival date.</Text>}
