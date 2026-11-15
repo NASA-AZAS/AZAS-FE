@@ -138,6 +138,12 @@ export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => 
     onPressOut={() => pressed.set(withSpring(1, { duration: 300, dampingRatio: 1 }))}>
     <Animated.View style={floatStyle} pointerEvents="none">
     <Animated.View testID="rocket-launch-flight" style={flightStyle}>
+    {!narrator && <Animated.View testID="home-mission-bubble" pointerEvents="none" style={[{ position: 'absolute', left: 6, top: -26, width: SIZE - 12, height: 36 }, bodyStyle]}>
+      <Svg width={SIZE - 12} height={36} viewBox="0 0 160 36" preserveAspectRatio="none">
+        <Path d="M8 .5 H152 Q159.5 .5 159.5 8 V21 Q159.5 29 152 29 H114 L108 35 L102 29 H8 Q.5 29 .5 21 V8 Q.5 .5 8 .5 Z" fill="none" stroke="#fff" strokeWidth={.6} />
+      </Svg>
+      <Text style={{ position: 'absolute', top: 7, left: 0, width: SIZE - 12, textAlign: 'center', color: theme.colors.text, fontSize: 11, fontWeight: '600', fontStyle: 'italic' }}>Mission to the Moon!</Text>
+    </Animated.View>}
     <Animated.View testID="rocket-visual" style={[styles.visual, bodyStyle]}>
       {outlined && [[-1.5, 0], [1.5, 0], [0, -1.5], [0, 1.5], [-1, -1], [1, -1], [-1, 1], [1, 1]].map(([x, y], i) => <Image key={i} source={require('../../../assets/rocket-neon-dark.png')} resizeMode="contain" accessible={false} style={[styles.body, { tintColor: '#000', left: x, top: y }]} />)}
       <Image source={require('../../../assets/rocket-neon-dark.png')} style={styles.body} resizeMode="contain" accessible={false} />
