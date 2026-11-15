@@ -1,12 +1,6 @@
-import { lunarSites } from './lunar-sites';
+import conditions from '../../../assets/lunar-site-conditions.json';
 
-export type SiteConditions = { sunlight: number; earthCommunication: number; power: number };
+export type SiteConditions = { sunlight: number; earthCommunication: number };
 
-// Demo percentages only; replace with site conditions from the API later.
-export const mockSiteConditions: Record<string, SiteConditions> = Object.fromEntries(
-  lunarSites.map((site, i) => [site.id, {
-    sunlight: 55 + (i * 7) % 40,
-    earthCommunication: 45 + (i * 11) % 50,
-    power: 50 + (i * 13) % 45,
-  }]),
-);
+// candidates.csv: mean daily Sun/Earth visibility percentages over 2027–2029.
+export const siteConditions: Record<string, SiteConditions> = conditions;

@@ -1,15 +1,15 @@
+import { useEffect } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
+import Animated, { Easing, ReduceMotion, useSharedValue, withTiming, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Path, Line, Circle } from 'react-native-svg';
 import { localMinimaps } from './local-minimap-assets';
 import { NASA_RED, type LunarSite } from './lunar-sites';
-import { mockSiteConditions } from './site-conditions';
+import { siteConditions } from './site-conditions';
 
 const SIZE = 88, CENTER = SIZE / 2;
 const metrics = [
   { key: 'sunlight', label: 'Sunlight', color: '#FFD166' },
   { key: 'earthCommunication', label: 'Earth Communication', color: '#74D9F5' },
-  { key: 'power', label: 'Power', color: '#A6E889' },
 ] as const;
 export function PanoramaMinimap({ site, heading, horizontalFov }: { site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
   // Rotate imagery into local north-up; the overlay heading is then geographic azimuth.
@@ -34,14 +34,23 @@ export function PanoramaMinimap({ site, heading, horizontalFov }: { site: LunarS
     </View>
     <View testID="panorama-site-conditions" style={{ width: SIZE + 1, gap: 6 }}>
       {metrics.map(metric => {
-        const value = mockSiteConditions[site.id][metric.key];
-        return <View key={metric.key} style={{ gap: 3 }}>
-          <Text numberOfLines={1} style={{ color: '#fff', fontSize: 8, textShadowColor: '#000', textShadowRadius: 3 }}>{metric.label}</Text>
-          <View accessibilityRole="progressbar" accessibilityLabel={`${metric.label} (demo)`} accessibilityValue={{ min: 0, max: 100, now: value }} style={{ height: 5, width: '100%', borderWidth: .5, borderColor: metric.color, backgroundColor: '#050a12aa' }}>
-            <View style={{ height: '100%', width: `${value}%`, backgroundColor: metric.color }} />
-          </View>
-        </View>;
+        const value = siteConditions[site.id][metric.key];
+        return <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={value} />;
       })}
+    </View>
+  </View>;
+}
+function ConditionBar({ label, color, value }: { label: string; color: string; value: number }) {
+  const fill = useSharedValue(0);
+  useEffect(() => {
+    fill.set(0);
+    fill.set(withTiming(value, { duration: 650, easing: Easing.bezier(.23, 1, .32, 1), reduceMotion: ReduceMotion.System }));
+  }, [fill, value]);
+  const fillStyle = useAnimatedStyle(() => ({ width: `${fill.get()}%` }));
+  return <View style={{ gap: 3 }}>
+    <Text numberOfLines={1} style={{ color: '#fff', fontSize: 8, textShadowColor: '#000', textShadowRadius: 3 }}>{label}</Text>
+    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: value, text: `${value}%` }} style={{ height: 5, width: '100%', borderWidth: .5, borderColor: color, backgroundColor: '#050a12aa', overflow: 'hidden' }}>
+      <Animated.View style={[{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: color }, fillStyle]} />
     </View>
   </View>;
 }

@@ -1,0 +1,110 @@
+{
+  "DM1": {
+    "sunlight": 30.0563,
+    "earthCommunication": 0.0
+  },
+  "DM2": {
+    "sunlight": 41.3549,
+    "earthCommunication": 59.3516
+  },
+  "Haworth": {
+    "sunlight": 40.4565,
+    "earthCommunication": 58.986
+  },
+  "LM1": {
+    "sunlight": 8.9961,
+    "earthCommunication": 41.2434
+  },
+  "LM2": {
+    "sunlight": 18.6607,
+    "earthCommunication": 49.7472
+  },
+  "LM3": {
+    "sunlight": 23.5649,
+    "earthCommunication": 45.9949
+  },
+  "LM4": {
+    "sunlight": 5.3465,
+    "earthCommunication": 39.2456
+  },
+  "LM5": {
+    "sunlight": 19.0687,
+    "earthCommunication": 44.4926
+  },
+  "LM6": {
+    "sunlight": 26.2444,
+    "earthCommunication": 42.6127
+  },
+  "LM7": {
+    "sunlight": 0.0703,
+    "earthCommunication": 34.3148
+  },
+  "LM8": {
+    "sunlight": 4.5038,
+    "earthCommunication": 3.0224
+  },
+  "NPA": {
+    "sunlight": 17.8541,
+    "earthCommunication": 28.3487
+  },
+  "NPB": {
+    "sunlight": 0.1647,
+    "earthCommunication": 27.0174
+  },
+  "NPC": {
+    "sunlight": 9.1767,
+    "earthCommunication": 28.834
+  },
+  "NPD": {
+    "sunlight": 4.8383,
+    "earthCommunication": 44.6054
+  },
+  "SL2": {
+    "sunlight": 26.6512,
+    "earthCommunication": 44.976
+  },
+  "SL3": {
+    "sunlight": 18.6353,
+    "earthCommunication": 0.0
+  },
+  "Shoemaker": {
+    "sunlight": 24.4431,
+    "earthCommunication": 32.1542
+  },
+  "Site01": {
+    "sunlight": 16.0818,
+    "earthCommunication": 50.4061
+  },
+  "Site04": {
+    "sunlight": 16.2295,
+    "earthCommunication": 50.415
+  },
+  "Site06": {
+    "sunlight": 34.8071,
+    "earthCommunication": 49.789
+  },
+  "Site07": {
+    "sunlight": 25.4454,
+    "earthCommunication": 51.515
+  },
+  "Site11": {
+    "sunlight": 39.8463,
+    "earthCommunication": 54.6248
+  },
+  "Site20": {
+    "sunlight": 12.6711,
+    "earthCommunication": 59.9681
+  },
+  "Site20v2": {
+    "sunlight": 12.6603,
+    "earthCommunication": 58.2807
+  },
+  "Site23": {
+    "sunlight": 28.637,
+    "earthCommunication": 63.0443
+  },
+  "Site42": {
+    "sunlight": 11.3215,
+    "earthCommunication": 36.6744
+  }
+}
