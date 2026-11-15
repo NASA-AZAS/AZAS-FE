@@ -37,3 +37,16 @@ Gesture validation: browser touch emulation confirmed two-finger pinch changes m
 Pinch stability correction: the map texture now keeps fixed layout dimensions and uses GPU scale/translation, while pins use translation only. This avoids resizing/repositioning native image layouts on every pinch update. The first active pinch event seeds the focal point, one-finger lift events cannot update scale/pan, and single-finger pan/inertia is suppressed during an active pinch.
 
 Validation: TypeScript passed. Browser two-touch regression verified the geographic point below the pinch midpoint stays stable across successive zoom updates, alongside wheel/drag and constant pin width, without runtime errors. Native device feel remains unverified.
+
+## Launch-site information
+
+The detail panel now shows a square, cover-cropped local photo beside its country flag/name and an expanded English summary of up to six lines, constrained to the photo's height. Below it, the assigned launch date and time are shown prominently in UTC using the same `getMockLaunchWindows` value as the selection list. Photos and their supplied credits/licenses are stored in `assets/launch-site-photos`; the photo credit opens its original source. The `Let's Launch!` button remains at the bottom with no next-stage action yet.
+
+Profiles use the site's geographic country: Baikonur is Kazakhstan; Kourou is France (French Guiana). Descriptive background was checked against [NASA launch sites](https://www.nasa.gov/kennedy/launch-services-program/launch-services-program-launch-sites/), [NASA launch operations](https://public.ksc.nasa.gov/lspeducation/launch-operations/), [NASA Baikonur background](https://www.nasa.gov/wp-content/uploads/2024/04/exp11-presskit.pdf?emrc=b0e481), [JAXA Tanegashima](https://global.jaxa.jp/about/centers/tnsc/index.html?level=1), [JAXA Uchinoura](https://www.jaxa.jp/about/centers/usc/), [ISRO SDSC](https://www.isro.gov.in/SDSC.html), [ESA Kourou](https://www.esa.int/ESA_Multimedia/Images/2024/06/Where_on_Earth_Kourou), [China launch-center background](https://english.www.gov.cn/news/202402/04/content_WS65bf341bc6d0868f4e8e3c71.html), [Rocket Lab launch sites](https://rocketlabcorp.com/launch/launch-with-us/), and [Vostochny geographic background](https://en.wikipedia.org/wiki/Vostochny_Cosmodrome).
+
+Validation: typecheck passed. Browser confirmed the selected photo/country, the launch time matching the list, square photo dimensions, and summary/button bounds at 1100×650 and 844×390. Native hardware was not tested.
+
+Photo/summary refinement: photos are larger (144px at 844×390, up to 190px on larger views), and each site introduction is roughly twice its previous length. Summaries remain constrained to the photo height.
+
+Detail refinement: launch time now has a thin white vertical separator and geographic coordinates on its right, shown to three decimal places with N/S/E/W. The world map starts at 3× and allows up to 12× zoom.
+

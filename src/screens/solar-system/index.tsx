@@ -11,6 +11,7 @@ import { SolarScene, type LunarProjection, type ViewControls } from './scene';
 import { SpaceHud, type BodyId } from './space-hud';
 import { launchSites } from './launch-sites';
 import { LaunchOverview } from './launch-overview';
+import { LaunchSiteInfo } from './launch-site-info';
 import { LaunchTimeList } from './launch-time-list';
 import { LunarGuide } from './lunar-guide';
 import { StartupSplash } from './startup-splash';
@@ -344,6 +345,12 @@ export function SolarSystemScreen() {
             <Text numberOfLines={2} style={{ flex: 1, color: '#fff', fontSize: 16 }}>{launchSites.find(site => site.id === launchDetail)?.name}</Text>
             <Pressable accessibilityRole="button" accessibilityLabel="Close launch site" onPress={closeLaunchDetail} style={{ padding: 10 }}><Text style={{ color: '#fff' }}>✕</Text></Pressable>
           </View>
+          {chosenArrival.current && <LaunchSiteInfo siteId={launchDetail} arrivalAt={chosenArrival.current.arrivalAt} />}
+          <Pressable testID="confirm-launch-site" accessibilityRole="button" accessibilityLabel="Let's Launch!" style={({ pressed }) => ({ minHeight: 48, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', ...theme.outlineSurface, borderWidth: .3, borderRadius: 8, opacity: pressed ? .65 : 1 })}>
+            <Ionicons name="rocket-outline" size={19} color="#fff" accessible={false} />
+            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>Let's Launch!</Text>
+            <Ionicons name="arrow-forward-outline" size={18} color="#fff" accessible={false} />
+          </Pressable>
         </View>
       </>}
       {earthStage && !launchDetail && guideVisible && chosenArrival.current && <LaunchTimeList arrivalAt={chosenArrival.current.arrivalAt} selectedId={launchSiteId} onSelect={selectLaunchSite} />}
