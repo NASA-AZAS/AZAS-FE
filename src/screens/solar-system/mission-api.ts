@@ -69,6 +69,24 @@ export async function loadSurfaceSky(runId: string, siteCode: string, touchdownU
   };
 }
 export type LaunchPlan = { runId: string; touchdownUtc: string; sites: LaunchSite[] };
+
+type VisibilityWindow = { celestialBody: string; windowStartAt: string; windowEndAt: string };
+export type TouchdownDay = {
+  analysisDate: string;
+  sunVisibleTimeRatio: number | null; earthVisibleTimeRatio: number | null; jointVisibleTimeRatio: number | null;
+  sunKnownTimeRatio: number; earthKnownTimeRatio: number; jointKnownTimeRatio: number;
+  resultStatus: string; terrainCoverageStatus: string; visibilityWindows: (VisibilityWindow | null)[] | null;
+};
+
+export async function loadTouchdownDay(runId: string, touchdownUtc: string, signal: AbortSignal) {
+  const date = new Date(touchdownUtc).toISOString().slice(0, 10);
+  const days = await request<(TouchdownDay | null)[]>(
+    `/analyses/${encodeURIComponent(runId)}/daily-results?date=${date}`, signal,
+  );
+  if (!Array.isArray(days)) throw new Error('Incomplete daily results.');
+  return days.find(day => day?.analysisDate === date) ?? null;
+}
+
 type LaunchOptions = {
   touchdownUtc: string | null;
   launchSites: { launchSiteCode: string; latitudeDeg: number; longitudeDegEast: number; candidates: { launchUtc: string; candidateId: string }[] }[];
