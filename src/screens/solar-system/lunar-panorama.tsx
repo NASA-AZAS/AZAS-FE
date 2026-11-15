@@ -6,7 +6,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Canvas, useLoader } from './render-surface';
 import { SurfaceSky, SurfaceSkyLabels, emptySkyMarkers } from './surface-sky';
-import { surfacePosition } from './surface-sky-data';
+import { surfacePosition, type SkyBody } from './surface-sky-data';
 import { SurfaceTimeline } from './surface-timeline';
 import { LunarBase } from './lunar-base';
 import { PanoramaMinimap } from './panorama-minimap';
@@ -75,6 +75,15 @@ export function LunarPanorama({ site, onReady, landed = false, surfaceActive = t
       pitch.set(withTiming(targetPitch.get(), timing));
     }), [heading, pitch, targetHeading, targetPitch, autoRotate]);
   const source = lunarPanoramas[siteId];
+  const findBody = (body: SkyBody) => {
+            autoRotate.set(false);
+            const position = surfacePosition(body, elapsed.get());
+            const az = position.azimuth * Math.PI / 180, el = position.elevation * Math.PI / 180;
+            const next = heading.get() + Math.atan2(Math.sin(az - heading.get()), Math.cos(az - heading.get()));
+            targetHeading.set(next); targetPitch.set(el);
+            heading.set(withTiming(next, { duration: 600 })); pitch.set(withTiming(el, { duration: 600 }));
+
+  };
   return <View style={{ flex: 1, minHeight: 0 }}>
     <PanoramaBoundary>
       <GestureDetector gesture={drag} touchAction="none">
@@ -84,15 +93,8 @@ export function LunarPanorama({ site, onReady, landed = false, surfaceActive = t
               <Suspense fallback={null}><PanoramaScene source={source} heading={heading} targetHeading={targetHeading} autoRotate={autoRotate} pitch={pitch} ready={ready} />{landed && <><LunarBase /><SurfaceSky elapsed={elapsed} markers={skyMarkers} scrubbing={scrubbing} active={surfaceActive} /></>}</Suspense>
             </Canvas>
           </View>
-          {landed && <SurfaceSkyLabels markers={skyMarkers} onFind={body => {
-            autoRotate.set(false);
-            const position = surfacePosition(body, elapsed.get());
-            const az = position.azimuth * Math.PI / 180, el = position.elevation * Math.PI / 180;
-            const next = heading.get() + Math.atan2(Math.sin(az - heading.get()), Math.cos(az - heading.get()));
-            targetHeading.set(next); targetPitch.set(el);
-            heading.set(withTiming(next, { duration: 600 })); pitch.set(withTiming(el, { duration: 600 }));
-          }} />}
-          <PanoramaMinimap skyMarkers={landed ? skyMarkers : undefined} side={landed ? 'right' : 'left'} site={site} heading={heading} horizontalFov={2 * Math.atan(Math.tan(65 * Math.PI / 360) * viewerSize.width / Math.max(1, viewerSize.height))} />
+          {landed && <SurfaceSkyLabels markers={skyMarkers} onFind={findBody} />}
+          <PanoramaMinimap onFindBody={findBody} skyMarkers={landed ? skyMarkers : undefined} side={landed ? 'right' : 'left'} site={site} heading={heading} horizontalFov={2 * Math.atan(Math.tan(65 * Math.PI / 360) * viewerSize.width / Math.max(1, viewerSize.height))} />
           {loading && <ActivityIndicator color="#fff" style={StyleSheet.absoluteFill} />}
           <ViewAngles heading={heading} pitch={pitch} landed={landed} />
         </View>

@@ -7,9 +7,9 @@ import { JourneyCountdown } from './journey-countdown';
 import { moonFlightStories } from './moon-flight-stories';
 
 const pages = [
-  "Why don't we fly straight to the Moon? Spacecraft follow carefully planned orbits to save fuel and reach the Moon safely!",
-  "Why do we circle Earth before heading to the Moon? It gives us time to check our spacecraft. Once everything is ready, we'll fire our engines and head toward the Moon!",
-  "Why don't we land right away? Lunar orbit lets us prepare for a controlled descent and wait for the right sunlight and communication conditions. Safety first!",
+  "See how the path curves between Earth and the Moon? Gravity shapes our journey, so we carefully plan our trajectory to save fuel and reach the Moon safely!",
+  "That loop around Earth is called a parking orbit! It gives us time to check our spacecraft and wait for the right moment to fire our engines toward the Moon!",
+  "And the loop around the Moon? We slow down to enter lunar orbit instead of flying past it! This lets us prepare for a controlled descent under the right sunlight and communication conditions. Safety first!",
 ];
 export function TransferGuide({ flight = false, countdown = false, active, onCountdownComplete }: { flight?: boolean; countdown?: boolean; active: boolean; onCountdownComplete: () => void }) {
   const { width } = useWindowDimensions();
