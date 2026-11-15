@@ -4,6 +4,8 @@ import Animated, { Easing, ReduceMotion, useSharedValue, withTiming, useAnimated
 import Svg, { Path, Line, Circle } from 'react-native-svg';
 import { localMinimaps } from './local-minimap-assets';
 import { NASA_RED, type LunarSite } from './lunar-sites';
+import { SurfaceSkyReadout } from './surface-sky-readout';
+import type { SkyMarkers } from './surface-sky';
 import { siteConditions } from './site-conditions';
 
 const SIZE = 88, CENTER = SIZE / 2;
@@ -11,13 +13,13 @@ const metrics = [
   { key: 'sunlight', label: 'Sunlight', color: '#FFD166' },
   { key: 'earthCommunication', label: 'Earth Communication', color: '#74D9F5' },
 ] as const;
-export function PanoramaMinimap({ site, heading, horizontalFov }: { site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
+export function PanoramaMinimap({ site, heading, horizontalFov, side = 'left', skyMarkers }: { skyMarkers?: SharedValue<SkyMarkers>; side?: 'left' | 'right'; site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
   // Rotate imagery into local north-up; the overlay heading is then geographic azimuth.
   const cone = useAnimatedStyle(() => ({ transform: [{ rotate: `${heading.get()}rad` }] }));
   const half = horizontalFov / 2, r = SIZE * Math.SQRT2;
   const x1 = CENTER - Math.sin(half) * r, y = CENTER - Math.cos(half) * r;
   const x2 = CENTER + Math.sin(half) * r;
-  return <View pointerEvents="none" style={{ position: 'absolute', left: 11.5, top: 11.5, width: SIZE + 1, gap: 8 }}>
+  return <View pointerEvents="none" style={{ position: 'absolute', ...(side === 'right' ? { right: 11.5 } : { left: 11.5 }), top: 11.5, width: SIZE + 1, gap: 8 }}>
     <View style={{ width: SIZE + 1, height: SIZE + 1, borderWidth: .5, borderColor: '#fff' }}>
     <View testID="panorama-minimap" style={styles.map}>
     <Image source={localMinimaps[site.id]} style={StyleSheet.absoluteFill} />
@@ -38,6 +40,7 @@ export function PanoramaMinimap({ site, heading, horizontalFov }: { site: LunarS
         return <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={value} />;
       })}
     </View>
+    {skyMarkers && <SurfaceSkyReadout markers={skyMarkers} />}
   </View>;
 }
 function ConditionBar({ label, color, value }: { label: string; color: string; value: number }) {

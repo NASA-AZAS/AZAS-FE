@@ -52,7 +52,7 @@ export function RocketPortrait() {
   </View>;
 }
 
-export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => {}, departed = false, narrator = false }: { onDeparture?: () => void; onLaunchStart?: () => void; departed?: boolean; narrator?: boolean }) {
+export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => {}, departed = false, narrator = false, outlined = false, onSmile }: { onDeparture?: () => void; onLaunchStart?: () => void; departed?: boolean; narrator?: boolean; outlined?: boolean; onSmile?: () => void }) {
   const { width, height } = useWindowDimensions();
   const [launched, setLaunched] = useState(false);
   const flight = useSharedValue(0);
@@ -84,6 +84,7 @@ export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => 
   }, [active, reducedMotion, float, gaze, blink, joy, shake, pressed, emphasis]);
 
   const smile = () => {
+    onSmile?.();
     if (launched || departed) return;
     if (!narrator) { setLaunched(true); onLaunchStart(); }
     emphasis.set(0);
@@ -137,6 +138,7 @@ export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => 
     <Animated.View style={floatStyle} pointerEvents="none">
     <Animated.View testID="rocket-launch-flight" style={flightStyle}>
     <Animated.View testID="rocket-visual" style={[styles.visual, bodyStyle]}>
+      {outlined && [[-1.5, 0], [1.5, 0], [0, -1.5], [0, 1.5], [-1, -1], [1, -1], [-1, 1], [1, 1]].map(([x, y], i) => <Image key={i} source={require('../../../assets/rocket-neon-dark.png')} resizeMode="contain" accessible={false} style={[styles.body, { tintColor: '#000', left: x, top: y }]} />)}
       <Image source={require('../../../assets/rocket-neon-dark.png')} style={styles.body} resizeMode="contain" accessible={false} />
       <Animated.View testID="rocket-idle-eyes" style={[styles.eyes, idleStyle]}><Eyes mood="idle" /></Animated.View>
       <Animated.View testID="rocket-happy-eyes" style={[styles.eyes, happyStyle]}><Eyes mood="happy" /></Animated.View>

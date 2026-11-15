@@ -387,13 +387,20 @@ export function SolarScene({ missionFlight, flightActive, flightTelemetry, fligh
     }
     if (missionFlight && flightTelemetry) {
       const view = rocketView;
+      if (view.completed) return;
       const now = performance.now();
       const playback = flightPlayback?.current;
-      if (playback?.skip) { view.elapsed = FLIGHT_DURATION_SECONDS; playback.skip = false; view.initialized = false; controls.current.yaw = .35; controls.current.pitch = .4; controls.current.zoom = 1; }
+      if (playback?.skip) { playback.skip = false; view.completed = true; onFlightArrived?.(); return; }
       else if (flightActive && !playback?.paused) view.elapsed = Math.min(FLIGHT_DURATION_SECONDS, view.elapsed + Math.max(0, now - view.lastTick) / 1000 * (playback?.speed ?? 1));
       view.lastTick = now;
       const progress = view.elapsed / FLIGHT_DURATION_SECONDS;
       flightRoute.sample(progress, view.point);
+      // Cut just before the path ends; Moon-center distance does not trigger arrival.
+      if (flightRoute.totalLength * (1 - progress) <= scale.moonRadius * .25) {
+        view.completed = true;
+        onFlightArrived?.();
+        return;
+      }
       flightRoute.sample(progress < 1 ? Math.min(1, progress + .0002) : .9998, view.ahead);
       if (progress < 1) view.tangent.subVectors(view.ahead, view.point).normalize();
       else view.tangent.subVectors(view.point, view.ahead).normalize();
@@ -443,7 +450,6 @@ export function SolarScene({ missionFlight, flightActive, flightTelemetry, fligh
       }
       flightSpriteSize.current = baseDistance * 2 * Math.tan(43 * Math.PI / 360) * 100 / size.height;
       flightTelemetry.current = { progress, remainingSeconds: Math.max(0, FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1), remainingKm: Math.max(0, (1 - progress) * flightRoute.totalLength * 2_000_000), speedKmh: AVERAGE_SPEED_KMH, arrived: progress === 1 };
-      if ((FLIGHT_DURATION_SECONDS - view.elapsed) / (playback?.speed ?? 1) <= 1.35 && !view.completed) { view.completed = true; onFlightArrived?.(); }
     }
     if (exploring && !controls.current.locked && !explorerArrived.current) {
       explorerArrived.current = true;

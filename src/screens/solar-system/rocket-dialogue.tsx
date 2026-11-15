@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { AccessibilityInfo, AppState, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 
-export function RocketDialogue({ pages, onFinished, showPageNumber = false }: { pages: string[]; onFinished?: () => void; showPageNumber?: boolean }) {
+export function RocketDialogue({ pages, onFinished, showPageNumber = false, onDismiss, compact = false, autoDismissMs }: { pages: string[]; onFinished?: () => void; showPageNumber?: boolean; onDismiss?: () => void; compact?: boolean; autoDismissMs?: number }) {
   const [page, setPage] = useState(0);
   if (!pages.length) return null;
   const reserveText = pages.reduce((a, b) => a.length > b.length ? a : b);
-  return <DialoguePage key={page} pageLabel={showPageNumber ? `${page + 1}/${pages.length}` : undefined} text={pages[page]} reserveText={reserveText} hasNext={page < pages.length - 1} onFinished={onFinished} onNext={() => setPage(value => Math.min(value + 1, pages.length - 1))} />;
+  return <DialoguePage autoDismissMs={autoDismissMs} onAutoDismiss={onDismiss} compact={compact} key={page} pageLabel={showPageNumber ? `${page + 1}/${pages.length}` : undefined} text={pages[page]} reserveText={reserveText} hasNext={page < pages.length - 1 || !!onDismiss} onFinished={onFinished} onNext={() => { if (page === pages.length - 1 && onDismiss) onDismiss(); else setPage(value => Math.min(value + 1, pages.length - 1)); }} />;
 }
 // All rocket speech shares italic typography and a stable-height typewriter bubble.
-function DialoguePage({ text, reserveText, hasNext, onNext, onFinished, pageLabel }: { pageLabel?: string; text: string; reserveText: string; hasNext: boolean; onNext: () => void; onFinished?: () => void }) {
+function DialoguePage({ text, reserveText, hasNext, onNext, onFinished, pageLabel, compact, autoDismissMs, onAutoDismiss }: { autoDismissMs?: number; onAutoDismiss?: () => void; compact?: boolean; pageLabel?: string; text: string; reserveText: string; hasNext: boolean; onNext: () => void; onFinished?: () => void }) {
   const [count, setCount] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [active, setActive] = useState(AppState.currentState !== 'background');
@@ -41,10 +41,15 @@ function DialoguePage({ text, reserveText, hasNext, onNext, onFinished, pageLabe
     return () => cancelAnimation(nudge);
   }, [complete, hasNext, active, reducedMotion, nudge]);
   useEffect(() => { if (complete && !hasNext) onFinished?.(); }, [complete, hasNext, onFinished]);
+  useEffect(() => {
+    if (!complete || !active || !autoDismissMs || !onAutoDismiss) return;
+    const timer = setTimeout(onAutoDismiss, autoDismissMs);
+    return () => clearTimeout(timer);
+  }, [complete, active, autoDismissMs, onAutoDismiss]);
   const hintStyle = useAnimatedStyle(() => ({ transform: [{ translateX: nudge.get() * 6 }] }));
-  return <Pressable testID="rocket-dialogue-bubble" accessibilityRole="button" accessibilityLabel={hasNext ? 'Next rocket message' : 'Rocket message'} accessibilityState={{ disabled: !complete || !hasNext }} disabled={!complete || !hasNext} onPress={onNext} style={styles.bubble}>
+  return <Pressable testID="rocket-dialogue-bubble" accessibilityRole="button" accessibilityLabel={hasNext ? 'Next rocket message' : 'Rocket message'} accessibilityState={{ disabled: !complete || !hasNext }} disabled={!complete || !hasNext} onPress={onNext} style={[styles.bubble, compact && { paddingVertical: 8 }]}>
     <Text accessible={false} style={[styles.speech, { opacity: 0 }]}>{reserveText}</Text>
-    <Text testID="rocket-dialogue-text" accessibilityLabel={text} style={[styles.speech, styles.typing]}>{text.slice(0, count)}</Text>
+    <Text testID="rocket-dialogue-text" accessibilityLabel={text} style={[styles.speech, styles.typing, compact && { top: 8 }]}>{text.slice(0, count)}</Text>
     {pageLabel && <Text testID="rocket-page-number" pointerEvents="none" style={{ position: 'absolute', right: 12, top: 10, color: '#9AABBE', fontSize: 9 }}>{pageLabel}</Text>}
     {complete && hasNext && <Animated.Text testID="rocket-next-page" accessible={false} style={[styles.next, hintStyle]}>{'>'}</Animated.Text>}
     <View pointerEvents="none" style={styles.tail} />

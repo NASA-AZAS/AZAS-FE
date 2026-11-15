@@ -5,11 +5,15 @@ import { useSharedValue, withTiming, Easing, useReducedMotion, type SharedValue 
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Canvas, useLoader } from './render-surface';
+import { SurfaceSky, SurfaceSkyLabels, emptySkyMarkers } from './surface-sky';
+import { surfacePosition } from './surface-sky-data';
+import { SurfaceTimeline } from './surface-timeline';
+import { LunarBase } from './lunar-base';
 import { PanoramaMinimap } from './panorama-minimap';
 import { type LunarSite } from './lunar-sites';
 import { lunarPanoramas } from './lunar-panorama-assets';
 
-function ViewAngles({ heading, pitch }: { heading: SharedValue<number>; pitch: SharedValue<number> }) {
+function ViewAngles({ heading, pitch, landed }: { landed?: boolean; heading: SharedValue<number>; pitch: SharedValue<number> }) {
   const [angles, setAngles] = useState({ azimuth: '0.0', elevation: '0.0' });
   useEffect(() => {
     // Sample the displayed camera angle at 10Hz without rerendering the panorama scene.
@@ -21,7 +25,7 @@ function ViewAngles({ heading, pitch }: { heading: SharedValue<number>; pitch: S
     }, 100);
     return () => clearInterval(timer);
   }, [heading, pitch]);
-  return <Text testID="panorama-view-angles" pointerEvents="none" style={styles.orientation}>Azimuth {angles.azimuth}° / Elevation {angles.elevation}°</Text>;
+  return <Text testID="panorama-view-angles" pointerEvents="none" style={[styles.orientation, landed && { bottom: 64 }]}>Azimuth {angles.azimuth}° / Elevation {angles.elevation}°</Text>;
 }
 
 class PanoramaBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -44,9 +48,12 @@ function PanoramaScene({ source, heading, targetHeading, autoRotate, pitch, read
     const elevation = pitch.get(), horizontal = Math.cos(elevation);
     camera.lookAt(horizontal * Math.cos(angle), Math.sin(elevation), horizontal * Math.sin(angle));
   });
-  return <mesh geometry={geometry}><meshBasicMaterial map={texture} /></mesh>;
+  return <mesh geometry={geometry} renderOrder={-10}><meshBasicMaterial map={texture} depthWrite={false} /></mesh>;
 }
-export function LunarPanorama({ site, onReady }: { site: LunarSite; onReady?: () => void }) {
+export function LunarPanorama({ site, onReady, landed = false, surfaceActive = true }: { site: LunarSite; onReady?: () => void; landed?: boolean; surfaceActive?: boolean }) {
+  const elapsed = useSharedValue(0);
+  const scrubbing = useSharedValue(false);
+  const skyMarkers = useSharedValue(emptySkyMarkers());
   const siteId = site.id;
   const reducedMotion = useReducedMotion();
   const autoRotate = useSharedValue(!reducedMotion);
@@ -74,15 +81,24 @@ export function LunarPanorama({ site, onReady }: { site: LunarSite; onReady?: ()
         <View collapsable={false} testID="dem-panorama" accessibilityLabel={`${siteId} DEM panorama. Drag in any direction to look around.`} onLayout={e => setViewerSize(e.nativeEvent.layout)} style={styles.viewer}>
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
             <Canvas camera={{ position: [0, 0, 0], rotation: [0, -Math.PI / 2, 0], fov: 65, near: .1, far: 30 }} gl={{ antialias: true }}>
-              <Suspense fallback={null}><PanoramaScene source={source} heading={heading} targetHeading={targetHeading} autoRotate={autoRotate} pitch={pitch} ready={ready} /></Suspense>
+              <Suspense fallback={null}><PanoramaScene source={source} heading={heading} targetHeading={targetHeading} autoRotate={autoRotate} pitch={pitch} ready={ready} />{landed && <><LunarBase /><SurfaceSky elapsed={elapsed} markers={skyMarkers} scrubbing={scrubbing} active={surfaceActive} /></>}</Suspense>
             </Canvas>
           </View>
-          <PanoramaMinimap site={site} heading={heading} horizontalFov={2 * Math.atan(Math.tan(65 * Math.PI / 360) * viewerSize.width / Math.max(1, viewerSize.height))} />
+          {landed && <SurfaceSkyLabels markers={skyMarkers} onFind={body => {
+            autoRotate.set(false);
+            const position = surfacePosition(body, elapsed.get());
+            const az = position.azimuth * Math.PI / 180, el = position.elevation * Math.PI / 180;
+            const next = heading.get() + Math.atan2(Math.sin(az - heading.get()), Math.cos(az - heading.get()));
+            targetHeading.set(next); targetPitch.set(el);
+            heading.set(withTiming(next, { duration: 600 })); pitch.set(withTiming(el, { duration: 600 }));
+          }} />}
+          <PanoramaMinimap skyMarkers={landed ? skyMarkers : undefined} side={landed ? 'right' : 'left'} site={site} heading={heading} horizontalFov={2 * Math.atan(Math.tan(65 * Math.PI / 360) * viewerSize.width / Math.max(1, viewerSize.height))} />
           {loading && <ActivityIndicator color="#fff" style={StyleSheet.absoluteFill} />}
-          <ViewAngles heading={heading} pitch={pitch} />
+          <ViewAngles heading={heading} pitch={pitch} landed={landed} />
         </View>
       </GestureDetector>
     </PanoramaBoundary>
+    {landed && <SurfaceTimeline elapsed={elapsed} autoRotate={autoRotate} scrubbing={scrubbing} />}
   </View>;
 }
 const styles = StyleSheet.create({
