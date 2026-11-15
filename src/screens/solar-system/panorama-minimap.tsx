@@ -6,14 +6,14 @@ import { localMinimaps } from './local-minimap-assets';
 import { NASA_RED, type LunarSite } from './lunar-sites';
 import { SurfaceSkyReadout } from './surface-sky-readout';
 import type { SkyMarkers } from './surface-sky';
-import { siteConditions } from './site-conditions';
+import type { SiteConditions } from './site-conditions';
 
 const SIZE = 88, CENTER = SIZE / 2;
 const metrics = [
   { key: 'sunlight', label: 'Sunlight', color: '#FFD166' },
   { key: 'earthCommunication', label: 'Earth Communication', color: '#74D9F5' },
 ] as const;
-export function PanoramaMinimap({ site, heading, horizontalFov, side = 'left', skyMarkers }: { skyMarkers?: SharedValue<SkyMarkers>; side?: 'left' | 'right'; site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
+export function PanoramaMinimap({ site, conditions, heading, horizontalFov, side = 'left', skyMarkers }: { conditions?: SiteConditions; skyMarkers?: SharedValue<SkyMarkers>; side?: 'left' | 'right'; site: LunarSite; heading: SharedValue<number>; horizontalFov: number }) {
   // Rotate imagery into local north-up; the overlay heading is then geographic azimuth.
   const cone = useAnimatedStyle(() => ({ transform: [{ rotate: `${heading.get()}rad` }] }));
   const half = horizontalFov / 2, r = SIZE * Math.SQRT2;
@@ -35,24 +35,22 @@ export function PanoramaMinimap({ site, heading, horizontalFov, side = 'left', s
     </View>
     </View>
     <View testID="panorama-site-conditions" style={{ width: SIZE + 1, gap: 6 }}>
-      {metrics.map(metric => {
-        const value = siteConditions[site.id][metric.key];
-        return <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={value} />;
-      })}
+      {metrics.map(metric => <ConditionBar key={`${site.id}-${metric.key}`} label={metric.label} color={metric.color} value={conditions?.[metric.key]} />)}
     </View>
     {skyMarkers && <SurfaceSkyReadout markers={skyMarkers} />}
   </View>;
 }
-function ConditionBar({ label, color, value }: { label: string; color: string; value: number }) {
+function ConditionBar({ label, color, value }: { label: string; color: string; value?: number }) {
   const fill = useSharedValue(0);
   useEffect(() => {
     fill.set(0);
+    if (value == null) return;
     fill.set(withTiming(value, { duration: 650, easing: Easing.bezier(.23, 1, .32, 1), reduceMotion: ReduceMotion.System }));
   }, [fill, value]);
   const fillStyle = useAnimatedStyle(() => ({ width: `${fill.get()}%` }));
   return <View style={{ gap: 3 }}>
     <Text numberOfLines={1} style={{ color: '#fff', fontSize: 8, textShadowColor: '#000', textShadowRadius: 3 }}>{label}</Text>
-    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: value, text: `${value}%` }} style={{ height: 5, width: '100%', borderWidth: .5, borderColor: color, backgroundColor: '#050a12aa', overflow: 'hidden' }}>
+    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: value, text: value == null ? 'Unavailable' : `${value}%` }} style={{ height: 5, width: '100%', borderWidth: .5, borderColor: color, backgroundColor: '#050a12aa', overflow: 'hidden' }}>
       <Animated.View style={[{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: color }, fillStyle]} />
     </View>
   </View>;
