@@ -175,3 +175,11 @@ Guide callout text is Lunar South Pole. RocketDialogue accepts a page array with
 Guide title now uses STEP01, NASA RED divider and23px bold brand-style type. Dialogue has two user-specified pages; > moves horizontally only once typing finishes. The final page reveals a small NASA RED SELECT button below the candidate cluster; it opens the Site01 overview/detail flow. It shares the Lunar South Pole callout's early zoom-out fade and does not intercept taps when invisible.
 
 Callout starts on the upper-right peripheral south-polar surface rather than the axis. Its local surface direction follows the screen upper-right tangent; label/leader follow projected coordinates. Opacity uses apparent lunar radius so a small zoom-out fades it away. Guide narrator is smaller/lower, floating and clickable for repeat smiles without flight. Bubble spans remaining safe width and all speech remains italic. Typecheck passed. Prior screenshot evidence is historical and predates the final page/callout layout.
+
+## Arrival date selection (mock)
+
+`Confirm Landing Site` now keeps the selected lunar site and overview in place, replacing the right-hand panorama with eight preset arrival date/time options. All options display UTC. The user must select one before `Confirm Arrival Date` can start the existing locked transition to Earth / STEP 02. Back returns to the panorama; changing candidates clears the pending date selection. The confirmed site and arrival window stay together in screen refs for the demo session.
+
+`arrival-windows.ts` contains the typed mock options, shared across sites for now. These dates are demo values, not calculated mission opportunities. Replace them with the selected site's backend response when available. `arrival-date-picker.tsx` renders the selection UI using the existing transparent background and thin white outlines.
+
+Validation: TypeScript and whitespace checks passed. Browser flow verified eight options, disabled confirmation before selection, enabled confirmation after selection, back-to-panorama reset, and arrival confirmation reaching Earth / STEP 02 without runtime errors. Native iPhone / Expo Go was not directly tested for this change.
