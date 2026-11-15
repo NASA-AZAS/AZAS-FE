@@ -52,7 +52,7 @@ export function RocketPortrait() {
   </View>;
 }
 
-export function RocketCompanion({ onDeparture, onLaunchStart, departed = false }: { onDeparture: () => void; onLaunchStart: () => void; departed?: boolean }) {
+export function RocketCompanion({ onDeparture = () => {}, onLaunchStart = () => {}, departed = false, narrator = false }: { onDeparture?: () => void; onLaunchStart?: () => void; departed?: boolean; narrator?: boolean }) {
   const { width, height } = useWindowDimensions();
   const [launched, setLaunched] = useState(false);
   const flight = useSharedValue(0);
@@ -85,8 +85,7 @@ export function RocketCompanion({ onDeparture, onLaunchStart, departed = false }
 
   const smile = () => {
     if (launched || departed) return;
-    setLaunched(true);
-    onLaunchStart();
+    if (!narrator) { setLaunched(true); onLaunchStart(); }
     emphasis.set(0);
     emphasis.set(withSequence(
       withTiming(1, { duration: 85 }), withTiming(0, { duration: 130 }),
@@ -97,7 +96,7 @@ export function RocketCompanion({ onDeparture, onLaunchStart, departed = false }
       withTiming(0, { duration: 120 })));
     joy.set(withSequence(withSpring(1, { duration: 220, dampingRatio: .8 }),
       withDelay(1100, withSpring(0, { duration: 400, dampingRatio: .8 }, finished => {
-        if (!finished) return;
+        if (!finished || narrator) return;
         flight.set(withTiming(1, { duration: reducedMotion ? 120 : 140, easing: Easing.in(Easing.cubic) }, done => {
           if (done) runOnJS(onDeparture)();
         }));
@@ -132,7 +131,7 @@ export function RocketCompanion({ onDeparture, onLaunchStart, departed = false }
   }));
 
   return <Pressable accessibilityRole="button" accessibilityLabel="Make the rocket smile"
-    accessibilityHint="Tap to make your rocket companion happy and launch it" accessibilityState={{ disabled: launched || departed }} disabled={launched || departed} style={styles.rocket}
+    accessibilityHint={narrator ? 'Tap to make your rocket companion smile' : 'Tap to make your rocket companion happy and launch it'} accessibilityState={{ disabled: launched || departed }} disabled={launched || departed} style={[styles.rocket, narrator && { height: SIZE, marginBottom: 0, marginRight: 0 }]}
     onPress={smile} onPressIn={() => pressed.set(withTiming(.97, { duration: 100 }))}
     onPressOut={() => pressed.set(withSpring(1, { duration: 300, dampingRatio: 1 }))}>
     <Animated.View style={floatStyle} pointerEvents="none">
@@ -143,13 +142,13 @@ export function RocketCompanion({ onDeparture, onLaunchStart, departed = false }
       <Animated.View testID="rocket-happy-eyes" style={[styles.eyes, happyStyle]}><Eyes mood="happy" /></Animated.View>
     </Animated.View>
     </Animated.View>
-    <Animated.View pointerEvents="none" style={styles.launchRow}>
+    {!narrator && <Animated.View pointerEvents="none" style={styles.launchRow}>
       <Text style={styles.launchText}>LAUNCH</Text>
       <View style={styles.mark}>
         <Animated.Text testID="launch-question" style={[styles.launchText, styles.markText, questionStyle]}>?</Animated.Text>
         <Animated.Text testID="launch-exclamation" style={[styles.launchText, styles.markText, exclamationStyle]}>!</Animated.Text>
       </View>
-    </Animated.View>
+    </Animated.View>}
     </Animated.View>
   </Pressable>;
 }

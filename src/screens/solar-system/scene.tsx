@@ -13,7 +13,7 @@ export type ViewControls = {
   yaw: number; pitch: number; zoom: number; locked: boolean;
   revision: number; fromBody: BodyId | null;
 };
-export type LunarProjection = { id: string; x: number; y: number; visible: boolean }[];
+export type LunarProjection = { id: string; x: number; y: number; visible: boolean; opacity?: number }[];
 type Props = {
   startup: 'loading' | 'flight' | 'done';
   onStartupDone: () => void;
@@ -332,6 +332,12 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
           return { id: site.id, point: new THREE.Vector3(.363 * Math.cos(lat) * Math.cos(lon), .363 * Math.sin(lat), -.363 * Math.cos(lat) * Math.sin(lon)) };
         });
         entries.push({ id: 'North Pole', point: new THREE.Vector3(0, .58, 0) }, { id: 'South Pole', point: new THREE.Vector3(0, -.58, 0) });
+        const inverseMoonRotation = moon.current.getWorldQuaternion(new THREE.Quaternion()).invert();
+        const edgeDirection = new THREE.Vector3(1, 1, 0).applyQuaternion(camera.quaternion).applyQuaternion(inverseMoonRotation);
+        edgeDirection.y = 0;
+        edgeDirection.normalize().multiplyScalar(.365 * Math.sin(Math.PI / 18));
+        edgeDirection.y = -.365 * Math.cos(Math.PI / 18);
+        entries.push({ id: 'South Pole Surface', point: edgeDirection });
         camera.updateMatrixWorld();
         onLunarProjection(entries.map(({ id, point }) => {
           const world = moon.current!.localToWorld(point);
@@ -339,7 +345,8 @@ export function SolarScene({ startup, onStartupDone, exploring, candidateSelecte
           const surface = origin.clone().addScaledVector(normal, scale.moonRadius);
           const visible = normal.dot(camera.position.clone().sub(surface)) > 0;
           world.project(camera);
-          return { id, x: (world.x + 1) * size.width / 2, y: (1 - world.y) * size.height / 2, visible: (!candidateSelected || visible) && !controls.current.locked };
+          const apparentRadius = scale.moonRadius / camera.position.distanceTo(origin) / Math.tan(43 * Math.PI / 360);
+          return { id, opacity: id === 'South Pole Surface' ? THREE.MathUtils.smoothstep(apparentRadius, .8, .98) : 1, x: (world.x + 1) * size.width / 2, y: (1 - world.y) * size.height / 2, visible: (!candidateSelected || visible) && !controls.current.locked };
         }));
       }
     }
